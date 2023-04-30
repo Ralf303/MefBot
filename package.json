@@ -1,8 +1,14 @@
 {
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
   "dependencies": {
     "telegraf": "^4.12.2",
     "telegraf-ratelimit": "^2.0.0",
     "telegraf-tools": "^1.1.3",
     "telegram-keyboard": "^2.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }

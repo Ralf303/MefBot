@@ -1,58 +1,76 @@
-const { Keyboard, Key } = require('telegram-keyboard')
+const { Keyboard, Key } = require("telegram-keyboard");
 
 module.exports = (bot) => {
-    trigerToBuy = {
-        "buy1": {
-            name: 'ВИП',
-            prise: 100000,
-        }
-    }
+  trigers = [
+    "ВИП",
+    "Админка",
+    "Префикс",
+    "Снять Варн",
+    "Анон",
+    "Логи",
+    "Смена Префикса",
+    "Снять бан",
+    "Выход ЧС",
+  ];
 
-    function buyAction(ctx, prise) {
-        
-    }
-   /* bot.action('buy1', (ctx) => {
-        ctx.deleteMessage()
-        if (ctx.user.val >= 100000) {
-          ctx.reply('Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст')
-          ctx.user.val -= 100000
-          bot.telegram.sendMessage('1157591765', 'Заявка на покупку!\n\nИмя покупателя @' + ctx.chat.username + '\n\nТовар: ВИП')
-        } else {
-          ctx.reply('Не достаточно мефа😢')
-        }
-      })
+  const price = [
+    100000, 80000, 40000, 20000, 150000, 25000, 10000, 100000, 200000,
+  ];
 
-      bot.action('buy2', (ctx) => {
-        ctx.deleteMessage()
-        if (ctx.user.val >= 80000) {
-          ctx.reply('Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст')
-          ctx.user.val -= 80000
-          bot.telegram.sendMessage('1157591765', 'Заявка на покупку!\n\nИмя покупателя @' + ctx.chat.username + '\n\nТовар: Админка')
-        } else {
-          ctx.reply('Не достаточно мефа😢')
-        }
-      }) 
-      */
+  function beforeBuy(ctx, item, price, triger) {
+    ctx.deleteMessage();
+    ctx.reply(
+      'Цена товара "' +
+        item +
+        '" состовляет ' +
+        price +
+        "MF\n\nВаш баланс: " +
+        ctx.persone.balance +
+        "MF\n\nВы согласны на покупку?",
+      Keyboard.make([
+        [
+          Key.callback("Купить", "buy" + triger),
+          Key.callback("Назад", "chatAssortiment"),
+        ],
+      ]).inline()
+    );
+  }
 
-      bot.action('dell', (ctx) => {
-        ctx.deleteMessage()
-      })
+  bot.action(trigers, (ctx) => {
+    const { data } = ctx.callbackQuery;
+    const item = trigers.indexOf(data);
+    console.log("Вы нажали на товар " + trigers[item] + " и его ID " + item);
+    beforeBuy(ctx, trigers[item], price[item], item);
+  });
 
-      bot.action('chatAssortiment', (ctx) =>{
-        ctx.deleteMessage()
-        ctx.reply('Товары📦\n•ВИП статус в ирисе: 100к💰\n•+1лвл админа: 80к💰\n•Префикс: 40к💰\n•Снять варн: 20к💰\n•Купить анонимность: 150к💰\n•Доступ к логам: 25к💰\n•Смена префикса: 10к💰\n•Снять бан: 100к💰\n•Выход из ЧС: 200к💰\n\n❗️магазин не доступен 3+ рангам администраторов❗️',  Keyboard.make([
-              [Key.callback('ВИП', 'vip'), Key.callback('Админка', 'adm'), Key.callback('Префикс', 'pref')],
-              [Key.callback('Снять Варн', 'warn'), Key.callback('Анон', 'anon'), Key.callback('Логи', 'logi')],
-              [Key.callback('Смен преф', 'change'), Key.callback('Снять бан', 'ban'), Key.callback('Выход ЧС', 'chs')],
-              [Key.callback('Закрыть', 'dell'), Key.callback('Назад', 'menu')],
-            ]).inline())
-        })
+  bot.action("dell", (ctx) => {
+    ctx.deleteMessage();
+  });
 
-        bot.action('menu', (ctx) =>{
-            ctx.deleteMessage()
-            ctx.reply('Выберите что хотите купить:', Keyboard.make([
-                [Key.callback('Товары для чата', 'chatAssortiment'), Key.callback('Улучшения', 'farmApp')],
-                [Key.callback('Закрыть', 'dell')],
-            ]).inline())
-        })
-    }
+  bot.action("chatAssortiment", (ctx) => {
+    ctx.deleteMessage();
+    ctx.reply(
+      "Товары📦\n•ВИП статус в ирисе: 100к💰\n•+1лвл админа: 80к💰\n•Префикс: 40к💰\n•Снять варн: 20к💰\n•Купить анонимность: 150к💰\n•Доступ к логам: 25к💰\n•Смена префикса: 10к💰\n•Снять бан: 100к💰\n•Выход из ЧС: 200к💰\n\n❗️магазин не доступен 3+ рангам администраторов❗️",
+      Keyboard.make([
+        ["ВИП", "Админка", "Префикс"],
+        ["Снять Варн", "Анон", "Логи"],
+        ["Смена Префикса", "Снять бан", "Выход ЧС"],
+        [Key.callback("Закрыть", "dell"), Key.callback("Назад", "menu")],
+      ]).inline()
+    );
+  });
+
+  bot.action("menu", (ctx) => {
+    ctx.deleteMessage();
+    ctx.reply(
+      "Выберите что хотите купить:",
+      Keyboard.make([
+        [
+          Key.callback("Товары для чата", "chatAssortiment"),
+          Key.callback("Улучшения", "farmApp"),
+        ],
+        [Key.callback("Закрыть", "dell")],
+      ]).inline()
+    );
+  });
+};
