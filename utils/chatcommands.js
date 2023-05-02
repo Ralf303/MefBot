@@ -3,34 +3,41 @@ const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
 const work =
   "Команды на котором можно заработать мефа:\n\nФерма\nКуб\nБандит\n\nТак же в чате иногда появляется капча из 6 цифр и если вы введете ее правильно то получите мефа";
-module.exports = (bot) => {
-  bot.command("start", async (ctx) => {
-    ctx
-      .reply(
-        "Привет " +
-          ctx.from.first_name +
-          "!\n\nЯ, МефБот, создан для помощи в чате @mefpablo\nБолее подробно => /help"
-      )
-      .catch((err) => console.log(err));
-  });
+function chatcommands(userMessage, persone, ctx, workImp, commandsImp) {
+  if (userMessage == "проф") {
+    ctx.reply(
+      "Ваш ник: " +
+        ctx.from.first_name +
+        "\nВаш ID: " +
+        ctx.chat.id +
+        "\nВаш меф: " +
+        persone.balance +
+        "\nКапчей введено: " +
+        persone.captureCounter +
+        "\nВаш уровень сбора: " +
+        persone.lvl.mef +
+        "\nВаш уровень времени: " +
+        persone.lvl.time
+    );
+  }
 
-  bot.command("command", (ctx) => {
-    ctx.reply(commands).catch((err) => console.log(err));
-  });
+  if (userMessage == "мой меф" || userMessage == "меф" || userMessage == "б") {
+    ctx.reply("Ваш меф: " + persone.balance);
+  }
 
-  bot.command("help", (ctx) => {
-    ctx
-      .replyWithHTML(
-        "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/mef информация по добычи мефа\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
-      )
-      .catch((err) => console.log(err));
-  });
+  if (userMessage == "меф гайд") {
+    ctx.reply(work);
+  }
 
-  bot.command("mef", (ctx) => {
-    ctx.reply(work).catch((err) => console.log(err));
-  });
+  if (userMessage == "бот") {
+    ctx.reply("✅На месте");
+  }
 
-  bot.command("shop", (ctx) => {
+  if (userMessage == "команды") {
+    ctx.reply(commands);
+  }
+
+  if (userMessage == "магазин") {
     if (ctx.chat.type === "private") {
       ctx.reply(
         "Выберите что хотите купить:",
@@ -45,5 +52,7 @@ module.exports = (bot) => {
     } else if (ctx.chat.type === "group" || ctx.chat.type === "supergroup") {
       ctx.reply("Данная команда доступна только в лс");
     }
-  });
-};
+  }
+}
+
+module.exports = { chatcommands };

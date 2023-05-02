@@ -126,4 +126,36 @@ module.exports = (bot) => {
       ctx.reply("Не достаточно мефа😢");
     }
   });
+
+  bot.action("timeapp", (ctx) => {
+    ctx.deleteMessage();
+    if (ctx.persone.balance >= 10000 && ctx.persone.lvl.time < 4) {
+      ctx.persone.balance -= 10000;
+      ctx.persone.lvl.time += 1;
+      ctx.reply(
+        "Поздравляем с успешной покупкой!\nТеперь ваш уровень времени " +
+          ctx.persone.lvl.time
+      );
+    } else if (ctx.persone.balance < 10000) {
+      ctx.reply("Недостаточно мефа(");
+    } else {
+      ctx.reply("Вы уже прокачали уровень времени на максимум");
+    }
+  });
+
+  bot.action("mefapp", (ctx) => {
+    ctx.deleteMessage();
+    if (ctx.persone.balance >= 20000 && ctx.persone.lvl.mef < 4) {
+      ctx.persone.balance -= 20000;
+      ctx.persone.lvl.mef += 1;
+      ctx.reply(
+        "Поздравляем с успешной покупкой!\nТеперь ваш уровень сбора " +
+          ctx.persone.lvl.mef
+      );
+    } else if (ctx.persone.balance < 20000) {
+      ctx.reply("Недостаточно мефа(");
+    } else {
+      ctx.reply("Вы уже прокачали уровень сбора на максимум");
+    }
+  });
 };
