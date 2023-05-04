@@ -3,7 +3,7 @@ const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
 const work =
   "Команды на котором можно заработать мефа:\n\nФерма\nКуб\nБандит\n\nТак же в чате иногда появляется капча из 6 цифр и если вы введете ее правильно то получите мефа";
-function chatcommands(userMessage, persone, ctx, workImp, commandsImp) {
+function chatcommands(userMessage, persone, ctx) {
   if (userMessage == "проф") {
     ctx.reply(
       "Ваш ник: " +

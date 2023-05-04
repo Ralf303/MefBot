@@ -9,15 +9,13 @@ const {
   checkUserSub,
 } = require("./utils/helpers.js");
 const { dice, bandit, userFerma, createRP } = require("./utils/games.js");
-const { chatcommands } = require("./utils/chatcommands.js");
+const { chatcommands } = require("./commands/chatcommands.js");
 const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
 const bot = new Telegraf(token);
 const { ScenesGenerator } = require("./scenes.js");
 const curScene = new ScenesGenerator();
 const GetPref = curScene.prefix(bot);
 const ChangePrefix = curScene.change(bot);
-const { folderLoader } = require("telegraf-tools")(bot);
-folderLoader("src");
 let capture = 120394857653;
 const triggers = [
   "меф",
@@ -48,7 +46,10 @@ let persone = {
 let banditStatus = true;
 
 const stage = new Scenes.Stage([GetPref, ChangePrefix]);
-
+bot.use(require("./actions/actionOnBuy.js"));
+bot.use(require("./commands/commands.js"));
+bot.use(require("./actions/actions.js"));
+bot.use(session());
 bot.use(stage.middleware());
 bot.use(
   rateLimit({
@@ -93,6 +94,7 @@ bot.on("text", async (ctx) => {
       if (userMessage === capture) {
         const randommef = getRandomInt(50, 200);
         persone.balance += randommef;
+        persone.captureCounter += 1;
         await ctx.reply("Верно, ты получил " + randommef + " мефа", {
           reply_to_message_id: ctx.message.message_id,
         });

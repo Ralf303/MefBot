@@ -9,7 +9,7 @@ function generateCapcha() {
     charset = "1234567890";
   res = "";
 
-  for (let i = 0, n = charset.length; i < length; ++i) {
+  for (let i = 0, n = charset.length; i < length; i++) {
     res += charset.charAt(Math.floor(Math.random() * n));
   }
 
