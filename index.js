@@ -3,8 +3,6 @@ const rateLimit = require("telegraf-ratelimit");
 const {
   getRandomInt,
   generateCapcha,
-  sleep,
-  formatTime,
   notify,
   checkUserSub,
 } = require("./utils/helpers.js");
@@ -46,11 +44,11 @@ let persone = {
 let banditStatus = true;
 
 const stage = new Scenes.Stage([GetPref, ChangePrefix]);
+bot.use(session());
+bot.use(stage.middleware());
 bot.use(require("./actions/actionOnBuy.js"));
 bot.use(require("./commands/commands.js"));
 bot.use(require("./actions/actions.js"));
-bot.use(session());
-bot.use(stage.middleware());
 bot.use(
   rateLimit({
     window: 4000,
@@ -123,28 +121,6 @@ bot.on("text", async (ctx) => {
     }
   } catch (e) {
     ctx.reply("Какая то ошибка, " + e);
-  }
-});
-
-bot.action("buy2", async (ctx) => {
-  ctx.deleteMessage();
-  if (persone.balance >= 40000) {
-    ctx.reply("Отлично, какой префикс ты хочешь?");
-    persone.balance -= 40000;
-    ctx.scene.enter("pref");
-  } else {
-    ctx.reply("Не достаточно мефа😢");
-  }
-});
-
-bot.action("buy6", (ctx) => {
-  ctx.deleteMessage();
-  if (persone.balance >= 10000) {
-    ctx.reply("Отлично, какой префикс ты хочешь?");
-    persone.balance -= 10000;
-    ctx.scene.enter("chang");
-  } else {
-    ctx.reply("Не достаточно мефа😢");
   }
 });
 

@@ -160,4 +160,26 @@ comp.action("mefapp", (ctx) => {
   }
 });
 
+comp.action("buy2", async (ctx) => {
+  ctx.deleteMessage();
+  if (ctx.persone.balance >= 40000) {
+    ctx.reply("Отлично, какой префикс ты хочешь?");
+    ctx.persone.balance -= 40000;
+    ctx.scene.enter("pref");
+  } else {
+    ctx.reply("Не достаточно мефа😢");
+  }
+});
+
+comp.action("buy6", (ctx) => {
+  ctx.deleteMessage();
+  if (ctx.persone.balance >= 10000) {
+    ctx.reply("Отлично, какой префикс ты хочешь?");
+    ctx.persone.balance -= 10000;
+    ctx.scene.enter("chang");
+  } else {
+    ctx.reply("Не достаточно мефа😢");
+  }
+});
+
 module.exports = comp;
