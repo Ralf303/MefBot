@@ -1,5 +1,11 @@
 const { Telegraf, session, Scenes } = require("telegraf");
 const rateLimit = require("telegraf-ratelimit");
+const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
+const bot = new Telegraf(token);
+const { ScenesGenerator } = require("./scenes.js");
+const curScene = new ScenesGenerator();
+const GetPref = curScene.prefix(bot);
+const ChangePrefix = curScene.change(bot);
 const {
   getRandomInt,
   generateCapcha,
@@ -8,12 +14,6 @@ const {
 } = require("./utils/helpers.js");
 const { dice, bandit, userFerma, createRP } = require("./utils/games.js");
 const { chatcommands } = require("./commands/chatcommands.js");
-const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
-const bot = new Telegraf(token);
-const { ScenesGenerator } = require("./scenes.js");
-const curScene = new ScenesGenerator();
-const GetPref = curScene.prefix(bot);
-const ChangePrefix = curScene.change(bot);
 let capture = 120394857653;
 const triggers = [
   "меф",

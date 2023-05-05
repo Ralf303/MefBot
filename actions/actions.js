@@ -4,7 +4,7 @@ const { Composer } = require("telegraf");
 
 const c = new Composer();
 
-trigers = [
+const trigers = [
   "ВИП",
   "Админка",
   "Префикс",

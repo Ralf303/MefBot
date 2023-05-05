@@ -9,7 +9,7 @@ comp.action("buy0", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 100000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -27,7 +27,7 @@ comp.action("buy1", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 80000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -45,7 +45,7 @@ comp.action("buy3", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
     );
     ctx.persone.balance -= 20000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -63,7 +63,7 @@ comp.action("buy4", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 150000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -81,7 +81,7 @@ comp.action("buy5", (ctx) => {
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
     );
     ctx.persone.balance -= 25000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Уведомление о покупке!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -99,7 +99,7 @@ comp.action("buy7", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
     );
     ctx.persone.balance -= 100000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -117,7 +117,7 @@ comp.action("buy8", (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вынесет вас из ЧС, больше не нарушайте"
     );
     ctx.persone.balance -= 200000;
-    comp.telegram.sendMessage(
+    bot.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +

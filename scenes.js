@@ -1,4 +1,5 @@
 const { Scenes } = require("telegraf");
+
 class ScenesGenerator {
   prefix(bot) {
     const pref = new Scenes.BaseScene("pref");
@@ -56,4 +57,5 @@ class ScenesGenerator {
     return chang;
   }
 }
+
 module.exports = { ScenesGenerator };
