@@ -1,9 +1,8 @@
 const { Keyboard, Key } = require("telegram-keyboard");
-
 const { Composer } = require("telegraf");
+const { getUser } = require("../utils/helpers");
 
 const c = new Composer();
-
 const trigers = [
   "ВИП",
   "Админка",
@@ -20,7 +19,8 @@ const price = [
   100000, 80000, 40000, 20000, 150000, 25000, 10000, 100000, 200000,
 ];
 
-function beforeBuy(ctx, item, price, triger) {
+async function beforeBuy(ctx, item, price, triger) {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
   ctx.reply(
     'Цена товара "' +
@@ -28,7 +28,7 @@ function beforeBuy(ctx, item, price, triger) {
       '" составляет ' +
       price +
       "MF\n\nВаш баланс: " +
-      ctx.persone.balance +
+      user.balance +
       "MF\n\nВы согласны на покупку?",
     Keyboard.inline([
       [
@@ -45,15 +45,16 @@ c.action(trigers, (ctx) => {
   beforeBuy(ctx, trigers[item], price[item], item);
 });
 
-c.action("farmApp", (ctx) => {
+c.action("farmApp", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
   ctx.reply(
     "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nВаш уровень сбора: " +
-      ctx.persone.lvl.mef +
+      user.meflvl +
       "\nВаш уровень времени: " +
-      ctx.persone.lvl.time +
+      user.timelvl +
       "\nВаш меф: " +
-      ctx.persone.balance,
+      user.balance,
     Keyboard.inline([
       ["Улучшить сбор", "Улучшить время"],
       [Key.callback("Закрыть", "dell"), Key.callback("Назад", "menu")],

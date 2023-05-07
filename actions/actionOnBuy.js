@@ -1,159 +1,177 @@
 const { Composer } = require("telegraf");
-
+const { getUser } = require("../utils/helpers");
 const compose = new Composer();
 
-compose.action("buy0", (ctx) => {
+compose.action("buy0", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 100000) {
+  if (user.balance >= 100000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
-    ctx.persone.balance -= 100000;
+    user.balance -= 100000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: ВИП"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy1", (ctx) => {
+compose.action("buy1", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 80000) {
+  if (user.balance >= 80000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
-    ctx.persone.balance -= 80000;
+    user.balance -= 80000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Админка"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy3", (ctx) => {
+compose.action("buy3", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 20000) {
+  if (user.balance >= 20000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
     );
-    ctx.persone.balance -= 20000;
+    user.balance -= 20000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Снятие варна"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy4", (ctx) => {
+compose.action("buy4", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 150000) {
+  if (user.balance >= 150000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
-    ctx.persone.balance -= 150000;
+    user.balance -= 150000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Анонимность"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy5", (ctx) => {
+compose.action("buy5", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 25000) {
+  if (user.balance >= 25000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
     );
-    ctx.persone.balance -= 25000;
+    user.balance -= 25000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Уведомление о покупке!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Логи"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy7", (ctx) => {
+compose.action("buy7", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 100000) {
+  if (user.balance >= 100000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
     );
-    ctx.persone.balance -= 100000;
+    user.balance -= 100000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Снятие бана"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy8", (ctx) => {
+compose.action("buy8", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 200000) {
+  if (user.balance >= 200000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вынесет вас из ЧС, больше не нарушайте"
     );
-    ctx.persone.balance -= 200000;
+    user.balance -= 200000;
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
         "\n\nТовар: Вынос из ЧС"
     );
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("timeapp", (ctx) => {
+compose.action("timeapp", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 10000 && ctx.persone.lvl.time < 4) {
-    ctx.persone.balance -= 10000;
-    ctx.persone.lvl.time += 1;
+  if (user.balance >= 10000 && user.timelvl < 4) {
+    user.balance -= 10000;
+    user.timelvl += 1;
     ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень времени " +
-        ctx.persone.lvl.time
+        user.timelvl
     );
-  } else if (ctx.persone.balance < 10000) {
+    user.save();
+  } else if (user.balance < 10000) {
     ctx.reply("Недостаточно мефа(");
   } else {
     ctx.reply("Вы уже прокачали уровень времени на максимум");
   }
 });
 
-compose.action("mefapp", (ctx) => {
+compose.action("mefapp", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 20000 && ctx.persone.lvl.mef < 4) {
-    ctx.persone.balance -= 20000;
-    ctx.persone.lvl.mef += 1;
+  if (user.balance >= 20000 && user.meflvl < 4) {
+    user.balance -= 20000;
+    user.meflvl += 1;
     ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень сбора " +
-        ctx.persone.lvl.mef
+        user.meflvl
     );
-  } else if (ctx.persone.balance < 20000) {
+    user.save();
+  } else if (user.balance < 20000) {
     ctx.reply("Недостаточно мефа(");
   } else {
     ctx.reply("Вы уже прокачали уровень сбора на максимум");
@@ -161,22 +179,26 @@ compose.action("mefapp", (ctx) => {
 });
 
 compose.action("buy2", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 40000) {
+  if (user.balance >= 40000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
-    ctx.persone.balance -= 40000;
+    user.balance -= 40000;
     ctx.scene.enter("BuyPrefix");
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-compose.action("buy6", (ctx) => {
+compose.action("buy6", async (ctx) => {
+  const user = await getUser(ctx.from.id);
   ctx.deleteMessage();
-  if (ctx.persone.balance >= 10000) {
+  if (user.balance >= 10000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
-    ctx.persone.balance -= 10000;
+    user.balance -= 10000;
     ctx.scene.enter("ChangePrefix");
+    user.save();
   } else {
     ctx.reply("Не достаточно мефа😢");
   }

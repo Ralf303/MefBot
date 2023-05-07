@@ -3,7 +3,7 @@ const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
 const work =
   "Команды на котором можно заработать мефа:\n\nФерма\nКуб\nБандит\n\nТак же в чате иногда появляется капча из 6 цифр и если вы введете ее правильно то получите мефа";
-function chatcommands(userMessage, persone, ctx) {
+function chatcommands(userMessage, user, ctx) {
   if (userMessage == "проф") {
     ctx.reply(
       "Ваш ник: " +
@@ -11,18 +11,18 @@ function chatcommands(userMessage, persone, ctx) {
         "\nВаш ID: " +
         ctx.chat.id +
         "\nВаш меф: " +
-        persone.balance +
+        user.balance +
         "\nКапчей введено: " +
-        persone.captureCounter +
+        user.captureCounter +
         "\nВаш уровень сбора: " +
-        persone.lvl.mef +
+        user.meflvl +
         "\nВаш уровень времени: " +
-        persone.lvl.time
+        user.timelvl
     );
   }
 
   if (userMessage == "мой меф" || userMessage == "меф" || userMessage == "б") {
-    ctx.reply("Ваш меф: " + persone.balance);
+    ctx.reply("Ваш меф: " + user.balance);
   }
 
   if (userMessage == "меф гайд") {

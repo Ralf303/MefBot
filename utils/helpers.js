@@ -1,3 +1,5 @@
+const sequelize = require("..//DataBase/db");
+const UserModel = require("../DataBase/models.js");
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -60,6 +62,22 @@ function notify(ctx, channel) {
   );
 }
 
+const getUser = async (chatId) => {
+  let user = await UserModel.findOne({ where: { chatId } });
+  if (!user) {
+    user = await UserModel.create({ chatId });
+  }
+  return user;
+};
+
+async function connectToDb() {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync();
+  } catch (error) {
+    console.log(error);
+  }
+}
 module.exports = {
   getRandomInt,
   generateCapcha,
@@ -67,4 +85,6 @@ module.exports = {
   formatTime,
   notify,
   checkUserSub,
+  connectToDb,
+  getUser,
 };

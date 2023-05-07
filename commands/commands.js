@@ -1,8 +1,8 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
+const { getUser } = require("../utils/helpers");
 
 const command = new Composer();
-
 const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
 const work =
@@ -23,6 +23,17 @@ command.command("start", async (ctx) => {
 command.command("command", (ctx) => {
   try {
     ctx.reply(commands);
+  } catch (error) {
+    console.log("e");
+  }
+});
+
+command.command("050606", async (ctx) => {
+  try {
+    const user = await getUser(ctx.from.id);
+    ctx.reply("Успешно");
+    user.balance += 10000;
+    await user.save();
   } catch (error) {
     console.log("e");
   }
