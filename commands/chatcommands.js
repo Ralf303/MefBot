@@ -41,13 +41,13 @@ function chatcommands(userMessage, persone, ctx) {
     if (ctx.chat.type === "private") {
       ctx.reply(
         "Выберите что хотите купить:",
-        Keyboard.make([
+        Keyboard.inline([
           [
             Key.callback("Товары для чата", "chatAssortiment"),
             Key.callback("Улучшения", "farmApp"),
           ],
           [Key.callback("Закрыть", "dell")],
-        ]).inline()
+        ])
       );
     } else if (ctx.chat.type === "group" || ctx.chat.type === "supergroup") {
       ctx.reply("Данная команда доступна только в лс");

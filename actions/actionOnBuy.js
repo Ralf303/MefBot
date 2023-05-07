@@ -1,15 +1,15 @@
 const { Composer } = require("telegraf");
 
-const comp = new Composer();
+const compose = new Composer();
 
-comp.action("buy0", (ctx) => {
+compose.action("buy0", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 100000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 100000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -20,14 +20,14 @@ comp.action("buy0", (ctx) => {
   }
 });
 
-comp.action("buy1", (ctx) => {
+compose.action("buy1", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 80000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 80000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -38,14 +38,14 @@ comp.action("buy1", (ctx) => {
   }
 });
 
-comp.action("buy3", (ctx) => {
+compose.action("buy3", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 20000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
     );
     ctx.persone.balance -= 20000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -56,14 +56,14 @@ comp.action("buy3", (ctx) => {
   }
 });
 
-comp.action("buy4", (ctx) => {
+compose.action("buy4", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 150000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     ctx.persone.balance -= 150000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -74,14 +74,14 @@ comp.action("buy4", (ctx) => {
   }
 });
 
-comp.action("buy5", (ctx) => {
+compose.action("buy5", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 25000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
     );
     ctx.persone.balance -= 25000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Уведомление о покупке!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -92,14 +92,14 @@ comp.action("buy5", (ctx) => {
   }
 });
 
-comp.action("buy7", (ctx) => {
+compose.action("buy7", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 100000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
     );
     ctx.persone.balance -= 100000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -110,14 +110,14 @@ comp.action("buy7", (ctx) => {
   }
 });
 
-comp.action("buy8", (ctx) => {
+compose.action("buy8", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 200000) {
     ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вынесет вас из ЧС, больше не нарушайте"
     );
     ctx.persone.balance -= 200000;
-    bot.telegram.sendMessage(
+    ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя @" +
         ctx.chat.username +
@@ -128,7 +128,7 @@ comp.action("buy8", (ctx) => {
   }
 });
 
-comp.action("timeapp", (ctx) => {
+compose.action("timeapp", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 10000 && ctx.persone.lvl.time < 4) {
     ctx.persone.balance -= 10000;
@@ -144,7 +144,7 @@ comp.action("timeapp", (ctx) => {
   }
 });
 
-comp.action("mefapp", (ctx) => {
+compose.action("mefapp", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 20000 && ctx.persone.lvl.mef < 4) {
     ctx.persone.balance -= 20000;
@@ -160,26 +160,26 @@ comp.action("mefapp", (ctx) => {
   }
 });
 
-comp.action("buy2", async (ctx) => {
+compose.action("buy2", async (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 40000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
     ctx.persone.balance -= 40000;
-    ctx.scene.enter("pref");
+    ctx.scene.enter("BuyPrefix");
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-comp.action("buy6", (ctx) => {
+compose.action("buy6", (ctx) => {
   ctx.deleteMessage();
   if (ctx.persone.balance >= 10000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
     ctx.persone.balance -= 10000;
-    ctx.scene.enter("chang");
+    ctx.scene.enter("ChangePrefix");
   } else {
     ctx.reply("Не достаточно мефа😢");
   }
 });
 
-module.exports = comp;
+module.exports = compose;

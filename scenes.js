@@ -2,11 +2,11 @@ const { Scenes } = require("telegraf");
 
 class ScenesGenerator {
   prefix(bot) {
-    const pref = new Scenes.BaseScene("pref");
-    pref.enter(async (ctx) => {
+    const BuyPrefix = new Scenes.BaseScene("BuyPrefix");
+    BuyPrefix.enter(async (ctx) => {
       await ctx.reply("Не больше 16 символов!");
     });
-    pref.on("text", async (ctx) => {
+    BuyPrefix.on("text", async (ctx) => {
       const preff = ctx.message.text;
       if (preff.length <= 16) {
         ctx.reply(
@@ -26,15 +26,15 @@ class ScenesGenerator {
         ctx.scene.reenter();
       }
     });
-    return pref;
+    return BuyPrefix;
   }
 
-  change(bot) {
-    const chang = new Scenes.BaseScene("chang");
-    chang.enter(async (ctx) => {
+  ChangePrefix(bot) {
+    const ChangePrefix = new Scenes.BaseScene("ChangePrefix");
+    ChangePrefix.enter(async (ctx) => {
       await ctx.reply("Не больше 16 символов!");
     });
-    chang.on("text", async (ctx) => {
+    ChangePrefix.on("text", async (ctx) => {
       const chapref = ctx.message.text;
       if (chapref.length <= 16) {
         ctx.reply(
@@ -54,7 +54,7 @@ class ScenesGenerator {
         ctx.scene.reenter();
       }
     });
-    return chang;
+    return ChangePrefix;
   }
 }
 

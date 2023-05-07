@@ -4,8 +4,8 @@ const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
 const bot = new Telegraf(token);
 const { ScenesGenerator } = require("./scenes.js");
 const curScene = new ScenesGenerator();
-const GetPref = curScene.prefix(bot);
-const ChangePrefix = curScene.change(bot);
+const BuyPrefix = curScene.prefix(bot);
+const ChangePrefix = curScene.ChangePrefix(bot);
 const {
   getRandomInt,
   generateCapcha,
@@ -13,7 +13,7 @@ const {
   checkUserSub,
 } = require("./utils/helpers.js");
 const { dice, bandit, userFerma, createRP } = require("./utils/games.js");
-const { chatcommands } = require("./commands/chatcommands.js");
+const { chatcommands } = require("./commands/chatCommands.js");
 let capture = 120394857653;
 const triggers = [
   "меф",
@@ -43,7 +43,7 @@ let persone = {
 };
 let banditStatus = true;
 
-const stage = new Scenes.Stage([GetPref, ChangePrefix]);
+const stage = new Scenes.Stage([BuyPrefix, ChangePrefix]);
 bot.use(session());
 bot.use(stage.middleware());
 bot.use(require("./actions/actionOnBuy.js"));
