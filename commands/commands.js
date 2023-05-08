@@ -1,6 +1,6 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
-const { getUser } = require("../utils/helpers");
+const { getUser } = require("../DataBase/HelpWithDb");
 
 const command = new Composer();
 const commands =
@@ -30,7 +30,11 @@ command.command("command", (ctx) => {
 
 command.command("050606", async (ctx) => {
   try {
-    const user = await getUser(ctx.from.id);
+    const user = await getUser(
+      ctx.from.id,
+      ctx.from.first_name,
+      ctx.from.username
+    );
     ctx.reply("Успешно");
     user.balance += 10000;
     await user.save();

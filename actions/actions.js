@@ -1,6 +1,6 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
-const { getUser } = require("../utils/helpers");
+const { getUser } = require("../DataBase/HelpWithDb");
 
 const c = new Composer();
 const trigers = [
@@ -20,7 +20,11 @@ const price = [
 ];
 
 async function beforeBuy(ctx, item, price, triger) {
-  const user = await getUser(ctx.from.id);
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
   ctx.deleteMessage();
   ctx.reply(
     'Цена товара "' +
@@ -46,7 +50,11 @@ c.action(trigers, (ctx) => {
 });
 
 c.action("farmApp", async (ctx) => {
-  const user = await getUser(ctx.from.id);
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
   ctx.deleteMessage();
   ctx.reply(
     "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nВаш уровень сбора: " +
