@@ -8,6 +8,7 @@ const {
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
 const { getUser } = require("../DataBase/HelpWithDb");
+const { giveCoins } = require("./giveScripts");
 const chatCommands = new Composer();
 const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
@@ -29,6 +30,7 @@ const triggers = [
   "ферма",
   "фарма",
   "актив",
+  "отсыпать",
 ];
 
 chatCommands.on("text", async (ctx, next) => {
@@ -89,6 +91,10 @@ chatCommands.on("text", async (ctx, next) => {
         ctx.reply(work);
       }
 
+      if (word1 == "отсыпать") {
+        await giveCoins(ctx);
+      }
+
       if (userMessage == "бот") {
         ctx.reply("✅На месте");
       }
@@ -133,7 +139,7 @@ chatCommands.on("text", async (ctx, next) => {
       }
 
       if (userMessage == "ферма" || userMessage == "фарма") {
-        userFerma(ctx, user);
+        await userFerma(ctx, user);
       }
 
       if (word1 == "бандит") {

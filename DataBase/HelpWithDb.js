@@ -1,5 +1,6 @@
 const sequelize = require("..//DataBase/db");
 const UserModel = require("../DataBase/models.js");
+
 const getUser = async (chatId, firstName, username) => {
   let user = await UserModel.findOne({ where: { chatId } });
   if (!user) {
@@ -15,6 +16,26 @@ const getUser = async (chatId, firstName, username) => {
   return user;
 };
 
+async function findTopUserInDay() {
+  const topUser = await UserModel.findOne({
+    order: [["dayMessageCounter", "DESC"]],
+  });
+  return topUser;
+}
+
+async function findTopUserInWeek() {
+  const topUser = await UserModel.findOne({
+    order: [["weekMessageCounter", "DESC"]],
+  });
+  return topUser;
+}
+
+async function findTopUserInMonth() {
+  const topUser = await UserModel.findOne({
+    order: [["monthMessageCounter", "DESC"]],
+  });
+  return topUser;
+}
 async function connectToDb() {
   try {
     await sequelize.authenticate();
@@ -24,7 +45,25 @@ async function connectToDb() {
   }
 }
 
+async function resetDayCounter() {
+  await UserModel.update({ dayMessageCounter: 0 }, { where: {} });
+}
+
+async function resetWeekCounter() {
+  await UserModel.update({ weekMessageCounter: 0 }, { where: {} });
+}
+
+async function resetMonthCounter() {
+  await UserModel.update({ monthMessageCounter: 0 }, { where: {} });
+}
+
 module.exports = {
   connectToDb,
   getUser,
+  findTopUserInDay,
+  resetDayCounter,
+  findTopUserInWeek,
+  findTopUserInMonth,
+  resetWeekCounter,
+  resetMonthCounter,
 };

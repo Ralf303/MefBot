@@ -4,7 +4,7 @@ async function dice(word3, word2, user, bot, ctx) {
   const stake = Number(word2);
   const userInput = word3;
   const userTrueImput = word3 <= 6 || word3 === "нечет" || word3 === "чет";
-  if (userTrueImput && user.balance >= stake && stake) {
+  if (userTrueImput && user.balance >= stake && stake >= 500) {
     user.balance -= stake;
     const info = await bot.telegram.sendDice(ctx.chat.id);
     await sleep(3800);
@@ -41,6 +41,8 @@ async function dice(word3, word2, user, bot, ctx) {
     }
   } else if (stake > user.balance) {
     ctx.reply("Не достаточно мефа😢");
+  } else if (stake < 500) {
+    ctx.reply("Ставка должна быть больше 500");
   } else {
     ctx.reply(
       'Введите ставку, а дальше число от 1 до 6, "чет" или "нечет", например "куб 1000 5" или "куб 228 нечет"'
@@ -94,10 +96,10 @@ function userFerma(ctx, user) {
   const lastTime = user.farmtime;
   const diff = now - lastTime;
   if (
-    (diff >= 60 && user.timelvl === 4) ||
-    (diff >= 120 && user.timelvl === 3) ||
-    (diff >= 180 && user.timelvl === 2) ||
-    (diff >= 240 && user.timelvl === 1)
+    (diff >= 3600 && user.timelvl === 4) ||
+    (diff >= 7200 && user.timelvl === 3) ||
+    (diff >= 10800 && user.timelvl === 2) ||
+    (diff >= 14400 && user.timelvl === 1)
   ) {
     user.farmtime = now;
     let randmef;
@@ -114,19 +116,19 @@ function userFerma(ctx, user) {
     user.balance += randmef;
   } else {
     if (user.timelvl === 4) {
-      const remainingTime = 60 - diff;
+      const remainingTime = 3600 - diff;
       const formattedTime = formatTime(remainingTime);
       ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
     } else if (user.timelvl === 3) {
-      const remainingTime = 120 - diff;
+      const remainingTime = 7200 - diff;
       const formattedTime = formatTime(remainingTime);
       ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
     } else if (user.timelvl === 2) {
-      const remainingTime = 180 - diff;
+      const remainingTime = 10800 - diff;
       const formattedTime = formatTime(remainingTime);
       ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
     } else {
-      const remainingTime = 240 - diff;
+      const remainingTime = 14400 - diff;
       const formattedTime = formatTime(remainingTime);
       ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
     }

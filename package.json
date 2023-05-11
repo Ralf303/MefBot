@@ -3,6 +3,7 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "cron": "^2.3.0",
     "mysql2": "^3.3.0",
     "sequelize": "^6.31.1",
     "telegraf": "^4.12.2",
