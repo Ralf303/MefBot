@@ -26,7 +26,7 @@ const start = async () => {
     })
   );
 
-  bot.use(require("./middlwares.js"));
+  bot.use(require("./middlewares.js"));
 
   Timings(bot);
   CaptureGenerator(bot);

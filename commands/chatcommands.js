@@ -8,8 +8,8 @@ const {
   checkUserSub,
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
-const { getUser } = require("../db");
-const { giveCoins } = require("./giveScripts");
+const { getUser } = require("../db/functions.js");
+const { giveCoins } = require("./giveScripts.js");
 
 const chatCommands = new Composer();
 const commands =
