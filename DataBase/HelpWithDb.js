@@ -1,5 +1,5 @@
-const sequelize = require("..//DataBase/db");
-const UserModel = require("../DataBase/models.js");
+const sequelize = require("./db");
+const UserModel = require("./models.js");
 
 const getUser = async (chatId, firstName, username) => {
   let user = await UserModel.findOne({ where: { chatId } });

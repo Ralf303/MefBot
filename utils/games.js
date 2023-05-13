@@ -135,12 +135,12 @@ function userFerma(ctx, user) {
   }
 }
 
-function createRP(rp, ctx, replyToMessage) {
+function createRP(rp, emoji, ctx, replyToMessage) {
   const firstName = ctx.message.from.first_name;
   const replyFirstName = replyToMessage.from.first_name;
-  const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
+  const regex = /([_*[\]()~`>#+\-={}.!])/g;
   const replyMessage =
-    `[${firstName.replace(regex, "\\$&")}]` +
+    `${emoji} [${firstName.replace(regex, "\\$&")}]` +
     `(tg://user?id=${ctx.message.from.id}) ` +
     rp +
     ` [${replyFirstName.replace(regex, "\\$&")}]` +

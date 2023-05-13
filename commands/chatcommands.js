@@ -1,5 +1,6 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
+const CronJob = require("cron").CronJob;
 const {
   getRandomInt,
   generateCapcha,
@@ -7,8 +8,9 @@ const {
   checkUserSub,
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
-const { getUser } = require("../DataBase/HelpWithDb");
+const { getUser } = require("../DataBase/helpWithDb");
 const { giveCoins } = require("./giveScripts");
+
 const chatCommands = new Composer();
 const commands =
   "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
@@ -18,7 +20,6 @@ let capture = 120394857653;
 const triggers = [
   "меф",
   "бот",
-  "капча",
   "магазин",
   "проф",
   "команды",
@@ -31,6 +32,27 @@ const triggers = [
   "фарма",
   "актив",
   "отсыпать",
+];
+const rp = [
+  "кинуть",
+  "доза",
+  "секс",
+  "уничтожить",
+  "нюхать",
+  "накормить",
+  "отшлепать",
+  "бум",
+];
+const rpEmoji = ["🫂", "💉", "🔞", "💀", "🌿", "👨‍🍳", "🔞", "💥"];
+const rpValue = [
+  "кинул напрогиб",
+  "вколол дозу",
+  "поставил на колени",
+  "уничтожил",
+  "занюхнул мефа вместе с",
+  "вкусно накормил",
+  "смачно отшлепал",
+  "взорвал",
 ];
 
 chatCommands.on("text", async (ctx, next) => {
@@ -52,12 +74,11 @@ chatCommands.on("text", async (ctx, next) => {
     ctx
   );
   if (replyToMessage && replyToMessage.from) {
-    const rp = ["кинуть", "доза", "наказать"];
-    const rpValue = ["кинул напрогиб", "вколол дозу", "жестко наказал"];
     const rpid = rp.indexOf(userMessage);
     const needrp = rpValue[rpid];
+    const needemoji = rpEmoji[rpid];
     if (userMessage == rp[rpid]) {
-      createRP(needrp, ctx, replyToMessage);
+      createRP(needrp, needemoji, ctx, replyToMessage);
     }
   }
   try {
@@ -129,11 +150,6 @@ chatCommands.on("text", async (ctx, next) => {
         capture = 342234242;
       }
 
-      if (userMessage == "капча") {
-        capture = generateCapcha();
-        ctx.reply("МефКапча " + capture);
-      }
-
       if (word1 == "куб") {
         await dice(word3, word2, user, ctx, ctx);
       }
@@ -155,4 +171,17 @@ chatCommands.on("text", async (ctx, next) => {
   return next();
 });
 
-module.exports = chatCommands;
+function CaptureGenerator(bot) {
+  new CronJob(
+    "0 1 */2 * * *",
+    async function () {
+      capture = generateCapcha();
+      await bot.telegram.sendMessage(-1001680708708, "МефКапча " + capture);
+    },
+    null,
+    true,
+    "Europe/Moscow"
+  );
+}
+
+module.exports = { chatCommands, CaptureGenerator };
