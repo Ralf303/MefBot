@@ -7,6 +7,6 @@ middleware.use(require("./actions/actionOnBuy.js"));
 middleware.use(require("./commands/commands.js"));
 middleware.use(require("./actions/actions.js"));
 middleware.use(chatCommands);
-middleware.use(require("./counter/ChatCounter.js"));
+middleware.use(require("./counter/chatCounter.js"));
 
 module.exports = middleware;
