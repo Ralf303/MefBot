@@ -1,6 +1,6 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
-const { getUser } = require("../dataBase/helpWithDb");
+const { getUser } = require("../db");
 
 const command = new Composer();
 const commands =

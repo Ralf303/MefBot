@@ -1,5 +1,5 @@
 const { Composer } = require("telegraf");
-const { getUser } = require("../dataBase/helpWithDb");
+const { getUser } = require("../db");
 const compose = new Composer();
 const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
 compose.action("buy0", async (ctx) => {
