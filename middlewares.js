@@ -1,5 +1,5 @@
 const { Composer } = require("telegraf");
-const { chatCommands } = require("./commands/chatCommands.js");
+const { chatCommands } = require("./commands/chatcommands.js");
 
 const middleware = new Composer();
 
