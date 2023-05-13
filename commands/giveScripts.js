@@ -1,4 +1,4 @@
-const User = require("../DataBase/models");
+const User = require("../DataBase/models.js");
 
 async function giveCoins(ctx) {
   const chatId = ctx.from.id;

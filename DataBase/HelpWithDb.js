@@ -1,4 +1,4 @@
-const sequelize = require("./db");
+const sequelize = require("./db.js");
 const UserModel = require("./models.js");
 
 const getUser = async (chatId, firstName, username) => {

@@ -4,10 +4,10 @@ const rateLimit = require("telegraf-ratelimit");
 const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
 const bot = new Telegraf(token);
 
-const { connectToDb } = require("./DataBase/helpWithDb");
+const { connectToDb } = require("./DataBase/helpWithDb.js");
 const { ScenesGenerator } = require("./scenes.js");
-const { Timings } = require("./CounterScripts/prizeForActive");
-const { CaptureGenerator } = require("./commands/chatCommands");
+const { Timings } = require("./CounterScripts/prizeForActive.js");
+const { CaptureGenerator } = require("./commands/chatCommands.js");
 const curScene = new ScenesGenerator();
 const BuyPrefix = curScene.prefix(bot);
 const ChangePrefix = curScene.ChangePrefix(bot);
