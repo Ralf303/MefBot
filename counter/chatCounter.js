@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { Composer } = require("telegraf");
-const { getUser } = require("../db");
-const User = require("../db/models");
+const { getUser } = require("../db/functions.js");
+const User = require("../db/models.js");
 
 const MessageCounter = new Composer();
 
