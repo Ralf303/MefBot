@@ -5,7 +5,7 @@ const {
   resetWeekCounter,
   findTopUserInMonth,
   findTopUserInWeek,
-} = require("../DataBase/helpWithDb");
+} = require("../dataBase/helpWithDb");
 const CronJob = require("cron").CronJob;
 
 function Timings(bot) {
