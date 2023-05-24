@@ -1,7 +1,9 @@
 const { Telegraf, session, Scenes } = require("telegraf");
 const rateLimit = require("telegraf-ratelimit");
-
-const token = "5790752465:AAHo8YTsyn0CWouPDpURS8jeivKikuF3XtA";
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
+const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 
 const { connectToDb } = require("./db/functions.js");
