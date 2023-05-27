@@ -1,5 +1,8 @@
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions.js");
 const User = require("../db/models.js");
@@ -7,13 +10,13 @@ const User = require("../db/models.js");
 const MessageCounter = new Composer();
 
 const regex = /([_*][)~(`>#+\-=|{}.!])/g;
-const allowedChats = [-1001680708708];
+const allowedChats = [-1001680708708, -1001672482562, -1001551821031];
 
 MessageCounter.hears(/актив день/i, async (ctx) => {
   const users = await User.findAll({
     where: {
       dayMessageCounter: {
-        [Op.gt]: 0, // <--- Вместо этого нужно написать просто: 0
+        [Op.gt]: 0,
       },
     },
     order: [["dayMessageCounter", "DESC"]],

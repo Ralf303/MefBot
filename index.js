@@ -10,6 +10,8 @@ const { connectToDb } = require("./db/functions.js");
 const { ScenesGenerator } = require("./scenes.js");
 const { Timings } = require("./counter/prizeForActive.js");
 const { CaptureGenerator } = require("./commands/chatcommands.js");
+const { Cycles } = require("./cyclesScript.js");
+
 const curScene = new ScenesGenerator();
 const BuyPrefix = curScene.prefix(bot);
 const ChangePrefix = curScene.ChangePrefix(bot);
@@ -17,7 +19,6 @@ const stage = new Scenes.Stage([BuyPrefix, ChangePrefix]);
 
 const start = async () => {
   await connectToDb();
-
   bot.use(session());
   bot.use(stage.middleware());
 
@@ -27,9 +28,8 @@ const start = async () => {
       limit: 5,
     })
   );
-
   bot.use(require("./middlewares.js"));
-
+  Cycles(bot);
   Timings(bot);
   CaptureGenerator(bot);
   bot.launch();

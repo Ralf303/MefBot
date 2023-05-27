@@ -1,6 +1,10 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
 const CronJob = require("cron").CronJob;
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
+
 const {
   getRandomInt,
   generateCapcha,
@@ -180,7 +184,10 @@ function CaptureGenerator(bot) {
     "0 1 */2 * * *",
     async function () {
       capture = generateCapcha();
-      await bot.telegram.sendMessage(-1001680708708, "МефКапча " + capture);
+      await bot.telegram.sendMessage(
+        process.env.CHAT_ID,
+        "МефКапча " + capture
+      );
     },
     null,
     true,

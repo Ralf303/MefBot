@@ -54,10 +54,7 @@ async function checkUserSub(ctx, channel, trigger, msg, triggers, bot) {
 }
 
 function notify(ctx, channel) {
-  ctx.reply(
-    "Для того чтобы пользоваться ботом необходимо подписаться на канал @" +
-      channel
-  );
+  ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
 }
 module.exports = {
   getRandomInt,

@@ -1,3 +1,6 @@
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 const {
   findTopUserInDay,
   resetDayCounter,
@@ -17,7 +20,7 @@ function Timings(bot) {
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 500 });
         bot.telegram.sendMessage(
-          -1001680708708,
+          process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот день и получил 500 грам мефа`,
           {
             disable_notification: true,
@@ -39,7 +42,7 @@ function Timings(bot) {
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 5000 });
         bot.telegram.sendMessage(
-          -1001680708708,
+          process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за эту неделю и получил 5000 грам мефа`,
           {
             disable_notification: true,
@@ -61,7 +64,7 @@ function Timings(bot) {
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 10000 });
         bot.telegram.sendMessage(
-          -1001680708708,
+          process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот месяц и получил 10000 грам мефа`,
           {
             disable_notification: true,

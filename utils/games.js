@@ -52,10 +52,10 @@ async function dice(word3, word2, user, bot, ctx) {
 
 async function bandit(word2, user, ctx) {
   const fruits = ["🍇", "🍊", "🍐", "🍋", "🍒", "🍓", "🍑", "🍉", "🍌", "🍍"];
-
+  const needChat = ctx.chat.id == -1001672482562 || ctx.chat.type === "private";
   try {
     let stake = Number(word2);
-    if (stake > 99 && user.balance >= stake && stake) {
+    if (stake > 99 && user.balance >= stake && stake && needChat) {
       user.balance -= stake;
       const randEmoji = () => fruits[Math.floor(Math.random() * fruits.length)];
       const randomEmojis = [randEmoji(), randEmoji(), randEmoji()];
@@ -83,6 +83,8 @@ async function bandit(word2, user, ctx) {
       }
     } else if (stake > user.balance) {
       ctx.reply("Недостаточно мефа😢");
+    } else if (!needChat) {
+      ctx.reply("Ограничение спама, бандит либо в лс либо в @mefanarhia");
     } else {
       ctx.reply('Введи "бандит [ставка]" больше 100');
     }
