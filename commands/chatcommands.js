@@ -16,10 +16,7 @@ const { getUser } = require("../db/functions.js");
 const { giveCoins } = require("./giveScripts.js");
 
 const chatCommands = new Composer();
-const commands =
-  "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
-const work =
-  "Команды на котором можно заработать мефа:\n\nФерма\nКуб\nБандит\n\nТак же в чате иногда появляется капча из 6 цифр и если вы введете ее правильно то получите мефа";
+const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 let capture = 120394857653;
 
 const triggers = [
@@ -32,7 +29,6 @@ const triggers = [
   "б",
   "куб",
   "бандит",
-  "меф гайд",
   "ферма",
   "фарма",
   "актив",
@@ -114,10 +110,6 @@ chatCommands.on("text", async (ctx, next) => {
         userMessage == "б"
       ) {
         ctx.reply("Ваш меф: " + user.balance);
-      }
-
-      if (userMessage == "меф гайд") {
-        ctx.reply(work);
       }
 
       if (word1 == "отсыпать") {

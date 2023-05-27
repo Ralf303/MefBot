@@ -3,10 +3,7 @@ const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions.js");
 
 const command = new Composer();
-const commands =
-  "Список команд:\nмеф гайд\nмеф\nбот\nкапча\nмагазин\nпроф\nкоманды";
-const work =
-  "Команды на котором можно заработать мефа:\n\nФерма\nКуб\nБандит\n\nТак же в чате иногда появляется капча из 6 цифр и если вы введете ее правильно то получите мефа";
+const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13ы";
 
 command.command("start", async (ctx) => {
   try {
@@ -48,14 +45,6 @@ command.command("help", (ctx) => {
     ctx.replyWithHTML(
       "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/mef информация по добычи мефа\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
     );
-  } catch (error) {
-    console.log("e");
-  }
-});
-
-command.command("mef", (ctx) => {
-  try {
-    ctx.reply(work);
   } catch (error) {
     console.log("e");
   }
