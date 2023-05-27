@@ -3,7 +3,7 @@ const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions.js");
 
 const command = new Composer();
-const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13ы";
+const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 
 command.command("start", async (ctx) => {
   try {
