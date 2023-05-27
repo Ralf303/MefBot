@@ -43,7 +43,7 @@ command.command("050606", async (ctx) => {
 command.command("help", (ctx) => {
   try {
     ctx.replyWithHTML(
-      "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/mef информация по добычи мефа\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
+      "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
     );
   } catch (error) {
     console.log("e");
