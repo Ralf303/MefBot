@@ -125,7 +125,7 @@ MessageCounter.on("message", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  if (needType) {
+  if (needType && chatId == process.env.CHAT_ID) {
     user.dayMessageCounter++;
     user.weekMessageCounter++;
     user.monthMessageCounter++;
