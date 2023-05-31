@@ -175,11 +175,15 @@ function CaptureGenerator(bot) {
   new CronJob(
     "0 1 */2 * * *",
     async function () {
-      capture = generateCapcha();
-      await bot.telegram.sendMessage(
-        process.env.CHAT_ID,
-        "МефКапча " + capture
-      );
+      try {
+        capture = generateCapcha();
+        await bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          "МефКапча " + capture
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
     null,
     true,

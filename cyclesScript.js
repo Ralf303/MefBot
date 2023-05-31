@@ -7,10 +7,14 @@ function Cycles(bot) {
   new CronJob(
     "0 0 0 * * *",
     async function () {
-      bot.telegram.sendMessage(
-        process.env.CHAT_ID,
-        "Всем спокойной ночи ебать😴"
-      );
+      try {
+        bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          "Всем спокойной ночи ебать😴"
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
     null,
     true,
@@ -20,7 +24,14 @@ function Cycles(bot) {
   new CronJob(
     "0 0 8 * * *",
     async function () {
-      bot.telegram.sendMessage(process.env.CHAT_ID, "Всем доброе утро ебать☀️");
+      try {
+        bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          "Всем доброе утро ебать☀️"
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
     null,
     true,
