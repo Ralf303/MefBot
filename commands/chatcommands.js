@@ -35,29 +35,17 @@ const triggers = [
   "отсыпать",
 ];
 
-const rp = [
-  "кинуть",
-  "доза",
-  "секс",
-  "уничтожить",
-  "нюхать",
-  "накормить",
-  "отшлепать",
-  "бум",
-];
-
-const rpEmoji = ["🫂", "💉", "🔞", "💀", "🌿", "👨‍🍳", "🔞", "💥"];
-
-const rpValue = [
-  "кинул напрогиб",
-  "вколол дозу",
-  "поставил на колени",
-  "уничтожил",
-  "занюхнул мефа вместе с",
-  "вкусно накормил",
-  "смачно отшлепал",
-  "взорвал",
-];
+const rp = {
+  кинуть: { value: "кинул(а) напрогиб", emoji: "🫂" },
+  доза: { value: "вколол(а) дозу", emoji: "💉" },
+  секс: { value: "трахнул(а) и кончил(а) внутрь", emoji: "🔞" },
+  уничтожить: { value: "уничтожил(а)", emoji: "💀" },
+  нюхать: { value: "занюхнул(а) мефа вместе с", emoji: "🌿" },
+  накормить: { value: "вкусно накормил(а)", emoji: "👨‍🍳" },
+  отшлепать: { value: "смачно отшлепал(а)", emoji: "🔞" },
+  бум: { value: "взорвал(а)", emoji: "💥" },
+  кончить: { value: "кончил(а) на лицо", emoji: "💦" },
+};
 
 chatCommands.on("text", async (ctx, next) => {
   const user = await getUser(
@@ -78,11 +66,17 @@ chatCommands.on("text", async (ctx, next) => {
     ctx
   );
   if (replyToMessage && replyToMessage.from) {
-    const rpid = rp.indexOf(userMessage);
-    const needrp = rpValue[rpid];
-    const needemoji = rpEmoji[rpid];
-    if (userMessage == rp[rpid]) {
-      createRP(needrp, needemoji, ctx, replyToMessage);
+    const comment = userMessage.split("\n")[1];
+    console.log(comment);
+    const rpAction = rp[userMessage.split("\n")[0]];
+    if (rpAction) {
+      await createRP(
+        rpAction.value,
+        rpAction.emoji,
+        ctx,
+        replyToMessage,
+        comment
+      );
     }
   }
   try {
@@ -92,7 +86,7 @@ chatCommands.on("text", async (ctx, next) => {
           "Ваш ник: " +
             user.firstname +
             "\nВаш ID: " +
-            ctx.chat.id +
+            ctx.from.id +
             "\nВаш меф: " +
             user.balance +
             "\nКапчей введено: " +

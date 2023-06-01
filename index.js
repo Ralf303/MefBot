@@ -18,6 +18,9 @@ const ChangePrefix = curScene.ChangePrefix(bot);
 const stage = new Scenes.Stage([BuyPrefix, ChangePrefix]);
 
 const start = async () => {
+  bot.catch((err) => {
+    console.log(`Error occurred: ${err}`);
+  });
   await connectToDb();
   bot.use(session());
   bot.use(stage.middleware());

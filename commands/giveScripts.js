@@ -27,17 +27,13 @@ async function giveCoins(ctx) {
       where: { chatId: receiverChatId },
     });
 
-    if (!receiver) {
-      receiver = await User.create({ chatId: receiverChatId });
-    }
-
     if (sender.balance < amount) {
       ctx.reply("Недостаточно мефа🥲");
       return;
     }
 
-    if (amount < 1000) {
-      ctx.reply("Минимальная сумма передачи 1000 грамм");
+    if (amount < 100) {
+      ctx.reply("Минимальная сумма передачи 100 грамм");
       return;
     }
 
