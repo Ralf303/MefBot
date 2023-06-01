@@ -13,9 +13,9 @@ async function dice(word3, word2, user, bot, ctx) {
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
         ctx.reply(
-          `🥳 Поздравляем! Кубик показал ${dice}\n Выйгрыш ${stake * 10}`
+          `🥳 Поздравляем! Кубик показал ${dice}\n Выйгрыш ${stake * 5}`
         );
-        user.balance += stake * 10;
+        user.balance += stake * 5;
       } else {
         ctx.reply(`😢 К сожалению, вы проиграли. Кубик показал ${dice}`);
       }
@@ -61,21 +61,21 @@ async function bandit(word2, user, ctx) {
       const randomEmojis = [randEmoji(), randEmoji(), randEmoji()];
 
       if (randomEmojis.every((e) => e === randomEmojis[0])) {
-        user.balance += stake * 20;
+        user.balance += stake * 10;
         ctx.reply(
           `🤑ДЖЕКПОТ🤑\n${randomEmojis.join("|")}\n @${
             ctx.from.username
-          } выйгрыш ${stake * 20}!`
+          } выйгрыш ${stake * 10}!`
         );
       } else if (
         randomEmojis[0] === randomEmojis[1] ||
         randomEmojis[0] === randomEmojis[2] ||
         randomEmojis[1] === randomEmojis[2]
       ) {
-        user.balance += stake * 5;
+        user.balance += stake * 3;
         ctx.reply(
           `${randomEmojis.join("|")}\n @${ctx.from.username} выйгрыш ${
-            stake * 5
+            stake * 3
           }!`
         );
       } else {
@@ -86,7 +86,7 @@ async function bandit(word2, user, ctx) {
     } else if (!needChat) {
       ctx.reply("Ограничение спама, бандит либо в лс либо в @mefanarhia");
     } else {
-      ctx.reply('Введи "бандит [ставка]" больше 100');
+      ctx.reply('Введи "бандит [ставка]" больше 500');
     }
   } catch (e) {
     console.log(e);
