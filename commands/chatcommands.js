@@ -22,7 +22,6 @@ let capture = 120394857653;
 const triggers = [
   "меф",
   "бот",
-  "магазин",
   "проф",
   "команды",
   "мой меф",
@@ -67,7 +66,6 @@ chatCommands.on("text", async (ctx, next) => {
   );
   if (replyToMessage && replyToMessage.from) {
     const comment = userMessage.split("\n")[1];
-    console.log(comment);
     const rpAction = rp[userMessage.split("\n")[0]];
     if (rpAction) {
       await createRP(
@@ -118,22 +116,6 @@ chatCommands.on("text", async (ctx, next) => {
         ctx.reply(commands);
       }
 
-      if (userMessage == "магазин") {
-        if (IsPrivate) {
-          ctx.reply(
-            "Выберите что хотите купить:",
-            Keyboard.inline([
-              [
-                Key.callback("Товары для чата", "chatAssortiment"),
-                Key.callback("Улучшения", "farmApp"),
-              ],
-              [Key.callback("Закрыть", "dell")],
-            ])
-          );
-        } else {
-          ctx.reply("Данная команда доступна только в лс");
-        }
-      }
       if (userMessage === capture) {
         const randommef = getRandomInt(50, 200);
         user.balance += randommef;
