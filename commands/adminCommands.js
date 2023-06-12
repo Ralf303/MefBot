@@ -6,7 +6,7 @@ const { getUser } = require("../db/functions");
 const adminCommands = new Composer();
 
 adminTriggers = ["список вещей", "выдать"];
-adminList = [1157591765, 5834756258];
+adminList = [1157591765];
 
 adminCommands.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();

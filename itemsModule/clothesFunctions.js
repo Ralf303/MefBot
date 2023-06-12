@@ -193,10 +193,15 @@ const getWornItems = async (user, ctx) => {
 
 const getInventory = async (user, ctx) => {
   const items = await user.getItems();
+  if (items.length === 0) {
+    await ctx.reply("Ваш инвентарь пуст.");
+    return;
+  }
   const itemNames = items.map((item) => `${item.itemName}[${item.id}]`);
   const rows = [];
   for (let i = 0; i < itemNames.length; i += 2) {
     let row = itemNames[i];
+
     if (i + 1 < itemNames.length) {
       row += `, ${itemNames[i + 1]}`;
     }
