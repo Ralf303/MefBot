@@ -2,6 +2,7 @@ const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions");
 const compose = new Composer();
 const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
+
 compose.action("buy0", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
@@ -170,34 +171,6 @@ compose.action("buy7", async (ctx) => {
   }
 });
 
-compose.action("buy8", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  ctx.deleteMessage();
-  if (user.balance >= 200000) {
-    ctx.reply(
-      "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вынесет вас из ЧС, больше не нарушайте"
-    );
-    user.balance -= 200000;
-    ctx.telegram.sendMessage(
-      "1157591765",
-      "Заявка на покупку!\n\nИмя покупателя " +
-        `[${user.firstname.replace(regex, "\\$&")}]` +
-        `(tg://user?id=${user.chatId})
-        \n\nТовар: Выход из ЧС`,
-      {
-        parse_mode: "Markdown",
-      }
-    );
-    user.save();
-  } else {
-    ctx.reply("Не достаточно мефа😢");
-  }
-});
-
 compose.action("timeapp", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
@@ -239,6 +212,27 @@ compose.action("mefapp", async (ctx) => {
     ctx.reply("Недостаточно мефа😢");
   } else {
     ctx.reply("Вы уже прокачали уровень сбора на максимум");
+  }
+});
+
+compose.action("slotapp", async (ctx) => {
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
+
+  ctx.deleteMessage();
+
+  if (user.balance >= 5000) {
+    user.balance -= 5000;
+    user.slots += 1;
+    ctx.reply(
+      "Поздравляем с успешной покупкой!\nТеперь у вас " + user.slots + " слотов"
+    );
+    await user.save();
+  } else {
+    ctx.reply("Недостаточно мефа😢");
   }
 });
 

@@ -1,15 +1,15 @@
 const sequelize = require("./db.js");
-const UserModel = require("./models.js");
+const { User } = require("./models");
 
 const getUser = async (chatId, firstName, username) => {
-  let user = await UserModel.findOne({ where: { chatId } });
+  let user = await User.findOne({ where: { chatId } });
   if (!user) {
-    user = await UserModel.create({ chatId, firstname: firstName, username });
+    user = await User.create({ chatId, firstname: firstName, username });
   } else {
-    if (!user.username) {
+    if (!user.username || !(user.username === username)) {
       user = await user.update({ username });
     }
-    if (!user.firstname) {
+    if (!user.firstname || !(user.firstname === firstName)) {
       user = await user.update({ firstname: firstName });
     }
   }
@@ -17,44 +17,47 @@ const getUser = async (chatId, firstName, username) => {
 };
 
 async function findTopUserInDay() {
-  const topUser = await UserModel.findOne({
+  const topUser = await User.findOne({
     order: [["dayMessageCounter", "DESC"]],
   });
   return topUser;
 }
 
 async function findTopUserInWeek() {
-  const topUser = await UserModel.findOne({
+  const topUser = await User.findOne({
     order: [["weekMessageCounter", "DESC"]],
   });
   return topUser;
 }
 
 async function findTopUserInMonth() {
-  const topUser = await UserModel.findOne({
+  const topUser = await User.findOne({
     order: [["monthMessageCounter", "DESC"]],
   });
   return topUser;
 }
-async function connectToDb() {
+
+const connectToDb = async () => {
   try {
     await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
     await sequelize.sync();
+    console.log("All models were synchronized successfully.");
   } catch (error) {
-    console.log(error);
+    console.error("Unable to connect to the database:", error);
   }
-}
+};
 
 async function resetDayCounter() {
-  await UserModel.update({ dayMessageCounter: 0 }, { where: {} });
+  await User.update({ dayMessageCounter: 0 }, { where: {} });
 }
 
 async function resetWeekCounter() {
-  await UserModel.update({ weekMessageCounter: 0 }, { where: {} });
+  await User.update({ weekMessageCounter: 0 }, { where: {} });
 }
 
 async function resetMonthCounter() {
-  await UserModel.update({ monthMessageCounter: 0 }, { where: {} });
+  await User.update({ monthMessageCounter: 0 }, { where: {} });
 }
 
 module.exports = {

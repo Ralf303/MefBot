@@ -1,4 +1,3 @@
-const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
 const CronJob = require("cron").CronJob;
 require("dotenv").config({
@@ -10,10 +9,21 @@ const {
   generateCapcha,
   notify,
   checkUserSub,
+  checkUserProfile,
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
 const { getUser } = require("../db/functions.js");
-const { giveCoins } = require("./giveScripts.js");
+const { giveCoins, giveItem, giveCase } = require("./giveScripts.js");
+const clothes = require("../itemsObjects.js/clothes");
+const {
+  getInventory,
+  deleteItem,
+  removeItem,
+  wearItem,
+  getWornItems,
+  buyItem,
+} = require("../itemsModule/clothesFunctions");
+const { buyCase } = require("../itemsModule/casesFunctions");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -32,6 +42,14 @@ const triggers = [
   "фарма",
   "актив",
   "отсыпать",
+  "инвентарь",
+  "удалить",
+  "снять",
+  "передать",
+  "купить",
+  "надеть",
+  "мой пабло",
+  "курс",
 ];
 
 const rp = {
@@ -44,6 +62,7 @@ const rp = {
   отшлепать: { value: "смачно отшлепал(а)", emoji: "🔞" },
   бум: { value: "взорвал(а)", emoji: "💥" },
   кончить: { value: "кончил(а) на лицо", emoji: "💦" },
+  вылечить: { value: "сделал(а) укол в попу и вылечил(а)", emoji: "💉" },
 };
 
 chatCommands.on("text", async (ctx, next) => {
@@ -53,9 +72,8 @@ chatCommands.on("text", async (ctx, next) => {
     ctx.from.username
   );
   const userMessage = ctx.message.text.toLowerCase();
-  const [word1, word2, word3] = userMessage.split(" ");
+  const [word1, word2, word3, word4] = userMessage.split(" ");
   const replyToMessage = ctx.message.reply_to_message;
-  const IsPrivate = ctx.chat.type === "private";
   const checkStatus = await checkUserSub(
     ctx,
     "@healthy_food_music",
@@ -64,6 +82,7 @@ chatCommands.on("text", async (ctx, next) => {
     triggers,
     ctx
   );
+
   if (replyToMessage && replyToMessage.from) {
     const comment = userMessage.split("\n")[1];
     const rpAction = rp[userMessage.split("\n")[0]];
@@ -77,23 +96,11 @@ chatCommands.on("text", async (ctx, next) => {
       );
     }
   }
+
   try {
     if (checkStatus || userMessage === capture) {
       if (userMessage == "проф") {
-        ctx.reply(
-          "Ваш ник: " +
-            user.firstname +
-            "\nВаш ID: " +
-            ctx.from.id +
-            "\nВаш меф: " +
-            user.balance +
-            "\nКапчей введено: " +
-            user.captureCounter +
-            "\nВаш уровень сбора: " +
-            user.meflvl +
-            "\nВаш уровень времени: " +
-            user.timelvl
-        );
+        await checkUserProfile(user, ctx);
       }
 
       if (
@@ -117,7 +124,7 @@ chatCommands.on("text", async (ctx, next) => {
       }
 
       if (userMessage === capture) {
-        const randommef = getRandomInt(50, 200);
+        const randommef = getRandomInt(500, 1000);
         user.balance += randommef;
         user.captureCounter += 1;
         await ctx.reply("Верно, ты получил " + randommef + " мефа", {
@@ -137,6 +144,70 @@ chatCommands.on("text", async (ctx, next) => {
       if (word1 == "бандит") {
         await bandit(word2, user, ctx);
       }
+
+      if (userMessage == "инвентарь") {
+        await getInventory(user, ctx);
+      }
+
+      if (word1 == "удалить") {
+        const id = Number(word3);
+        if (!isNaN(id) && word2 == "вещь") {
+          await deleteItem(user, id, ctx);
+        }
+      }
+
+      if (word1 == "снять") {
+        const id = Number(word2);
+        if (!isNaN(id)) {
+          await removeItem(user, id, ctx);
+        }
+      }
+
+      if (word1 == "передать") {
+        const id = Number(word3);
+        const count = isNaN(Number(word4)) ? 1 : word4;
+        if (word2 == "вещь" && !isNaN(id)) {
+          await giveItem(user, id, ctx);
+        }
+
+        if (word2 == "мефкейс" && !isNaN(id)) {
+          await giveCase(user, id, count, ctx);
+        }
+      }
+
+      if (word1 == "надеть") {
+        const id = Number(word2);
+        if (!isNaN(id)) {
+          await wearItem(user, id, ctx);
+        }
+      }
+
+      if (userMessage == "мой пабло") {
+        await getWornItems(user, ctx);
+      }
+
+      if (userMessage == "курс") {
+        ctx.reply(
+          "🤑Активный курс обмена🤑\n\n2 рдно - 1 меф\n1 ириска - 500 мефа\n1 рубль - 1000 мефа\n\nМенять можно у @ralf303"
+        );
+      }
+
+      if (word1 == "купить") {
+        const id = Number(word3);
+        const count = Number(word4);
+        const itemInfo = clothes[id];
+
+        if (word2 == "мефкейс" && !isNaN(id)) {
+          await buyCase(user, id, count, ctx);
+        }
+
+        if (word2 == "вещь" && itemInfo && !isNaN(id)) {
+          await buyItem(user, itemInfo, ctx, true);
+        } else if (word2 == "вещь") {
+          ctx.reply("Такой вещи нет");
+        }
+      }
+
       await user.save();
     } else if (triggers.includes(userMessage) || triggers.includes(word1)) {
       await notify(ctx, "healthy_food_music");

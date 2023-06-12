@@ -1,3 +1,6 @@
+const { User } = require("../db/models");
+const clothes = require("../itemsObjects.js/clothes");
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -53,6 +56,119 @@ async function checkUserSub(ctx, channel, trigger, msg, triggers, bot) {
   }
 }
 
+async function checkUserProfile(user, ctx) {
+  const message = ctx.message.reply_to_message;
+
+  if (!message) {
+    ctx.reply(
+      "Ваш ник: " +
+        user.firstname +
+        "\nВаш меф: " +
+        user.balance +
+        "\nКапчей введено: " +
+        user.captureCounter +
+        "\nВаш уровень сбора: " +
+        user.meflvl +
+        "\nВаш уровень времени: " +
+        user.timelvl +
+        "\nСлотов всего: " +
+        user.slots +
+        "\nСлотов занято: " +
+        user.fullSlots
+    );
+    return;
+  }
+
+  const playerChatId = message.from.id;
+
+  // проверяем, что отправитель не является ботом
+  if (message.from.is_bot) {
+    ctx.reply("У ботов не бывает профилей🙄");
+    return;
+  }
+
+  try {
+    const player = await User.findOne({
+      where: { chatId: playerChatId },
+    });
+
+    ctx.reply(
+      "Профиль " +
+        player.firstname +
+        "\nГрамм мефа: " +
+        player.balance +
+        "\nКапчей введено: " +
+        player.captureCounter +
+        "\nУровень сбора: " +
+        player.meflvl +
+        "\nУровень времени: " +
+        player.timelvl +
+        "\nСлотов всего: " +
+        player.slots +
+        "\nСлотов занято: " +
+        player.fullSlots
+    );
+  } catch (error) {
+    console.log(error);
+    ctx.reply("Ошибка при выполнении операции.");
+  }
+}
+
+function shopGenerator(id, ctx) {
+  let result;
+  if (id === "1") {
+    result = 'Магазин "Bomj Gang"\n\n';
+    let i = 1;
+    for (const item in clothes) {
+      if (clothes[item].class === "low") {
+        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        i++;
+      }
+    }
+  }
+
+  if (id === "2") {
+    result = 'Магазин "Paul Shop"\n\n';
+    let i = 1;
+    for (const item in clothes) {
+      if (clothes[item].class === "middle") {
+        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        i++;
+      }
+    }
+  }
+
+  if (id === "3") {
+    result = 'Магазин "Clemente House"\n\n';
+    let i = 1;
+    for (const item in clothes) {
+      if (clothes[item].class === "elite") {
+        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        i++;
+      }
+    }
+  }
+
+  if (id === "4") {
+    result = "Магазин donate\n\n";
+    let i = 1;
+    for (const item in clothes) {
+      if (clothes[item].class === "vip") {
+        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}\n`;
+        i++;
+      }
+    }
+    result += "\n❗️ЦЕНЫ УКАЗАНЫ В ИРИСКАХ, ПРИ ПОКУПКЕ ЗА РУБЛИ СКИДКА 50%❗️";
+    ctx.reply(result + "\n\nДля покупки связывайтесь с @ralf303");
+    return;
+  }
+  ctx.reply(
+    result +
+      "\n\nПонравилась вещь? Примерь ее командой\n<<Примерить {Id вещи}>>\nЧтобы купить товар напишите команду\n<<Купить вещь {id вещи}>>"
+  );
+  return;
+}
+
 function notify(ctx, channel) {
   ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
 }
@@ -63,4 +179,6 @@ module.exports = {
   formatTime,
   notify,
   checkUserSub,
+  checkUserProfile,
+  shopGenerator,
 };

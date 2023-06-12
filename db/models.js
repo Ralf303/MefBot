@@ -19,6 +19,26 @@ const User = sequelize.define("user", {
   meflvl: { type: DataTypes.INTEGER, defaultValue: 1 },
   timelvl: { type: DataTypes.INTEGER, defaultValue: 1 },
   farmtime: { type: DataTypes.INTEGER, defaultValue: 0 },
+  slots: { type: DataTypes.INTEGER, defaultValue: 10 },
+  fullSlots: { type: DataTypes.INTEGER, defaultValue: 0 },
+  minecraftCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  brawlCase: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
-module.exports = User;
+const Item = sequelize.define("item", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  src: { type: DataTypes.STRING },
+  itemName: { type: DataTypes.STRING },
+  bodyPart: { type: DataTypes.STRING },
+  isWorn: { type: DataTypes.BOOLEAN, defaultValue: false },
+  price: { type: DataTypes.INTEGER },
+});
+
+User.hasMany(Item, { as: "items" });
+
+module.exports = { User, Item };

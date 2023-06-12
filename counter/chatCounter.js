@@ -5,14 +5,14 @@ require("dotenv").config({
 });
 const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions.js");
-const User = require("../db/models.js");
+const { User } = require("../db/models.js");
 
 const MessageCounter = new Composer();
 
 const regex = /([_*][)~(`>#+\-=|{}.!])/g;
 const allowedChats = [-1001680708708, -1001672482562, -1001551821031];
 
-MessageCounter.hears(/актив день/i, async (ctx) => {
+MessageCounter.hears(/актив день/i, async (ctx, next) => {
   const users = await User.findAll({
     where: {
       dayMessageCounter: {
@@ -42,8 +42,10 @@ ${message}`,
       disable_web_page_preview: true,
     }
   );
+  return next();
 });
-MessageCounter.hears(/актив неделя/i, async (ctx) => {
+
+MessageCounter.hears(/актив неделя/i, async (ctx, next) => {
   const users = await User.findAll({
     where: {
       weekMessageCounter: {
@@ -73,8 +75,10 @@ ${message}`,
       disable_web_page_preview: true,
     }
   );
+  return next();
 });
-MessageCounter.hears(/актив месяц/i, async (ctx) => {
+
+MessageCounter.hears(/актив месяц/i, async (ctx, next) => {
   const users = await User.findAll({
     where: {
       monthMessageCounter: {
@@ -104,9 +108,10 @@ ${message}`,
       disable_web_page_preview: true,
     }
   );
+  return next();
 });
 
-MessageCounter.on("message", async (ctx) => {
+MessageCounter.on("message", async (ctx, next) => {
   const chatId = ctx.chat.id;
   const needType = ctx.chat.type !== "private";
   if (!allowedChats.includes(chatId) && needType) {
@@ -131,6 +136,7 @@ MessageCounter.on("message", async (ctx) => {
     user.monthMessageCounter++;
     user.save();
   }
+  return next();
 });
 
 module.exports = MessageCounter;

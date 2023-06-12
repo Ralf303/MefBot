@@ -3,7 +3,7 @@ const { Composer } = require("telegraf");
 
 const privatCommands = new Composer();
 
-privatTriggers = ["магазин"];
+privatTriggers = ["магазин", "примерить"];
 
 privatCommands.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
@@ -17,12 +17,25 @@ privatCommands.on("text", async (ctx, next) => {
           "Выберите что хотите купить:",
           Keyboard.inline([
             [
-              Key.callback("Товары для чата", "chatAssortiment"),
-              Key.callback("Улучшения", "farmApp"),
+              Key.callback("Товары чата", "chatAssortiment"),
+              "Улучшения",
+              "Вещи",
             ],
             [Key.callback("Закрыть", "dell")],
           ])
         );
+      }
+
+      if (word1 == "примерить") {
+        const id = Number(word2);
+        const itemInfo = clothes[id];
+        if (!isNaN(id)) {
+          await tryItem(itemInfo, ctx, id);
+        } else {
+          ctx.reply(
+            "Не правильное использование команды\n\nПопробуйте\n<<Примерить {Id вещи}>>"
+          );
+        }
       }
     } else if (
       (privatTriggers.includes(userMessage) ||

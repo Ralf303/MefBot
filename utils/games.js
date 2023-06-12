@@ -13,7 +13,7 @@ async function dice(word3, word2, user, bot, ctx) {
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
         ctx.reply(
-          `🥳 Поздравляем! Кубик показал ${dice}\n Выйгрыш ${stake * 5}`
+          `🥳 Поздравляем! Кубик показал ${dice}\n Выигрыш ${stake * 5}`
         );
         user.balance += stake * 5;
       } else {
@@ -28,7 +28,7 @@ async function dice(word3, word2, user, bot, ctx) {
         ctx.reply(
           `🥳 Поздравляем! Кубик показал ${dice} (число ${
             isEven ? "чётное" : "нечётное"
-          })\n Выйгрыш ${stake * 1.5}`
+          })\n Выигрыш ${stake * 1.5}`
         );
         user.balance += stake * 1.5;
       } else {
@@ -68,7 +68,7 @@ async function bandit(word2, user, ctx) {
         ctx.reply(
           `🤑ДЖЕКПОТ🤑\n${randomEmojis.join("|")}\n @${
             ctx.from.username
-          } выйгрыш ${stake * 10}!`
+          } выигрыш ${stake * 10}!`
         );
       } else if (
         randomEmojis[0] === randomEmojis[1] ||
@@ -77,7 +77,7 @@ async function bandit(word2, user, ctx) {
       ) {
         user.balance += stake * 3;
         ctx.reply(
-          `${randomEmojis.join("|")}\n @${ctx.from.username} выйгрыш ${
+          `${randomEmojis.join("|")}\n @${ctx.from.username} выигрыш ${
             stake * 3
           }!`
         );

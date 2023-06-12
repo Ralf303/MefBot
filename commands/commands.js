@@ -25,21 +25,6 @@ command.command("command", (ctx) => {
   }
 });
 
-command.command("050606", async (ctx) => {
-  try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
-    ctx.reply("Успешно");
-    user.balance += 10000;
-    await user.save();
-  } catch (error) {
-    console.log("e");
-  }
-});
-
 command.command("help", (ctx) => {
   try {
     ctx.replyWithHTML(
@@ -56,10 +41,7 @@ command.command("shop", (ctx) => {
       ctx.reply(
         "Выберите что хотите купить:",
         Keyboard.inline([
-          [
-            Key.callback("Товары для чата", "chatAssortiment"),
-            Key.callback("Улучшения", "farmApp"),
-          ],
+          [Key.callback("Товары чата", "chatAssortiment"), "Улучшения", "Вещи"],
           [Key.callback("Закрыть", "dell")],
         ])
       );
