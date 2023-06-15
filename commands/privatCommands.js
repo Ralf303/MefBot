@@ -1,5 +1,6 @@
 const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
+const clothes = require("../itemsObjects.js/clothes");
 
 const privatCommands = new Composer();
 
