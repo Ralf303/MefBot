@@ -9,7 +9,7 @@ const bot = new Telegraf(token);
 const { connectToDb } = require("./db/functions.js");
 const { ScenesGenerator } = require("./scenes.js");
 const { Timings } = require("./counter/prizeForActive.js");
-const { CaptureGenerator } = require("./commands/chatCommands.js");
+const { CaptureGenerator } = require("./commands/chatcommands.js");
 const { Cycles } = require("./cyclesScript.js");
 
 const curScene = new ScenesGenerator();
