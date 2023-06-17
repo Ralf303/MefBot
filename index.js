@@ -9,13 +9,14 @@ const bot = new Telegraf(token);
 const { connectToDb } = require("./db/functions.js");
 const { ScenesGenerator } = require("./scenes.js");
 const { Timings } = require("./counter/prizeForActive.js");
-const { CaptureGenerator } = require("./commands/chatcommands.js");
+const { CaptureGenerator } = require("./commands/chatCommands.js");
 const { Cycles } = require("./cyclesScript.js");
 
 const curScene = new ScenesGenerator();
 const BuyPrefix = curScene.prefix(bot);
 const ChangePrefix = curScene.ChangePrefix(bot);
-const stage = new Scenes.Stage([BuyPrefix, ChangePrefix]);
+const rouletteScene = curScene.rouletteScene(bot);
+const stage = new Scenes.Stage([BuyPrefix, ChangePrefix, rouletteScene]);
 
 const start = async () => {
   bot.catch((err) => {
