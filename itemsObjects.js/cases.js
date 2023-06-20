@@ -4,10 +4,17 @@ const cases = {
     dbName: "minecraftCase",
     price: 250,
   },
+
   2: {
     name: "Бравл кейс",
     dbName: "brawlCase",
     price: 500,
+  },
+
+  3: {
+    name: "Хотлайн кейс",
+    dbName: "hotlineCase",
+    price: 200,
   },
 };
 

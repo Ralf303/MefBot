@@ -23,6 +23,7 @@ const User = sequelize.define("user", {
   fullSlots: { type: DataTypes.INTEGER, defaultValue: 0 },
   minecraftCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   brawlCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  hotlineCase: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {

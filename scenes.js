@@ -178,6 +178,12 @@ class ScenesGenerator {
         ctx.from.username
       );
 
+      if (user.balance < amount) {
+        ctx.reply("У вас кончился меф😢\nДля начала игры наберите рулетка");
+        ctx.scene.leave();
+        return;
+      }
+
       const bet = ctx.callbackQuery.data;
       const winNumber = Math.floor(Math.random() * 36 + 1); // генерация случайного числа от 1 до 36
       const winColor = getWinColor(winNumber);

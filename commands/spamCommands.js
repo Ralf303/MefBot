@@ -23,12 +23,14 @@ spamCommands.on("text", async (ctx, next) => {
         let result = "Ваши мефкейсы:\n";
         let i = 1;
         for (const item in cases) {
-          result += `${i}) ${cases[item].name} - ${user.minecraftCase} шт.\n`;
+          result += `${i}) ${cases[item].name} - ${
+            user[cases[item].dbName]
+          } шт.\n`;
           i++;
         }
         ctx.reply(
           result +
-            "\n\nЧтобы открыть мефкейс напишите команду\n<<Открыть {id мефкейса}>>"
+            "\n\nЧтобы открыть мефкейс напишите команду\n<<Открыть {id}>>"
         );
       }
 

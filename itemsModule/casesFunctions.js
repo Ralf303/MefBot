@@ -153,6 +153,49 @@ const openbrawlCase = async (user, ctx, bot) => {
   ctx.reply(result);
 };
 
+const openhotlineCase = async (user, ctx, bot) => {
+  const chance = getRandomInt(1, 1000);
+  let result = `${user.username} открыл Хотлайн кейс и получил`;
+
+  if (chance <= 499) {
+    const win = getRandomInt(1, 250);
+    user.balance += win;
+    result += ` ${win}MF`;
+  }
+
+  if (chance >= 500 && chance <= 515) {
+    const randomItem = getRandomInt(50, 55);
+    const needItem = clothes[randomItem];
+    const item = await Item.create({
+      src: needItem.src,
+      itemName: needItem.name,
+      bodyPart: needItem.bodyPart,
+      isWorn: false,
+    });
+
+    user.fullSlots++;
+    await user.addItem(item);
+    await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+    await bot.telegram.sendMessage(
+      process.env.CHAT_ID,
+      `❗️@${user.username} испытал удачу при открытии Хотлайн кейса и выбил ${needItem.name}❗️`
+    );
+    await user.save();
+    await item.save();
+    return;
+  }
+
+  if (chance >= 516 && chance <= 599) {
+    const win = getRandomInt(250, 1000);
+    user.balance += win;
+    result += ` ${win}MF`;
+  }
+
+  if (chance >= 600) {
+    result += " ничего😥";
+  }
+  ctx.reply(result);
+};
 /*****************************************************************************************************/
 
 const buyCase = async (user, id, count, ctx) => {
@@ -185,6 +228,7 @@ const buyCase = async (user, id, count, ctx) => {
 const open = {
   minecraftCase: openminecraftCase,
   brawlCase: openbrawlCase,
+  hotlineCase: openhotlineCase,
 };
 
 const openCase = async (user, id, ctx, bot) => {
