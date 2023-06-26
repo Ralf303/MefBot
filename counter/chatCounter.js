@@ -12,6 +12,40 @@ const MessageCounter = new Composer();
 const regex = /([_*][)~(`>#+\-=|{}.!])/g;
 const allowedChats = [-1001680708708, -1001672482562, -1001551821031];
 
+MessageCounter.on("new_chat_members", async (ctx, next) => {
+  const chatId = ctx.message.chat.id;
+  const fromUserInfo = ctx.message.from;
+  const invitedUserInfo = ctx.message.new_chat_members;
+  console.log(invitedUserInfo);
+
+  const fromUser = await getUser(
+    fromUserInfo.id,
+    fromUserInfo.first_name,
+    fromUserInfo.username
+  );
+
+  let invitedUser;
+
+  for (let i = 0; i < invitedUserInfo.length; i++) {
+    invitedUser = await User.findOne({
+      where: { chatId: invitedUserInfo[i].id },
+    });
+
+    if (!invitedUser && allowedChats.includes(chatId)) {
+      invitedUser = await User.create({
+        chatId: invitedUserInfo[i].id,
+        firstname: invitedUserInfo[i].first_name,
+        username: invitedUserInfo[i].username,
+      });
+
+      fromUser.balance += 5000;
+      await fromUser.save();
+    }
+  }
+
+  return next();
+});
+
 MessageCounter.hears(/актив день/i, async (ctx, next) => {
   const users = await User.findAll({
     where: {
