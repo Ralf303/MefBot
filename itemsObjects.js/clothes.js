@@ -492,6 +492,16 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  56: {
+    name: "Супер Грабли",
+    bodyPart: "left",
+    src: "img/grabli.png",
+    price: 300,
+    canBuy: false,
+    class: "vip",
+    info: "Умножает сбор мефа в пять раз когда надеты на пабло",
+  },
 };
 
 module.exports = clothes;

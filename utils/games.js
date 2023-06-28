@@ -1,3 +1,4 @@
+const { Item } = require("../db/models.js");
 const { sleep, formatTime, getRandomInt } = require("./helpers.js");
 
 async function dice(word3, word2, user, bot, ctx) {
@@ -96,10 +97,11 @@ async function bandit(word2, user, ctx) {
   }
 }
 
-function userFerma(ctx, user) {
-  const now = Math.floor(Date.now() / 1000); // текущее время в UNIX-формате
+async function userFerma(ctx, user) {
+  const now = Math.floor(Date.now() / 1000);
   const lastTime = user.farmtime;
   const diff = now - lastTime;
+
   if (
     (diff >= 3600 && user.timelvl === 4) ||
     (diff >= 7200 && user.timelvl === 3) ||
@@ -108,6 +110,7 @@ function userFerma(ctx, user) {
   ) {
     user.farmtime = now;
     let randmef;
+
     if (user.meflvl === 1) {
       randmef = getRandomInt(50, 100);
     } else if (user.meflvl === 2) {
@@ -117,26 +120,37 @@ function userFerma(ctx, user) {
     } else {
       randmef = getRandomInt(300, 500);
     }
+
+    // Check if the user has an item named "Супер Грабли"
+    const hasSuperGrabli = await Item.findOne({
+      where: {
+        userId: user.id,
+        itemName: "Супер Грабли",
+        isWorn: true,
+      },
+    });
+
+    if (hasSuperGrabli) {
+      randmef *= 5;
+    }
+
     ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
   } else {
+    let remainingTime;
+
     if (user.timelvl === 4) {
-      const remainingTime = 3600 - diff;
-      const formattedTime = formatTime(remainingTime);
-      ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+      remainingTime = 3600 - diff;
     } else if (user.timelvl === 3) {
-      const remainingTime = 7200 - diff;
-      const formattedTime = formatTime(remainingTime);
-      ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+      remainingTime = 7200 - diff;
     } else if (user.timelvl === 2) {
-      const remainingTime = 10800 - diff;
-      const formattedTime = formatTime(remainingTime);
-      ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+      remainingTime = 10800 - diff;
     } else {
-      const remainingTime = 14400 - diff;
-      const formattedTime = formatTime(remainingTime);
-      ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+      remainingTime = 14400 - diff;
     }
+
+    const formattedTime = formatTime(remainingTime);
+    ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
   }
 }
 

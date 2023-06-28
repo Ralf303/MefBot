@@ -1,5 +1,6 @@
 const Jimp = require("jimp");
 const { Item } = require("../db/models");
+const clothes = require("../itemsObjects.js/clothes");
 
 async function blendImages(imagePaths) {
   const bg = await Jimp.read("img/bg.jpg");
@@ -226,6 +227,30 @@ const tryItem = async (itemInfo, ctx, id) => {
   );
 };
 
+const getItemInfo = (id, ctx) => {
+  const needItem = clothes[id];
+
+  if (!needItem) {
+    ctx.reply("Такой вещи вообще нет😥");
+    return;
+  }
+
+  const info = needItem.info;
+
+  if (!info) {
+    ctx.reply("У данной вещи нет особености😥");
+    return;
+  }
+
+  ctx.reply(
+    `❗️${needItem.name}❗️\n\n${info}\n\nЦена: ${
+      needItem.price
+    } ирисок\n\n‼️В РУБЛЯХ ${needItem.price / 2}‼️`
+  );
+
+  console.log(needItem);
+};
+
 module.exports = {
   buyItem,
   deleteItem,
@@ -234,4 +259,5 @@ module.exports = {
   getInventory,
   removeItem,
   tryItem,
+  getItemInfo,
 };

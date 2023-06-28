@@ -22,6 +22,7 @@ const {
   wearItem,
   getWornItems,
   buyItem,
+  getItemInfo,
 } = require("../itemsModule/clothesFunctions");
 const { buyCase } = require("../itemsModule/casesFunctions");
 
@@ -50,6 +51,7 @@ const triggers = [
   "надеть",
   "мой пабло",
   "курс",
+  "инфо",
 ];
 
 const rp = {
@@ -205,6 +207,13 @@ chatCommands.on("text", async (ctx, next) => {
           await buyItem(user, itemInfo, ctx, true);
         } else if (word2 == "вещь") {
           ctx.reply("Такой вещи нет");
+        }
+      }
+
+      if (word1 == "инфо") {
+        const id = Number(word2);
+        if (!isNaN(id)) {
+          getItemInfo(id, ctx);
         }
       }
 
