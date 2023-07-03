@@ -14,7 +14,7 @@ spamCommands.on("text", async (ctx, next) => {
     ctx.from.username
   );
   const userMessage = ctx.message.text.toLowerCase();
-  const [word1, word2, word3] = userMessage.split(" ");
+  const [word1, word2] = userMessage.split(" ");
   const IsSpam = ctx.chat.id === -1001672482562;
   const IsPrivate = ctx.chat.type === "private";
   try {
@@ -35,12 +35,12 @@ spamCommands.on("text", async (ctx, next) => {
       }
 
       if (word1 == "открыть") {
-        const id = Number(word3);
-        if (!isNaN(id) && word2 == "мефкейс") {
+        const id = Number(word2);
+        if (!isNaN(id)) {
           await openCase(user, id, ctx, ctx);
-        } else if (word2 == "мефкейс") {
+        } else if (word1 == "открыть") {
           ctx.reply(
-            "Не правильное использование команды\n\nПопробуйте\n<<Открыть мефкейс {Id мефкейса}>>"
+            "Не правильное использование команды\n\nПопробуйте\n<<Открыть {Id мефкейса}>>"
           );
         }
       }
