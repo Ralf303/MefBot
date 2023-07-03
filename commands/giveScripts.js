@@ -1,5 +1,6 @@
 const { User, Item } = require("../db/models");
 const cases = require("../itemsObjects.js/cases");
+const { giveResoursesLog, loseLog } = require("../logs/globalLogs");
 
 const giveCoins = async (ctx) => {
   const chatId = ctx.from.id;
@@ -45,6 +46,9 @@ const giveCoins = async (ctx) => {
     ctx.reply(
       `Вы успешно отсыпали ${amount} грамм мефа ${message.from.first_name}`
     );
+
+    await loseLog(sender, "меф", "передача другому юзеру");
+    await giveResoursesLog(sender, receiver, "меф", amount);
   } catch (error) {
     console.log(error);
     ctx.reply("Ошибка при выполнении операции.");
@@ -101,6 +105,17 @@ const giveItem = async (sender, id, ctx) => {
     await sender.save();
     await receiver.save();
     await item.save();
+    await loseLog(
+      sender,
+      `${item.itemName}[${item.id}]`,
+      "передача другому юзеру"
+    );
+    await giveResoursesLog(
+      sender,
+      receiver,
+      `${item.itemName}[${item.id}]`,
+      "1"
+    );
   } catch (error) {
     console.log(error);
   }
@@ -149,6 +164,13 @@ const giveCase = async (sender, id, count, ctx) => {
 
     await sender.save();
     await receiver.save();
+    await loseLog(sender, `${needCase.name}[${id}]`, "передача другому юзеру");
+    await giveResoursesLog(
+      sender,
+      receiver,
+      `${needCase.name}[${id}]`,
+      `${count}`
+    );
   } catch (error) {
     console.log(error);
   }

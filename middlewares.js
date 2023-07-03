@@ -11,5 +11,5 @@ middleware.use(chatCommands);
 middleware.use(require("./commands/privatCommands.js"));
 middleware.use(require("./commands/spamCommands.js"));
 middleware.use(require("./commands/adminCommands.js"));
-middleware.use(require("./chatLogs.js"));
+middleware.use(require("./logs/securityLogs.js"));
 module.exports = middleware;

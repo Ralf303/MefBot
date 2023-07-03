@@ -1,10 +1,15 @@
 const { Item } = require("../db/models.js");
+const { gamesLog } = require("../logs/globalLogs.js");
 const { sleep, formatTime, getRandomInt } = require("./helpers.js");
 
 async function dice(word3, word2, user, bot, ctx) {
   const stake = Number(word2);
   const userInput = word3;
-  const userTrueImput = word3 <= 6 || word3 === "нечет" || word3 === "чет";
+  const userTrueImput =
+    Number(word3) <= 6 || word3 === "нечет" || word3 === "чет";
+  let winAmount = 0;
+  const previousBalance = user.balance;
+
   if (userTrueImput && user.balance >= stake && stake >= 500) {
     user.balance -= stake;
     const info = await bot.telegram.sendDice(ctx.chat.id);
@@ -16,7 +21,7 @@ async function dice(word3, word2, user, bot, ctx) {
         ctx.reply(
           `🥳 Поздравляем! Кубик показал ${dice}\n Выигрыш ${stake * 5}`
         );
-        user.balance += stake * 5;
+        winAmount = stake * 5;
       } else {
         ctx.reply(`😢 К сожалению, вы проиграли. Кубик показал ${dice}`);
       }
@@ -31,8 +36,9 @@ async function dice(word3, word2, user, bot, ctx) {
             isEven ? "чётное" : "нечётное"
           })\n Выигрыш ${stake * 1.5}`
         );
-        user.balance += stake * 1.5;
+        winAmount = stake * 1.5;
       } else {
+        winAmount = 0;
         ctx.reply(
           `😢 К сожалению, вы проиграли. Кубик показал ${dice} (число ${
             isEven ? "четное" : "нечетное"
@@ -40,13 +46,17 @@ async function dice(word3, word2, user, bot, ctx) {
         );
       }
     }
+
+    user.balance += winAmount;
+    await gamesLog(user, "кубик", winAmount, previousBalance);
+    await user.save();
   } else if (stake > user.balance) {
     ctx.reply("Не достаточно мефа😢");
   } else if (stake < 500) {
     ctx.reply("Ставка должна быть больше 500");
   } else {
     ctx.reply(
-      'Введите ставку, а дальше число от 1 до 6, "чет" или "нечет", например "куб 1000 5" или "куб 228 нечет"'
+      'Введите ставку, а дальше число от 1 до 6, "чет" или "нечет", например "куб 1000 5" или "куб 500 нечет"'
     );
   }
 }
@@ -59,13 +69,16 @@ async function bandit(word2, user, ctx) {
     ctx.chat.type === "private";
   try {
     let stake = Number(word2);
+    let winAmount = 0;
+    const previousBalance = user.balance;
+
     if (stake > 499 && user.balance >= stake && stake && needChat) {
       user.balance -= stake;
       const randEmoji = () => fruits[Math.floor(Math.random() * fruits.length)];
       const randomEmojis = [randEmoji(), randEmoji(), randEmoji()];
 
       if (randomEmojis.every((e) => e === randomEmojis[0])) {
-        user.balance += stake * 10;
+        winAmount = stake * 10;
         ctx.reply(
           `🤑ДЖЕКПОТ🤑\n${randomEmojis.join("|")}\n @${
             ctx.from.username
@@ -76,7 +89,7 @@ async function bandit(word2, user, ctx) {
         randomEmojis[0] === randomEmojis[2] ||
         randomEmojis[1] === randomEmojis[2]
       ) {
-        user.balance += stake * 3;
+        winAmount = stake * 3;
         ctx.reply(
           `${randomEmojis.join("|")}\n @${ctx.from.username} выигрыш ${
             stake * 3
@@ -84,7 +97,13 @@ async function bandit(word2, user, ctx) {
         );
       } else {
         ctx.reply(`${randomEmojis.join("|")}\n @${ctx.from.username} слив 🥱`);
+        winAmount = 0;
       }
+
+      user.balance += winAmount;
+
+      await gamesLog(user, "бандит", winAmount, previousBalance);
+      await user.save();
     } else if (stake > user.balance) {
       ctx.reply("Недостаточно мефа😢");
     } else if (!needChat) {

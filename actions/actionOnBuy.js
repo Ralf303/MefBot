@@ -1,5 +1,6 @@
 const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions");
+const { loseLog } = require("../logs/globalLogs");
 const compose = new Composer();
 const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
 
@@ -15,6 +16,7 @@ compose.action("buy0", async (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 100000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -43,6 +45,7 @@ compose.action("buy1", async (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 80000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -71,6 +74,7 @@ compose.action("buy3", async (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
     );
     user.balance -= 20000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -99,6 +103,7 @@ compose.action("buy4", async (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 150000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -127,6 +132,7 @@ compose.action("buy5", async (ctx) => {
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
     );
     user.balance -= 25000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -155,6 +161,7 @@ compose.action("buy7", async (ctx) => {
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
     );
     user.balance -= 100000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.telegram.sendMessage(
       "1157591765",
       "Заявка на покупку!\n\nИмя покупателя " +
@@ -180,6 +187,7 @@ compose.action("timeapp", async (ctx) => {
   ctx.deleteMessage();
   if (user.balance >= 10000 && user.timelvl < 4) {
     user.balance -= 10000;
+    await loseLog(user, `меф`, "покупка в магазине");
     user.timelvl += 1;
     ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень времени " +
@@ -202,6 +210,7 @@ compose.action("mefapp", async (ctx) => {
   ctx.deleteMessage();
   if (user.balance >= 20000 && user.meflvl < 4) {
     user.balance -= 20000;
+    await loseLog(user, `меф`, "покупка в магазине");
     user.meflvl += 1;
     ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень сбора " +
@@ -226,6 +235,7 @@ compose.action("slotapp", async (ctx) => {
 
   if (user.balance >= 5000) {
     user.balance -= 5000;
+    await loseLog(user, `меф`, "покупка в магазине");
     user.slots += 1;
     ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь у вас " + user.slots + " слотов"
@@ -246,6 +256,7 @@ compose.action("buy2", async (ctx) => {
   if (user.balance >= 40000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 40000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.scene.enter("BuyPrefix");
     user.save();
   } else {
@@ -263,6 +274,7 @@ compose.action("buy6", async (ctx) => {
   if (user.balance >= 10000) {
     ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 10000;
+    await loseLog(user, `меф`, "покупка в магазине");
     ctx.scene.enter("ChangePrefix");
     user.save();
   } else {

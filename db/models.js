@@ -40,6 +40,19 @@ const Item = sequelize.define("item", {
   price: { type: DataTypes.INTEGER },
 });
 
+const Logs = sequelize.define("logs", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  date: { type: DataTypes.STRING },
+  action: { type: DataTypes.STRING },
+  userOne: { type: DataTypes.STRING },
+  userTwo: { type: DataTypes.STRING, defaultValue: "0" },
+});
+
 User.hasMany(Item, { as: "items" });
 
-module.exports = { User, Item };
+module.exports = { User, Item, Logs };

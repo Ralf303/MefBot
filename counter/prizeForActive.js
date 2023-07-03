@@ -40,10 +40,10 @@ function Timings(bot) {
       const topUser = await findTopUserInWeek();
       await resetWeekCounter();
       if (topUser) {
-        await topUser.update({ balance: topUser.balance + 5000 });
+        await topUser.update({ balance: topUser.balance + 15000 });
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
-          `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за эту неделю и получил 5000 грам мефа`,
+          `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за эту неделю и получил 15000 грам мефа`,
           {
             disable_notification: true,
             parse_mode: "Markdown",
@@ -62,10 +62,10 @@ function Timings(bot) {
       const topUser = await findTopUserInMonth();
       await resetMonthCounter();
       if (topUser) {
-        await topUser.update({ balance: topUser.balance + 10000 });
+        await topUser.update({ balance: topUser.balance + 50000 });
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
-          `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот месяц и получил 10000 грам мефа`,
+          `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот месяц и получил 50000 грам мефа`,
           {
             disable_notification: true,
             parse_mode: "Markdown",

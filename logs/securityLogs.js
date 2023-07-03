@@ -4,7 +4,7 @@ const safety = new Composer();
 
 safety.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
-  const [word1] = userMessage.split(" ");
+  const word1 = userMessage[0];
   const IsPrivate = ctx.chat.type === "private";
   const message = ctx.message.reply_to_message;
   const chatId = ctx.message.chat.id.toString();

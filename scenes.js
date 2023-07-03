@@ -1,6 +1,7 @@
 const { Scenes } = require("telegraf");
 const { getUser } = require("./db/functions");
 const { getWinAmount, getWinColor } = require("./utils/rouletteFunctions");
+const { gamesLog } = require("./logs/globalLogs");
 
 class ScenesGenerator {
   prefix(bot) {
@@ -186,7 +187,7 @@ class ScenesGenerator {
         const winAmount = getWinAmount(amount, bet, winNumber);
         const message = `Выпавшее число: ${winNumber} (${winColor}),\nВаша ставка: ${amount} на (${bet}). ${
           winAmount > 0
-            ? `\n🥳 Поздравляем, вы выиграли *${winAmount}*!\n\nБаланс: ${
+            ? `\n🥳 Поздравляем, вы выиграли ${winAmount}!\n\nБаланс: ${
                 user.balance + winAmount
               }`
             : `\n😔 Увы, вы проиграли. Попробуйте еще раз.\n\nБаланс: ${
@@ -225,8 +226,10 @@ class ScenesGenerator {
           .then((res) => {
             ctx.session.rouletteMessage = res.message_id;
           });
-
-        user.balance += winAmount - amount;
+        const previousBalance = user.balance;
+        user.balance -= amount;
+        user.balance += winAmount;
+        await gamesLog(user, "рулетку", winAmount, previousBalance);
         await user.save();
       } else {
         await ctx.telegram.deleteMessage(
