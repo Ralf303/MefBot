@@ -1,5 +1,5 @@
 const { Item } = require("../db/models.js");
-const { gamesLog } = require("../logs/globalLogs.js");
+const { gamesLog, resiveLog } = require("../logs/globalLogs.js");
 const { sleep, formatTime, getRandomInt } = require("./helpers.js");
 
 async function dice(word3, word2, user, bot, ctx) {
@@ -155,6 +155,7 @@ async function userFerma(ctx, user) {
 
     ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
+    await resiveLog(user, "меф", randmef, "сбор фермы");
   } else {
     let remainingTime;
 

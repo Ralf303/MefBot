@@ -9,6 +9,7 @@ const {
   findTopUserInMonth,
   findTopUserInWeek,
 } = require("../db/functions.js");
+const { resiveLog } = require("../logs/globalLogs.js");
 const CronJob = require("cron").CronJob;
 
 function Timings(bot) {
@@ -19,6 +20,7 @@ function Timings(bot) {
       await resetDayCounter();
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 500 });
+        await resiveLog(topUser, "меф", "500", "награда за актив");
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот день и получил 500 грам мефа`,
@@ -41,6 +43,7 @@ function Timings(bot) {
       await resetWeekCounter();
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 15000 });
+        await resiveLog(topUser, "меф", "15000", "награда за актив");
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за эту неделю и получил 15000 грам мефа`,
@@ -63,6 +66,7 @@ function Timings(bot) {
       await resetMonthCounter();
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 50000 });
+        await resiveLog(topUser, "меф", "50000", "награда за актив");
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
           `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот месяц и получил 50000 грам мефа`,

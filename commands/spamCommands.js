@@ -15,7 +15,8 @@ spamCommands.on("text", async (ctx, next) => {
   );
   const userMessage = ctx.message.text.toLowerCase();
   const [word1, word2] = userMessage.split(" ");
-  const IsSpam = ctx.chat.id === -1001672482562;
+  const IsSpam =
+    ctx.chat.id === -1001672482562 || ctx.chat.id === -1001680708708;
   const IsPrivate = ctx.chat.type === "private";
   try {
     if (IsSpam || IsPrivate) {

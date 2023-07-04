@@ -1,16 +1,18 @@
 const { Item } = require("../db/models");
 const cases = require("../itemsObjects.js/cases");
 const clothes = require("../itemsObjects.js/clothes");
+const { resiveLog, loseLog } = require("../logs/globalLogs");
 const { getRandomInt } = require("../utils/helpers");
 
 const openminecraftCase = async (user, ctx, bot) => {
   const chance = getRandomInt(1, 1000);
   let result = `${user.username} открыл Майнкрафт кейс и получил`;
-
+  await loseLog(user, "кейс", "открытие");
   if (chance <= 499) {
     const win = getRandomInt(1, 250);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
   }
 
   if (chance >= 500 && chance <= 502) {
@@ -29,6 +31,7 @@ const openminecraftCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Майнкрафт кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -50,6 +53,7 @@ const openminecraftCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Майнкрафт кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -71,6 +75,7 @@ const openminecraftCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Майнкрафт кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -92,6 +97,7 @@ const openminecraftCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Майнкрафт кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -101,6 +107,7 @@ const openminecraftCase = async (user, ctx, bot) => {
     const win = getRandomInt(250, 1000);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, `меф`, `${win}`, "приз из кейса");
   }
 
   if (chance >= 600) {
@@ -112,11 +119,12 @@ const openminecraftCase = async (user, ctx, bot) => {
 const openbrawlCase = async (user, ctx, bot) => {
   const chance = getRandomInt(1, 1000);
   let result = `${user.username} открыл Бравл кейс и получил`;
-
+  await loseLog(user, "кейс", "открытие");
   if (chance <= 499) {
     const win = getRandomInt(1, 250);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
   }
 
   if (chance >= 500 && chance <= 505) {
@@ -136,6 +144,7 @@ const openbrawlCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Бравл кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -145,6 +154,7 @@ const openbrawlCase = async (user, ctx, bot) => {
     const win = getRandomInt(250, 1000);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
   }
 
   if (chance >= 600) {
@@ -156,11 +166,12 @@ const openbrawlCase = async (user, ctx, bot) => {
 const openhotlineCase = async (user, ctx, bot) => {
   const chance = getRandomInt(1, 1000);
   let result = `${user.username} открыл Хотлайн кейс и получил`;
-
+  await loseLog(user, "кейс", "открытие");
   if (chance <= 499) {
     const win = getRandomInt(1, 250);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
   }
 
   if (chance >= 500 && chance <= 515) {
@@ -180,6 +191,7 @@ const openhotlineCase = async (user, ctx, bot) => {
       process.env.CHAT_ID,
       `❗️@${user.username} испытал удачу при открытии Хотлайн кейса и выбил ${needItem.name}❗️`
     );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
     return;
@@ -189,6 +201,7 @@ const openhotlineCase = async (user, ctx, bot) => {
     const win = getRandomInt(250, 1000);
     user.balance += win;
     result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
   }
 
   if (chance >= 600) {
@@ -196,6 +209,7 @@ const openhotlineCase = async (user, ctx, bot) => {
   }
   ctx.reply(result);
 };
+
 /*****************************************************************************************************/
 
 const buyCase = async (user, id, count, ctx) => {
@@ -218,6 +232,13 @@ const buyCase = async (user, id, count, ctx) => {
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
     user.balance -= price;
+    await loseLog(
+      user,
+      "меф",
+      `покупка ${needCase.name} в количестве ${count}`
+    );
+
+    await resiveLog(user, `${needCase.name}`, `${count}`, "покупка в магазине");
     user[needCase.dbName] += count;
     await user.save();
   } else {

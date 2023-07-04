@@ -25,6 +25,7 @@ const {
   getItemInfo,
 } = require("../itemsModule/clothesFunctions");
 const { buyCase } = require("../itemsModule/casesFunctions");
+const { resiveLog } = require("../logs/globalLogs");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -128,6 +129,7 @@ chatCommands.on("text", async (ctx, next) => {
       if (userMessage === capture) {
         const randommef = getRandomInt(500, 1000);
         user.balance += randommef;
+        await resiveLog(user, "меф", `${randommef}`, "ввод капчи");
         user.captureCounter += 1;
         await ctx.reply("Верно, ты получил " + randommef + " мефа", {
           reply_to_message_id: ctx.message.message_id,

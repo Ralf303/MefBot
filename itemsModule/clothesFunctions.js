@@ -1,6 +1,7 @@
 const Jimp = require("jimp");
 const { Item } = require("../db/models");
 const clothes = require("../itemsObjects.js/clothes");
+const { loseLog, resiveLog } = require("../logs/globalLogs");
 
 async function blendImages(imagePaths) {
   const bg = await Jimp.read("img/bg.jpg");
@@ -44,7 +45,14 @@ const buyItem = async (user, itemInfo, ctx, status) => {
 
   user.fullSlots++;
   await user.addItem(item);
+  await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
   await ctx.reply(`Вы купили: ${item.itemName}[${item.id}]`);
+  await resiveLog(
+    user,
+    `${item.itemName}[${item.id}]`,
+    "1",
+    "покупка в магазине"
+  );
   await user.save();
   await item.save();
 };
@@ -66,6 +74,7 @@ const deleteItem = async (user, id, ctx) => {
   ctx.reply(
     `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`
   );
+  await loseLog(user, `${item.itemName}[${item.id}]`, `Удаление`);
   user.balance += cashBack;
   user.fullSlots--;
   await item.destroy();
