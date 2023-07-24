@@ -226,7 +226,7 @@ chatCommands.on("text", async (ctx, next) => {
         }
       }
 
-      if (word1 == "инфа") {
+      if (word1 === "инфа") {
         const id = Number(word2);
         if (!isNaN(id)) {
           getItemInfo(id, ctx);
@@ -245,7 +245,7 @@ chatCommands.on("text", async (ctx, next) => {
 
 function CaptureGenerator(bot) {
   new CronJob(
-    "* 1 */2 * * *",
+    "0 1 */2 * * *",
     async function () {
       try {
         capture = generateCapcha();
