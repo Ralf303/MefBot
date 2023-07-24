@@ -502,6 +502,16 @@ const clothes = {
     class: "vip",
     info: "Умножает сбор мефа в пять раз когда надеты на пабло",
   },
+
+  57: {
+    name: "Калькулятор",
+    bodyPart: "right",
+    src: "img/calculator.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+    info: "Умножает награду за капчу в 3 раза когда надет на пабло",
+  },
 };
 
 module.exports = clothes;

@@ -26,6 +26,7 @@ const {
 } = require("../itemsModule/clothesFunctions");
 const { buyCase } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
+const { Item } = require("../db/models");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -127,10 +128,23 @@ chatCommands.on("text", async (ctx, next) => {
       }
 
       if (userMessage === capture) {
-        const randommef = getRandomInt(500, 1000);
-        user.balance += randommef;
+        let randommef = getRandomInt(500, 1000);
+
+        const hasCalculator = await Item.findOne({
+          where: {
+            userId: user.id,
+            itemName: "Калькулятор",
+            isWorn: true,
+          },
+        });
+
+        if (hasCalculator) {
+          randommef *= 3;
+        }
+
         await resiveLog(user, "меф", `${randommef}`, "ввод капчи");
         user.captureCounter += 1;
+        user.balance += randommef;
         await ctx.reply("Верно, ты получил " + randommef + " мефа", {
           reply_to_message_id: ctx.message.message_id,
         });
@@ -212,7 +226,7 @@ chatCommands.on("text", async (ctx, next) => {
         }
       }
 
-      if (word1 == "инфо") {
+      if (word1 == "инфа") {
         const id = Number(word2);
         if (!isNaN(id)) {
           getItemInfo(id, ctx);
@@ -221,7 +235,7 @@ chatCommands.on("text", async (ctx, next) => {
 
       await user.save();
     } else if (triggers.includes(userMessage) || triggers.includes(word1)) {
-      await notify(ctx, "healthy_food_music");
+      notify(ctx, "healthy_food_music");
     }
   } catch (e) {
     ctx.reply("Какая то ошибка, " + e);
@@ -231,7 +245,7 @@ chatCommands.on("text", async (ctx, next) => {
 
 function CaptureGenerator(bot) {
   new CronJob(
-    "0 1 */2 * * *",
+    "30 * * * * *",
     async function () {
       try {
         capture = generateCapcha();

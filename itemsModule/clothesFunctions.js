@@ -251,11 +251,7 @@ const getItemInfo = (id, ctx) => {
     return;
   }
 
-  ctx.reply(
-    `❗️${needItem.name}❗️\n\n${info}\n\nЦена: ${
-      needItem.price
-    } ирисок\n\n‼️В РУБЛЯХ ${needItem.price / 2}‼️`
-  );
+  ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
 
   console.log(needItem);
 };
