@@ -245,7 +245,7 @@ chatCommands.on("text", async (ctx, next) => {
 
 function CaptureGenerator(bot) {
   new CronJob(
-    "30 * * * * *",
+    "* 1 */2 * * *",
     async function () {
       try {
         capture = generateCapcha();
