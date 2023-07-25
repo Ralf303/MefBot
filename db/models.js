@@ -53,6 +53,18 @@ const Logs = sequelize.define("logs", {
   userTwo: { type: DataTypes.STRING, defaultValue: "0" },
 });
 
-User.hasMany(Item, { as: "items" });
+const Roles = sequelize.define("roles", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  status: { type: DataTypes.STRING },
+  password: { type: DataTypes.STRING },
+});
 
-module.exports = { User, Item, Logs };
+User.hasMany(Item, { as: "items" });
+User.hasOne(Roles, { as: "role" });
+
+module.exports = { User, Item, Logs, Roles };

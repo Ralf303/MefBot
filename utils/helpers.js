@@ -19,6 +19,16 @@ function generateCapcha() {
   return res;
 }
 
+function generatePassword(length) {
+  let charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let retVal = "";
+  for (let i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  return retVal;
+}
+
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -63,6 +73,8 @@ async function checkUserProfile(user, ctx) {
     ctx.reply(
       "Ваш ник: " +
         user.firstname +
+        "\nId: " +
+        user.chatId +
         "\nВаш меф: " +
         user.balance +
         "\nКапчей введено: " +
@@ -95,6 +107,8 @@ async function checkUserProfile(user, ctx) {
     ctx.reply(
       "Профиль " +
         player.firstname +
+        "\nId: " +
+        player.chatId +
         "\nГрамм мефа: " +
         player.balance +
         "\nКапчей введено: " +
@@ -183,4 +197,5 @@ module.exports = {
   checkUserSub,
   checkUserProfile,
   shopGenerator,
+  generatePassword,
 };

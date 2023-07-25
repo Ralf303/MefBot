@@ -263,10 +263,10 @@ chatCommands.on("text", async (ctx, next) => {
 
 function CaptureGenerator(bot) {
   const job = new CronJob(
-    "0 0 13-23 * * *",
+    "0 1-55 */2 * * *",
     async function () {
       try {
-        const capture = generateCapcha();
+        capture = generateCapcha();
         await bot.telegram.sendMessage(
           process.env.CHAT_ID,
           "МефКапча " + capture
@@ -276,22 +276,7 @@ function CaptureGenerator(bot) {
       }
     },
     null,
-    true,
-    "Europe/Moscow"
-  );
-
-  const randomJob = new CronJob(
-    "0 */30 * * * *",
-    function () {
-      const interval =
-        Math.floor(Math.random() * (10800000 - 1800000 + 1)) + 1800000; // Случайный интервал от 30 минут до 3 часов
-      setTimeout(() => {
-        job.start();
-        job.stop();
-      }, interval);
-    },
-    null,
-    true,
+    true, // Установите значение `false`, чтобы задача не запускалась автоматически
     "Europe/Moscow"
   );
 }
