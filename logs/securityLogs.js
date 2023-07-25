@@ -13,7 +13,7 @@ safety.on("text", async (ctx, next) => {
 
   try {
     if (!IsPrivate && message) {
-      if (word1 == "мут") {
+      if (userMessage.includes("мут")) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🔇 #МУТ
@@ -29,7 +29,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "варн") {
+      if (userMessage.includes("варн")) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `⚠️ #ВАРН
@@ -45,7 +45,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "бан") {
+      if (userMessage.includes("бан")) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🚷 #БАН
@@ -61,7 +61,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "размут") {
+      if (userMessage.includes("размут")) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🔉 #РАЗМУТ
@@ -93,7 +93,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "разбан") {
+      if (userMessage.includes("разбан")) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `♿️ #РАЗБАН

@@ -252,8 +252,6 @@ const getItemInfo = (id, ctx) => {
   }
 
   ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
-
-  console.log(needItem);
 };
 
 module.exports = {

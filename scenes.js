@@ -188,7 +188,7 @@ class ScenesGenerator {
         const message = `Выпавшее число: ${winNumber} (${winColor}),\nВаша ставка: ${amount} на (${bet}). ${
           winAmount > 0
             ? `\n🥳 Поздравляем, вы выиграли ${winAmount}!\n\nБаланс: ${
-                user.balance + winAmount
+                user.balance - amount + winAmount
               }`
             : `\n😔 Увы, вы проиграли. Попробуйте еще раз.\n\nБаланс: ${
                 user.balance - amount

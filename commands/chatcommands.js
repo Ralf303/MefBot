@@ -54,6 +54,7 @@ const triggers = [
   "мой пабло",
   "курс",
   "инфо",
+  "инфа",
 ];
 
 const rp = {
@@ -141,9 +142,26 @@ chatCommands.on("text", async (ctx, next) => {
         if (hasCalculator) {
           randommef *= 3;
         }
+        user.captureCounter += 1;
+
+        if (user.captureCounter === 100) {
+          const item = await Item.create({
+            src: "img/calculator.png",
+            itemName: "Калькулятор",
+            bodyPart: "right",
+            isWorn: false,
+            price: 50,
+          });
+
+          user.fullSlots++;
+          await user.addItem(item);
+          await item.save();
+          ctx.reply(
+            `‼️ВНИМАНИЕ‼️\n\n@${ctx.from.username} ввел 100 капчей и получает редкий предмет "калькулятор[${item.id}]"`
+          );
+        }
 
         await resiveLog(user, "меф", `${randommef}`, "ввод капчи");
-        user.captureCounter += 1;
         user.balance += randommef;
         await ctx.reply("Верно, ты получил " + randommef + " мефа", {
           reply_to_message_id: ctx.message.message_id,
@@ -226,7 +244,7 @@ chatCommands.on("text", async (ctx, next) => {
         }
       }
 
-      if (word1 === "инфа") {
+      if (word1 == "инфо" || word1 == "инфа") {
         const id = Number(word2);
         if (!isNaN(id)) {
           getItemInfo(id, ctx);
@@ -244,11 +262,11 @@ chatCommands.on("text", async (ctx, next) => {
 });
 
 function CaptureGenerator(bot) {
-  new CronJob(
-    "0 1 */2 * * *",
+  const job = new CronJob(
+    "0 0 13-23 * * *",
     async function () {
       try {
-        capture = generateCapcha();
+        const capture = generateCapcha();
         await bot.telegram.sendMessage(
           process.env.CHAT_ID,
           "МефКапча " + capture
@@ -256,6 +274,21 @@ function CaptureGenerator(bot) {
       } catch (error) {
         console.log(error);
       }
+    },
+    null,
+    true,
+    "Europe/Moscow"
+  );
+
+  const randomJob = new CronJob(
+    "0 */30 * * * *",
+    function () {
+      const interval =
+        Math.floor(Math.random() * (10800000 - 1800000 + 1)) + 1800000; // Случайный интервал от 30 минут до 3 часов
+      setTimeout(() => {
+        job.start();
+        job.stop();
+      }, interval);
     },
     null,
     true,

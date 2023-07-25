@@ -184,7 +184,6 @@ async function createRP(rp, emoji, ctx, replyToMessage, comment) {
     "\\$&"
   );
 
-  console.log(comment);
   try {
     let replyMessage =
       `${emoji} [${firstName}](tg://user?id=${ctx.message.from.id}) ` +
