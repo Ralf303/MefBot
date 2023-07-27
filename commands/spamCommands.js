@@ -1,11 +1,11 @@
 const { Composer } = require("telegraf");
-const { openCase } = require("../itemsModule/casesFunctions");
+const { openCase, openDonateCase } = require("../itemsModule/casesFunctions");
 const cases = require("../itemsObjects.js/cases");
 const { getUser } = require("../db/functions");
 
 const spamCommands = new Composer();
 
-spamTriggers = ["мои мефкейсы", "открыть", "мефкейсы"];
+spamTriggers = ["открыть", "мефкейсы"];
 
 spamCommands.on("text", async (ctx, next) => {
   const user = await getUser(
@@ -20,23 +20,14 @@ spamCommands.on("text", async (ctx, next) => {
   const IsPrivate = ctx.chat.type === "private";
   try {
     if (IsSpam || IsPrivate) {
-      if (userMessage == "мои мефкейсы") {
-        let result = "Ваши мефкейсы:\n";
-        let i = 1;
-        for (const item in cases) {
-          result += `${i}) ${cases[item].name} - ${
-            user[cases[item].dbName]
-          } шт.\n`;
-          i++;
-        }
-        ctx.reply(
-          result +
-            "\n\nЧтобы открыть мефкейс напишите команду\n<<Открыть {id}>>"
-        );
-      }
-
       if (word1 == "открыть") {
         const id = Number(word2);
+
+        if (word2 === "донат") {
+          await openDonateCase(user, ctx);
+          return;
+        }
+
         if (!isNaN(id)) {
           await openCase(user, id, ctx, ctx);
         } else if (word1 == "открыть") {
@@ -55,7 +46,7 @@ spamCommands.on("text", async (ctx, next) => {
         }
         ctx.reply(
           result +
-            "\n\nЧтобы купить мефкейс напишите команду\n<<Купить мефкейс {id мефкейса}>>"
+            "\n\nТак же есть Донат кейс за 25 рублей\nИз него выпадает одна рандомная вещь\n\nКупить => @ralf303\n\nЧтобы купить мефкейс напишите команду\n<<Купить мефкейс {id мефкейса}>>"
         );
       }
     } else if (

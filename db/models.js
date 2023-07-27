@@ -24,6 +24,7 @@ const User = sequelize.define("user", {
   minecraftCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   brawlCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   hotlineCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  donateCase: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {

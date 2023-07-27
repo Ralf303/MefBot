@@ -210,6 +210,38 @@ const openhotlineCase = async (user, ctx, bot) => {
   ctx.reply(result);
 };
 
+const openDonateCase = async (user, ctx) => {
+  if (user.donateCase === 0) {
+    ctx.reply(`Недостаточно мефкейсов😥`);
+    return;
+  }
+
+  user.donateCase--;
+  await user.save();
+
+  let result = `${user.username} открыл Донат кейс и получил`;
+  const randomItem =
+    Math.floor(Math.random() * Object.keys(clothes).length) + 1;
+  const needItem = clothes[randomItem];
+  const item = await Item.create({
+    src: needItem.src,
+    itemName: needItem.name,
+    bodyPart: needItem.bodyPart,
+    isWorn: false,
+  });
+
+  user.fullSlots++;
+  await user.addItem(item);
+  await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+  await ctx.telegram.sendMessage(
+    process.env.CHAT_ID,
+    `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${needItem.name}❗️`
+  );
+  await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
+  await user.save();
+  await item.save();
+};
+
 /*****************************************************************************************************/
 
 const buyCase = async (user, id, count, ctx) => {
@@ -273,4 +305,4 @@ const openCase = async (user, id, ctx, bot) => {
   return;
 };
 
-module.exports = { openCase, buyCase };
+module.exports = { openCase, buyCase, openDonateCase };

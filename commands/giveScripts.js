@@ -175,4 +175,52 @@ const giveCase = async (sender, id, count, ctx) => {
     console.log(error);
   }
 };
-module.exports = { giveCoins, giveItem, giveCase };
+
+const giveDonateCase = async (sender, id, count, ctx) => {
+  try {
+    const message = ctx.message.reply_to_message;
+
+    if (!message) {
+      return;
+    }
+
+    const receiverChatId = message.from.id;
+
+    // проверяем, что отправитель не является ботом
+    if (message.from.is_bot) {
+      ctx.reply("Зачем боту кейсы🧐");
+      return;
+    }
+
+    const receiver = await User.findOne({
+      where: { chatId: receiverChatId },
+    });
+
+    const needCase = id;
+
+    if (needCase !== "донат") {
+      ctx.reply("Такого кейса нет😥");
+      return;
+    }
+
+    const caseCount = sender.donateCase;
+
+    if (count > caseCount) {
+      ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
+      return;
+    }
+
+    sender.donateCase -= count;
+    receiver.donateCase += count;
+
+    ctx.reply(`Вы успешно передали ${count} донаткейсов @${receiver.username}`);
+
+    await sender.save();
+    await receiver.save();
+    await loseLog(sender, `донат кейс`, "передача другому юзеру");
+    await giveResoursesLog(sender, receiver, `донат кейс`, `${count}`);
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = { giveCoins, giveItem, giveCase, giveDonateCase };

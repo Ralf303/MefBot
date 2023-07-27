@@ -278,7 +278,7 @@ const clothes = {
   },
 
   32: {
-    name: "Маска кенпачи",
+    name: "Маска анонимуса",
     src: "img/anonim_mask.png",
     bodyPart: "face",
     price: 50,

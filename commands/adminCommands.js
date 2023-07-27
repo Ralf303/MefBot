@@ -85,6 +85,12 @@ adminCommands.on("text", async (ctx, next) => {
           await user.save();
         }
 
+        if (word2 == "кейс" && !isNaN(id)) {
+          user.donateCase += id;
+          ctx.reply(`Успешно выдано ${id} донат кейсов`);
+          await user.save();
+        }
+
         if (word2 == "вещь" && itemInfo && !isNaN(id)) {
           await buyItem(user, itemInfo, ctx);
         } else if (word2 == "вещь") {

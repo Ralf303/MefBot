@@ -13,7 +13,12 @@ const {
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
 const { getUser } = require("../db/functions.js");
-const { giveCoins, giveItem, giveCase } = require("./giveScripts.js");
+const {
+  giveCoins,
+  giveItem,
+  giveCase,
+  giveDonateCase,
+} = require("./giveScripts.js");
 const clothes = require("../itemsObjects.js/clothes");
 const {
   getInventory,
@@ -27,6 +32,7 @@ const {
 const { buyCase } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
 const { Item } = require("../db/models");
+const cases = require("../itemsObjects.js/cases");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -54,6 +60,7 @@ const triggers = [
   "мой пабло",
   "курс",
   "инфо",
+  "мои мефкейсы",
   "инфа",
 ];
 
@@ -173,6 +180,23 @@ chatCommands.on("text", async (ctx, next) => {
         await dice(word3, word2, user, ctx, ctx);
       }
 
+      if (userMessage == "мои мефкейсы") {
+        let result = "Ваши мефкейсы:\n";
+        let i = 1;
+        for (const item in cases) {
+          result += `${i}) ${cases[item].name} - ${
+            user[cases[item].dbName]
+          } шт.\n`;
+          i++;
+        }
+        ctx.reply(
+          result +
+            "\n\n💰Донат кейс - " +
+            user.donateCase +
+            "шт💰\n\nЧтобы открыть Донат кейс\n<<Открыть донат>>\nИз него выпадает одна рандомная вещь\n\nКупить => @ralf303\n\nЧтобы открыть мефкейс напишите команду\n<<Открыть {id}>>"
+        );
+      }
+
       if (userMessage == "ферма" || userMessage == "фарма") {
         await userFerma(ctx, user);
       }
@@ -202,12 +226,20 @@ chatCommands.on("text", async (ctx, next) => {
       if (word1 == "передать") {
         const id = Number(word3);
         const count = isNaN(Number(word4)) ? 1 : word4;
+
         if (word2 == "вещь" && !isNaN(id)) {
           await giveItem(user, id, ctx);
+          return;
         }
 
         if (word2 == "мефкейс" && !isNaN(id)) {
           await giveCase(user, id, count, ctx);
+          return;
+        }
+
+        if (word2 == "мефкейс" && word3 === "донат") {
+          await giveDonateCase(user, word3, count, ctx);
+          return;
         }
       }
 
