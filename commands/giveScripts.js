@@ -34,6 +34,11 @@ const giveCoins = async (ctx) => {
       return;
     }
 
+    if (sender.id === receiver.id) {
+      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      return;
+    }
+
     if (amount < 100) {
       ctx.reply("Минимальная сумма передачи 100 грамм");
       return;
@@ -88,12 +93,17 @@ const giveItem = async (sender, id, ctx) => {
     }
 
     if (receiver.slots <= receiver.fullSlots) {
-      ctx.reply(`У ${receiver.firstName} нет места😥`);
+      ctx.reply(`У ${receiver.firstname} нет места😥`);
       return;
     }
 
     if (item.isWorn) {
       item.isWorn = false;
+    }
+
+    if (sender.id === receiver.id) {
+      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      return;
     }
     sender.fullSlots--;
     receiver.fullSlots++;
@@ -155,6 +165,11 @@ const giveCase = async (sender, id, count, ctx) => {
       return;
     }
 
+    if (sender.id === receiver.id) {
+      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      return;
+    }
+
     sender[needCase.dbName] -= count;
     receiver[needCase.dbName] += count;
 
@@ -207,6 +222,11 @@ const giveDonateCase = async (sender, id, count, ctx) => {
 
     if (count > caseCount) {
       ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
+      return;
+    }
+
+    if (sender.id === receiver.id) {
+      ctx.reply(`Иди нахуй, так нельзя🖕`);
       return;
     }
 
