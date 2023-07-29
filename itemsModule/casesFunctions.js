@@ -113,6 +113,7 @@ const openminecraftCase = async (user, ctx, bot) => {
   if (chance >= 600) {
     result += " ничего😥";
   }
+  await user.save();
   ctx.reply(result);
 };
 
@@ -160,6 +161,8 @@ const openbrawlCase = async (user, ctx, bot) => {
   if (chance >= 600) {
     result += " ничего😥";
   }
+
+  await user.save();
   ctx.reply(result);
 };
 
@@ -207,6 +210,8 @@ const openhotlineCase = async (user, ctx, bot) => {
   if (chance >= 600) {
     result += " ничего😥";
   }
+
+  await user.save();
   ctx.reply(result);
 };
 
