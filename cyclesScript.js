@@ -42,7 +42,7 @@ function Cycles(bot) {
   );
 
   new CronJob(
-    "20 * * * * *",
+    "20 0 13 * * *",
     async function () {
       try {
         const drones = await Item.findAll({

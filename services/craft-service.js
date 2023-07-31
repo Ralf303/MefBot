@@ -7,6 +7,12 @@ class CrafService {
   async craftItem(user, id, ctx) {
     try {
       const craft = craftItems[id];
+
+      if (!craft) {
+        ctx.reply("Такого крафта нет😥");
+        return;
+      }
+
       const components = craft.components;
       const quantity = craft.quantity;
 
