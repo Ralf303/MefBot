@@ -19,6 +19,10 @@ function generateCapcha() {
   return res;
 }
 
+function calculateMiningAmount(balance) {
+  return Math.floor(balance * 0.05);
+}
+
 function generatePassword(length) {
   let charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -198,4 +202,5 @@ module.exports = {
   checkUserProfile,
   shopGenerator,
   generatePassword,
+  calculateMiningAmount,
 };

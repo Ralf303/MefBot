@@ -166,6 +166,55 @@ const openbrawlCase = async (user, ctx, bot) => {
   ctx.reply(result);
 };
 
+const openfalloutCase = async (user, ctx, bot) => {
+  const chance = getRandomInt(1, 1000);
+  let result = `${user.username} открыл Фоллаут кейс и получил`;
+  await loseLog(user, "кейс", "открытие");
+  if (chance <= 499) {
+    const win = getRandomInt(1, 50);
+    user.balance += win;
+    result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
+  }
+
+  if (chance >= 500 && chance <= 515) {
+    const randomItem = getRandomInt(60, 63);
+    const needItem = clothes[randomItem];
+    const item = await Item.create({
+      src: needItem.src,
+      itemName: needItem.name,
+      bodyPart: needItem.bodyPart,
+      isWorn: false,
+    });
+
+    user.fullSlots++;
+    await user.addItem(item);
+    await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+    await bot.telegram.sendMessage(
+      process.env.CHAT_ID,
+      `❗️@${user.username} испытал удачу при открытии Фоллаут кейса и выбил ${needItem.name}❗️`
+    );
+    await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
+    await user.save();
+    await item.save();
+    return;
+  }
+
+  if (chance >= 516 && chance <= 599) {
+    const win = getRandomInt(250, 500);
+    user.balance += win;
+    result += ` ${win}MF`;
+    await resiveLog(user, "меф", `${win}`, "приз из кейса");
+  }
+
+  if (chance >= 600) {
+    result += " ничего😥";
+  }
+
+  await user.save();
+  ctx.reply(result);
+};
+
 const openhotlineCase = async (user, ctx, bot) => {
   const chance = getRandomInt(1, 1000);
   let result = `${user.username} открыл Хотлайн кейс и получил`;
@@ -287,6 +336,7 @@ const open = {
   minecraftCase: openminecraftCase,
   brawlCase: openbrawlCase,
   hotlineCase: openhotlineCase,
+  falloutCase: openfalloutCase,
 };
 
 const openCase = async (user, id, ctx, bot) => {

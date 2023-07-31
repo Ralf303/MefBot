@@ -16,6 +16,12 @@ const cases = {
     dbName: "hotlineCase",
     price: 200,
   },
+
+  3: {
+    name: "Фоллаут Кейс",
+    dbName: "falloutCase",
+    price: 100,
+  },
 };
 
 module.exports = cases;

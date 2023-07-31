@@ -33,49 +33,13 @@ const { buyCase } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
 const { Item } = require("../db/models");
 const cases = require("../itemsObjects.js/cases");
+const rp = require("../utils/arrays/rp-array");
+const triggers = require("../utils/arrays/triggers-array");
+const craftService = require("../services/craft-service");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 let capture = 120394857653;
-
-const triggers = [
-  "меф",
-  "бот",
-  "проф",
-  "команды",
-  "мой меф",
-  "б",
-  "куб",
-  "бандит",
-  "ферма",
-  "фарма",
-  "актив",
-  "отсыпать",
-  "инвентарь",
-  "удалить",
-  "снять",
-  "передать",
-  "купить",
-  "надеть",
-  "мой пабло",
-  "курс",
-  "инфо",
-  "мои мефкейсы",
-  "инфа",
-];
-
-const rp = {
-  кинуть: { value: "кинул(а) напрогиб", emoji: "🫂" },
-  доза: { value: "вколол(а) дозу", emoji: "💉" },
-  секс: { value: "трахнул(а) и кончил(а) внутрь", emoji: "🔞" },
-  уничтожить: { value: "уничтожил(а)", emoji: "💀" },
-  нюхать: { value: "занюхнул(а) мефа вместе с", emoji: "🌿" },
-  накормить: { value: "вкусно накормил(а)", emoji: "👨‍🍳" },
-  отшлепать: { value: "смачно отшлепал(а)", emoji: "🔞" },
-  бум: { value: "взорвал(а)", emoji: "💥" },
-  кончить: { value: "кончил(а) на лицо", emoji: "💦" },
-  вылечить: { value: "сделал(а) укол в попу и вылечил(а)", emoji: "💉" },
-};
 
 chatCommands.on("text", async (ctx, next) => {
   const user = await getUser(
@@ -133,6 +97,13 @@ chatCommands.on("text", async (ctx, next) => {
 
       if (userMessage == "команды") {
         ctx.reply(commands);
+      }
+
+      if (word1 == "крафт") {
+        const id = Number(word2);
+        if (!isNaN(id)) {
+          await craftService.craftItem(user, id, ctx);
+        }
       }
 
       if (userMessage === capture) {
@@ -203,6 +174,10 @@ chatCommands.on("text", async (ctx, next) => {
 
       if (word1 == "бандит") {
         await bandit(word2, user, ctx);
+      }
+
+      if (word1 == "крафты") {
+        craftService.craftList(ctx);
       }
 
       if (userMessage == "инвентарь") {

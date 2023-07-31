@@ -17,10 +17,11 @@ const getUser = async (chatId, firstName, username) => {
 };
 
 async function findTopUserInDay() {
-  const topUser = await User.findOne({
+  const topUsers = await User.findAll({
     order: [["dayMessageCounter", "DESC"]],
+    limit: 3, // ограничиваем количество найденных пользователей тремя
   });
-  return topUser;
+  return topUsers;
 }
 
 async function findTopUserInWeek() {

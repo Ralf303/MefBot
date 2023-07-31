@@ -512,6 +512,62 @@ const clothes = {
     class: "impossible",
     info: "Умножает награду за капчу в 3 раза когда надет на пабло",
   },
+
+  58: {
+    name: "Дрон Майнер",
+    bodyPart: "extra",
+    src: "img/drone_miner.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+    info: "Майнит 5% от вашего общего количества мефа раз в сутки, когда надет на пабло",
+  },
+
+  59: {
+    name: 'Дрон "ЭД-Э"',
+    bodyPart: "extra",
+    src: "img/drone_e-de.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+    info: "ЭД-Э является носителем информации многих умов, и знает как увеличить шанс успешного крафта на 25%, когда надет на пабло",
+  },
+
+  60: {
+    name: "Лазерная винтовка",
+    bodyPart: "left",
+    src: "img/lazer_gun.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  61: {
+    name: "Силовая броня",
+    bodyPart: "face",
+    src: "img/power_armor.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  62: {
+    name: "Пип-Бой",
+    bodyPart: "right",
+    src: "img/pip_boy.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  63: {
+    name: "Шляпа мафиози",
+    bodyPart: "head",
+    src: "img/mafia_hat.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

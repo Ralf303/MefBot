@@ -16,14 +16,58 @@ function Timings(bot) {
   new CronJob(
     "5 0 0 * * *",
     async function () {
-      const topUser = await findTopUserInDay();
+      const topUsers = await findTopUserInDay(); // вызываем функцию findTopUsersInDay
       await resetDayCounter();
-      if (topUser) {
-        await topUser.update({ balance: topUser.balance + 500 });
-        await resiveLog(topUser, "меф", "500", "награда за актив");
+      if (topUsers[0]) {
+        const balanceToAdd = topUsers[0].dayMessageCounter + 500; // баланс первого пользователя равен его количеству сообщений + 500
+        await topUsers[0].update({ balance: balanceToAdd }); // обновляем баланс первого пользователя
+        await resiveLog(
+          topUsers[0],
+          "меф",
+          balanceToAdd.toString(),
+          "награда за актив"
+        ); // отправляем лог о начислении баланса
         bot.telegram.sendMessage(
           process.env.CHAT_ID,
-          `[${topUser.firstname}](https://t.me/${topUser.username}) был самым активным за этот день и получил 500 грам мефа`,
+          `[${topUsers[0].firstname}](https://t.me/${topUsers[0].username}) был самым активным за этот день и получил ${balanceToAdd} грам мефа`,
+          {
+            disable_notification: true,
+            parse_mode: "Markdown",
+            disable_web_page_preview: true,
+          }
+        );
+      }
+      if (topUsers[1]) {
+        const balanceToAdd = topUsers[1].dayMessageCounter; // баланс второго пользователя равен его количеству сообщений
+        await topUsers[1].update({ balance: balanceToAdd }); // обновляем баланс второго пользователя
+        await resiveLog(
+          topUsers[1],
+          "меф",
+          balanceToAdd.toString(),
+          "награда за актив"
+        ); // отправляем лог о начислении баланса
+        bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          `[${topUsers[1].firstname}](https://t.me/${topUsers[1].username}) был вторым по активности за этот день и получил ${balanceToAdd} грам мефа`,
+          {
+            disable_notification: true,
+            parse_mode: "Markdown",
+            disable_web_page_preview: true,
+          }
+        );
+      }
+      if (topUsers[2]) {
+        const balanceToAdd = topUsers[2].dayMessageCounter; // баланс третьего пользователя равен его количеству сообщений
+        await topUsers[2].update({ balance: balanceToAdd }); // обновляем баланс третьего пользователя
+        await resiveLog(
+          topUsers[2],
+          "меф",
+          balanceToAdd.toString(),
+          "награда за актив"
+        ); // отправляем лог о начислении баланса
+        bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          `[${topUsers[2].firstname}](https://t.me/${topUsers[2].username}) был третьим по активности за этот день и получил ${balanceToAdd} грам мефа`,
           {
             disable_notification: true,
             parse_mode: "Markdown",
@@ -36,6 +80,7 @@ function Timings(bot) {
     true,
     "Europe/Moscow"
   );
+
   new CronJob(
     "20 0 0 * * 0",
     async function () {
