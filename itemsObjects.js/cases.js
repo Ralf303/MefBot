@@ -17,7 +17,7 @@ const cases = {
     price: 200,
   },
 
-  3: {
+  4: {
     name: "Фоллаут Кейс",
     dbName: "falloutCase",
     price: 100,
