@@ -20,7 +20,7 @@ function Timings(bot) {
       await resetDayCounter();
       if (topUsers[0]) {
         const balanceToAdd = topUsers[0].dayMessageCounter + 500; // баланс первого пользователя равен его количеству сообщений + 500
-        await topUsers[0].update({ balance: balanceToAdd }); // обновляем баланс первого пользователя
+        topUsers[0].balance += balanceToAdd; // обновляем баланс первого пользователя
         await resiveLog(
           topUsers[0],
           "меф",
@@ -39,7 +39,7 @@ function Timings(bot) {
       }
       if (topUsers[1]) {
         const balanceToAdd = topUsers[1].dayMessageCounter; // баланс второго пользователя равен его количеству сообщений
-        await topUsers[1].update({ balance: balanceToAdd }); // обновляем баланс второго пользователя
+        topUsers[1].balance += balanceToAdd; // обновляем баланс второго пользователя
         await resiveLog(
           topUsers[1],
           "меф",
@@ -58,7 +58,7 @@ function Timings(bot) {
       }
       if (topUsers[2]) {
         const balanceToAdd = topUsers[2].dayMessageCounter; // баланс третьего пользователя равен его количеству сообщений
-        await topUsers[2].update({ balance: balanceToAdd }); // обновляем баланс третьего пользователя
+        topUsers[0].balance += balanceToAdd; // обновляем баланс третьего пользователя
         await resiveLog(
           topUsers[2],
           "меф",
@@ -75,6 +75,10 @@ function Timings(bot) {
           }
         );
       }
+
+     await topUsers[0].save()
+     await topUsers[1].save()
+     await topUsers[2].save()
     },
     null,
     true,
