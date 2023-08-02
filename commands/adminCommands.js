@@ -122,7 +122,7 @@ adminCommands.on("text", async (ctx, next) => {
                           ctx.reply(message);
                           ctx.telegram.sendMessage(
                             id,
-                            `Вы теперь являетесь менеджером. Пароль: ${password}`
+                            `Вы теперь являетесь менеджером. Логин: ${needUser.chatId} Пароль: ${password}\n\nСсылка на админку http://mefadmin.ru`
                           );
                         })
                         .catch((error) => {
