@@ -4,16 +4,15 @@ const safety = new Composer();
 
 safety.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
-  const word1 = userMessage[0];
-  const IsPrivate = ctx.chat.type === "private";
+  const [word1, word2, word3, word4] = userMessage.split(" ");
   const message = ctx.message.reply_to_message;
   const chatId = ctx.message.chat.id.toString();
   const stringChatId = chatId.slice(4);
   const messageId = ctx.message.message_id;
 
   try {
-    if (!IsPrivate && message) {
-      if (userMessage.includes("мут")) {
+    if (message) {
+      if (word1 == "мут") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🔇 #МУТ
@@ -29,7 +28,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage.includes("варн")) {
+      if (word1 == "варн") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `⚠️ #ВАРН
@@ -45,7 +44,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage.includes("бан")) {
+      if (word1 == "бан") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🚷 #БАН
@@ -61,7 +60,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage.includes("размут")) {
+      if (word1 == "размут" || word1 == "говори" || userMessage == "снять мут") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🔉 #РАЗМУТ
@@ -77,7 +76,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage.includes("снять варн")) {
+      if (userMessage == "снять варн" || word1 == "разварн"){
         ctx.telegram.sendMessage(
           "-1001497936733",
           `⚠️ #РАЗВАРН
@@ -93,7 +92,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage.includes("разбан")) {
+      if (word1 == "разбан" || userMessage == "снять бан") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `♿️ #РАЗБАН
