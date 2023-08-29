@@ -15,7 +15,7 @@ const trigers = [
   "Снять бан",
 ];
 
-const numbers = ["1", "2", "3", "4"];
+const numbers = ["1", "2", "3", "4", "5"];
 
 const price = [100000, 80000, 40000, 20000, 150000, 25000, 10000, 100000];
 
@@ -26,7 +26,7 @@ async function beforeBuy(ctx, item, price, triger) {
     ctx.from.username
   );
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     'Цена товара "' +
       item +
       '" составляет ' +
@@ -43,16 +43,16 @@ async function beforeBuy(ctx, item, price, triger) {
   );
 }
 
-shopActions.action(trigers, (ctx) => {
+shopActions.action(trigers, async (ctx) => {
   const { data } = ctx.callbackQuery;
   const item = trigers.indexOf(data);
-  beforeBuy(ctx, trigers[item], price[item], item);
+  await beforeBuy(ctx, trigers[item], price[item], item);
 });
 
-shopActions.action(numbers, (ctx) => {
+shopActions.action(numbers, async (ctx) => {
   ctx.deleteMessage();
   const { data } = ctx.callbackQuery;
-  shopGenerator(data, ctx);
+  await shopGenerator(data, ctx);
 });
 
 shopActions.action("farmApp", async (ctx) => {
@@ -62,7 +62,7 @@ shopActions.action("farmApp", async (ctx) => {
     ctx.from.username
   );
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nВаш уровень сбора: " +
       user.meflvl +
       "\nВаш уровень времени: " +
@@ -76,9 +76,9 @@ shopActions.action("farmApp", async (ctx) => {
   );
 });
 
-shopActions.action("Улучшить сбор", (ctx) => {
+shopActions.action("Улучшить сбор", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "💎Улучшение сбора💎\n\n1 лвл: 50-100 мефа за сбор\n2 лвл: 100-200 мефа за сбор\n3 лвл: 200-400 мефа за сбор\n4 лвл: 300-500 мефа за сбор\n\n💰Каждое улучшение стоит 20к💰",
     Keyboard.inline([
       [Key.callback("Купить улучшение", "mefapp")],
@@ -87,9 +87,9 @@ shopActions.action("Улучшить сбор", (ctx) => {
   );
 });
 
-shopActions.action("Улучшить время", (ctx) => {
+shopActions.action("Улучшить время", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "🕘Улучшение времени🕘\n\nС каждым уровнем уменьшается количество времени между сбором\nНа первом уровне интервал сбора 4 часа. Всего уровней 4 и каждый сбрасывает время на один час.\n\n💰Цена одного улучшения 10к💰",
     Keyboard.inline([
       [Key.callback("Купить улучшение", "timeapp")],
@@ -98,9 +98,9 @@ shopActions.action("Улучшить время", (ctx) => {
   );
 });
 
-shopActions.action("Инвентарь", (ctx) => {
+shopActions.action("Инвентарь", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "🎒Улучшение инвентаря🎒\n\nВсе просто, чем больше слотов тем больше вещей вы можете хранить\n\n💰1 слот стоит 5к💰",
     Keyboard.inline([
       [Key.callback("Купить слот", "slotapp")],
@@ -109,13 +109,13 @@ shopActions.action("Инвентарь", (ctx) => {
   );
 });
 
-shopActions.action("dell", (ctx) => {
+shopActions.action("dell", async (ctx) => {
   ctx.deleteMessage();
 });
 
-shopActions.action("Улучшения", (ctx) => {
+shopActions.action("Улучшения", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "Что будем улучшать:",
     Keyboard.inline([
       ["Инвентарь", Key.callback("Ферму", "farmApp")],
@@ -124,20 +124,24 @@ shopActions.action("Улучшения", (ctx) => {
   );
 });
 
-shopActions.action("Вещи", (ctx) => {
+shopActions.action("Вещи", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "Отлично!\nВ какой магазин пойдем?",
     Keyboard.inline([
-      [Key.callback("Bomj Gang", "1"), Key.callback("Paul Shop", "2")],
-      [Key.callback("Clemente House", "3"), Key.callback("DonateLand", "4")],
+      [Key.callback("📦Bomj Gang📦", "1"), Key.callback("💼Paul Shop💼", "2")],
+      [
+        Key.callback("🎩Clemente House🎩", "3"),
+        Key.callback("💎Gem Shop💎", "5"),
+      ],
+      [Key.callback("🤑DonateLand🤑", "4")],
     ])
   );
 });
 
-shopActions.action("chatAssortiment", (ctx) => {
+shopActions.action("chatAssortiment", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "Товары📦\n•ВИП статус в ирисе: 100к💰\n•+1лвл админа: 80к💰\n•Префикс: 40к💰\n•Снять варн: 20к💰\n•Купить анонимность: 150к💰\n•Доступ к логам: 25к💰\n•Смена префикса: 10к💰\n•Снять бан: 100к💰n\n❗️магазин не доступен 3+ рангам администраторов❗️",
     Keyboard.inline([
       ["ВИП", "Админка", "Префикс"],
@@ -148,9 +152,9 @@ shopActions.action("chatAssortiment", (ctx) => {
   );
 });
 
-shopActions.action("menu", (ctx) => {
+shopActions.action("menu", async (ctx) => {
   ctx.deleteMessage();
-  ctx.reply(
+  await ctx.reply(
     "Выберите что хотите купить:",
     Keyboard.inline([
       [Key.callback("Товары чата", "chatAssortiment"), "Улучшения", "Вещи"],

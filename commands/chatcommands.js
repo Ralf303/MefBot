@@ -29,12 +29,13 @@ const {
   buyItem,
   getItemInfo,
 } = require("../itemsModule/clothesFunctions");
-const { buyCase } = require("../itemsModule/casesFunctions");
+const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
 const { Item } = require("../db/models");
 const cases = require("../itemsObjects.js/cases");
 const rp = require("../utils/arrays/rp-array");
 const craftService = require("../services/craft-service");
+const gemsService = require("../services/gems-service");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -74,7 +75,7 @@ chatCommands.on("text", async (ctx, next) => {
       userMessage == "меф" ||
       userMessage == "б"
     ) {
-      ctx.reply("Ваш меф: " + user.balance);
+      await ctx.reply("Ваш меф: " + user.balance + "\nВаши гемы: " + user.gems);
     }
 
     if (word1 == "отсыпать") {
@@ -82,11 +83,11 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "бот") {
-      ctx.reply("✅На месте");
+      await ctx.reply("✅На месте");
     }
 
     if (userMessage == "команды") {
-      ctx.reply(commands);
+      await ctx.reply(commands);
     }
 
     if (word1 == "крафт") {
@@ -124,7 +125,7 @@ chatCommands.on("text", async (ctx, next) => {
         user.fullSlots++;
         await user.addItem(item);
         await item.save();
-        ctx.reply(
+        await ctx.reply(
           `‼️ВНИМАНИЕ‼️\n\n@${ctx.from.username} ввел 100 капчей и получает редкий предмет "калькулятор[${item.id}]"`
         );
       }
@@ -150,7 +151,7 @@ chatCommands.on("text", async (ctx, next) => {
         } шт.\n`;
         i++;
       }
-      ctx.reply(
+      await ctx.reply(
         result +
           "\n\n💰Донат кейс - " +
           user.donateCase +
@@ -206,6 +207,11 @@ chatCommands.on("text", async (ctx, next) => {
         await giveDonateCase(user, word3, count, ctx);
         return;
       }
+
+      if (word2 == "гемы" && !isNaN(id)) {
+        await gemsService.giveGems(ctx);
+        return;
+      }
     }
 
     if (word1 == "надеть") {
@@ -220,7 +226,7 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "курс") {
-      ctx.reply(
+      await ctx.reply(
         "🤑Активный курс обмена🤑\n\n1 бкоин - 5 мефа\n2 рдно - 1 меф\n1 ириска - 500 мефа\n1 рубль - 1000 мефа\n\nМенять можно у @ralf303"
       );
     }
@@ -237,7 +243,7 @@ chatCommands.on("text", async (ctx, next) => {
       if (word2 == "вещь" && itemInfo && !isNaN(id)) {
         await buyItem(user, itemInfo, ctx, true);
       } else if (word2 == "вещь") {
-        ctx.reply("Такой вещи нет");
+        await ctx.reply("Такой вещи нет");
       }
     }
 
@@ -246,11 +252,15 @@ chatCommands.on("text", async (ctx, next) => {
       if (!isNaN(id)) {
         getItemInfo(id, ctx);
       }
+
+      if (word2 == "мефкейс" && !isNaN(Number(word3))) {
+        getCaseInfo(Number(word3), ctx);
+      }
     }
 
     await user.save();
   } catch (e) {
-    ctx.reply("Какая то ошибка, " + e);
+    await ctx.reply("Какая то ошибка, " + e);
   }
   return next();
 });

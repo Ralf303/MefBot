@@ -18,12 +18,12 @@ async function dice(word3, word2, user, bot, ctx) {
 
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
-        ctx.reply(
+        await ctx.reply(
           `🥳 Поздравляем! Кубик показал ${dice}\n Выигрыш ${stake * 5}`
         );
         winAmount = stake * 5;
       } else {
-        ctx.reply(`😢 К сожалению, вы проиграли. Кубик показал ${dice}`);
+        await ctx.reply(`😢 К сожалению, вы проиграли. Кубик показал ${dice}`);
       }
     } else if (userInput === "чет" || userInput === "нечет") {
       const isEven = dice % 2 === 0;
@@ -31,7 +31,7 @@ async function dice(word3, word2, user, bot, ctx) {
         (isEven && userInput === "чет") ||
         (!isEven && userInput === "нечет")
       ) {
-        ctx.reply(
+        await ctx.reply(
           `🥳 Поздравляем! Кубик показал ${dice} (число ${
             isEven ? "чётное" : "нечётное"
           })\n Выигрыш ${stake * 1.5}`
@@ -39,7 +39,7 @@ async function dice(word3, word2, user, bot, ctx) {
         winAmount = stake * 1.5;
       } else {
         winAmount = 0;
-        ctx.reply(
+        await ctx.reply(
           `😢 К сожалению, вы проиграли. Кубик показал ${dice} (число ${
             isEven ? "четное" : "нечетное"
           })`
@@ -51,11 +51,11 @@ async function dice(word3, word2, user, bot, ctx) {
     await gamesLog(user, "кубик", winAmount, previousBalance);
     await user.save();
   } else if (stake > user.balance) {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   } else if (stake < 500) {
-    ctx.reply("Ставка должна быть больше 500");
+    await ctx.reply("Ставка должна быть больше 500");
   } else {
-    ctx.reply(
+    await ctx.reply(
       'Введите ставку, а дальше число от 1 до 6, "чет" или "нечет", например "куб 1000 5" или "куб 500 нечет"'
     );
   }
@@ -79,7 +79,7 @@ async function bandit(word2, user, ctx) {
 
       if (randomEmojis.every((e) => e === randomEmojis[0])) {
         winAmount = stake * 10;
-        ctx.reply(
+        await ctx.reply(
           `🤑ДЖЕКПОТ🤑\n${randomEmojis.join("|")}\n @${
             ctx.from.username
           } выигрыш ${stake * 10}!`
@@ -90,13 +90,15 @@ async function bandit(word2, user, ctx) {
         randomEmojis[1] === randomEmojis[2]
       ) {
         winAmount = stake * 3;
-        ctx.reply(
+        await ctx.reply(
           `${randomEmojis.join("|")}\n @${ctx.from.username} выигрыш ${
             stake * 3
           }!`
         );
       } else {
-        ctx.reply(`${randomEmojis.join("|")}\n @${ctx.from.username} слив 🥱`);
+        await ctx.reply(
+          `${randomEmojis.join("|")}\n @${ctx.from.username} слив 🥱`
+        );
         winAmount = 0;
       }
 
@@ -105,11 +107,11 @@ async function bandit(word2, user, ctx) {
       await gamesLog(user, "бандит", winAmount, previousBalance);
       await user.save();
     } else if (stake > user.balance) {
-      ctx.reply("Недостаточно мефа😢");
+      await ctx.reply("Недостаточно мефа😢");
     } else if (!needChat) {
-      ctx.reply("Ограничение спама, бандит либо в лс либо в @mefanarhia");
+      await ctx.reply("Ограничение спама, бандит либо в лс либо в @mefanarhia");
     } else {
-      ctx.reply('Введи "бандит [ставка]" больше 500');
+      await ctx.reply('Введи "бандит [ставка]" больше 500');
     }
   } catch (e) {
     console.log(e);
@@ -153,7 +155,7 @@ async function userFerma(ctx, user) {
       randmef *= 5;
     }
 
-    ctx.reply("✅Меф собран " + randmef);
+    await ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
     await resiveLog(user, "меф", randmef, "сбор фермы");
   } else {
@@ -170,7 +172,7 @@ async function userFerma(ctx, user) {
     }
 
     const formattedTime = formatTime(remainingTime);
-    ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+    await ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
   }
 }
 

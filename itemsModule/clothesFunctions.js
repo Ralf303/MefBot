@@ -19,20 +19,31 @@ async function blendImages(imagePaths) {
 
 const buyItem = async (user, itemInfo, ctx, status) => {
   if (user.slots < user.fullSlots) {
-    ctx.reply("Недостаточно слотов😥");
+    await ctx.reply("Недостаточно слотов😥");
     return;
   }
 
   if (!itemInfo.canBuy && status) {
-    ctx.reply("Эту вещь нельзя купить😥");
+    await ctx.reply("Эту вещь нельзя купить😥");
     return;
   }
 
-  if (user.balance <= itemInfo.price && status) {
-    ctx.reply("Недостаточно мефа😢");
+  if (
+    user.balance <= itemInfo.price &&
+    status &&
+    itemInfo.class !== "special"
+  ) {
+    await ctx.reply("Недостаточно мефа😢");
     return;
-  } else if (status) {
+  } else if (status && itemInfo.class !== "special") {
     user.balance -= itemInfo.price;
+  }
+
+  if (user.gems <= itemInfo.price && status && itemInfo.class === "special") {
+    await ctx.reply("Недостаточно гемов😢");
+    return;
+  } else if (status && itemInfo.class === "special") {
+    user.gems -= itemInfo.price;
   }
 
   const item = await Item.create({
@@ -46,7 +57,9 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   user.fullSlots++;
   await user.addItem(item);
   await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
-  await ctx.reply(`Вы купили: ${item.itemName}[${item.id}]`);
+  await ctx.reply(
+    `Вы купили: ${item.itemName}[${item.id}]\n\n📖Надеть ${item.id}`
+  );
   await resiveLog(
     user,
     `${item.itemName}[${item.id}]`,
@@ -66,12 +79,12 @@ const deleteItem = async (user, id, ctx) => {
   });
 
   if (!item) {
-    ctx.reply(`У вас нет такой вещи😥`);
+    await ctx.reply(`У вас нет такой вещи😥`);
     return;
   }
 
   const cashBack = Math.floor(item.price / 2);
-  ctx.reply(
+  await ctx.reply(
     `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`
   );
   await loseLog(user, `${item.itemName}[${item.id}]`, `Удаление`);
@@ -91,13 +104,13 @@ const removeItem = async (user, id, ctx) => {
 
     // проверяем, что указанный предмет существует
     if (!item) {
-      ctx.reply("Такой вещи у вас нет😥");
+      await ctx.reply("Такой вещи у вас нет😥");
       return;
     }
 
     // проверяем, что предмет не надет
     if (!item.isWorn) {
-      ctx.reply("Эта вещь и так не надета😎");
+      await ctx.reply("Эта вещь и так не надета😎");
       return;
     }
 
@@ -105,10 +118,10 @@ const removeItem = async (user, id, ctx) => {
     item.isWorn = false;
     await item.save();
 
-    ctx.reply(`Вы сняли ${item.itemName}[${id}]`);
+    await ctx.reply(`Вы сняли ${item.itemName}[${id}]`);
   } catch (error) {
     console.log(error);
-    ctx.reply("Что-то пошло не так");
+    await ctx.reply("Что-то пошло не так");
   }
 };
 
@@ -123,13 +136,13 @@ const wearItem = async (user, id, ctx) => {
 
     // проверяем, что указанный предмет существует
     if (!item) {
-      ctx.reply("Такой вещи у вас нет😥");
+      await ctx.reply("Такой вещи у вас нет😥");
       return;
     }
 
     // проверяем, что предмет еще не надет
     if (item.isWorn) {
-      ctx.reply("Эта вещь уже надета😎");
+      await ctx.reply("Эта вещь уже надета😎");
       return;
     }
 
@@ -198,10 +211,10 @@ const wearItem = async (user, id, ctx) => {
     item.isWorn = true;
     await item.save();
 
-    ctx.reply(`Вы надели ${item.itemName}[${id}]`);
+    await ctx.reply(`Вы надели ${item.itemName}[${id}]`);
   } catch (error) {
     console.log(error);
-    ctx.reply("Что-то пошло не так");
+    await ctx.reply("Что-то пошло не так");
   }
 };
 
@@ -242,7 +255,7 @@ const getWornItems = async (user, ctx) => {
     return;
   } catch (error) {
     console.log(error);
-    ctx.reply("Что-то пошло не так😥");
+    await ctx.reply("Что-то пошло не так😥");
   }
 };
 
@@ -271,7 +284,7 @@ const getInventory = async (user, ctx) => {
 
 const tryItem = async (itemInfo, ctx, id) => {
   if (!itemInfo.canBuy) {
-    ctx.reply("Эту вещь нельзя примерить");
+    await ctx.reply("Эту вещь нельзя примерить");
     return;
   }
 
@@ -285,22 +298,22 @@ const tryItem = async (itemInfo, ctx, id) => {
   );
 };
 
-const getItemInfo = (id, ctx) => {
+const getItemInfo = async (id, ctx) => {
   const needItem = clothes[id];
 
   if (!needItem) {
-    ctx.reply("Такой вещи вообще нет😥");
+    await ctx.reply("Такой вещи вообще нет😥");
     return;
   }
 
   const info = needItem.info;
 
   if (!info) {
-    ctx.reply("У данной вещи нет особености😥");
+    await ctx.reply("У данной вещи нет особености😥");
     return;
   }
 
-  ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
+  await ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
 };
 
 module.exports = {

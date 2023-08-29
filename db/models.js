@@ -26,6 +26,7 @@ const User = sequelize.define("user", {
   hotlineCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   donateCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   falloutCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  gems: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {

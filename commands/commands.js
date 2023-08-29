@@ -7,7 +7,7 @@ const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 
 command.command("start", async (ctx) => {
   try {
-    ctx.reply(
+    await ctx.reply(
       "Привет " +
         ctx.from.first_name +
         "!\n\nЯ, МефБот, создан для помощи в чате @mefpablo\nБолее подробно => /help"
@@ -17,17 +17,17 @@ command.command("start", async (ctx) => {
   }
 });
 
-command.command("command", (ctx) => {
+command.command("command", async (ctx) => {
   try {
-    ctx.reply(commands);
+    await ctx.reply(commands);
   } catch (error) {
     console.log("e");
   }
 });
 
-command.command("help", (ctx) => {
+command.command("help", async (ctx) => {
   try {
-    ctx.replyWithHTML(
+    await ctx.replyWithHTML(
       "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
     );
   } catch (error) {
@@ -35,10 +35,10 @@ command.command("help", (ctx) => {
   }
 });
 
-command.command("shop", (ctx) => {
+command.command("shop", async (ctx) => {
   try {
     if (ctx.chat.type === "private") {
-      ctx.reply(
+      await ctx.reply(
         "Выберите что хотите купить:",
         Keyboard.inline([
           [Key.callback("Товары чата", "chatAssortiment"), "Улучшения", "Вещи"],
@@ -46,7 +46,7 @@ command.command("shop", (ctx) => {
         ])
       );
     } else {
-      ctx.reply("Данная команда доступна только в лс");
+      await ctx.reply("Данная команда доступна только в лс");
     }
   } catch (error) {
     console.log("e");

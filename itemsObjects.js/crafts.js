@@ -14,6 +14,14 @@ const craftItems = {
     quantity: 1,
     chance: 25,
   },
+
+  3: {
+    name: "Супер Кирка",
+    personalId: 75,
+    components: ["Алмазная кирка"],
+    quantity: 2,
+    chance: 10,
+  },
 };
 
 module.exports = craftItems;

@@ -19,7 +19,7 @@ const giveCoins = async (ctx) => {
 
   // проверяем, что отправитель не является ботом
   if (message.from.is_bot) {
-    ctx.reply("Зачем боту меф🧐");
+    await ctx.reply("Зачем боту меф🧐");
     return;
   }
 
@@ -30,17 +30,17 @@ const giveCoins = async (ctx) => {
     });
 
     if (sender.balance < amount) {
-      ctx.reply("Недостаточно мефа🥲");
+      await ctx.reply("Недостаточно мефа🥲");
       return;
     }
 
     if (sender.id === receiver.id) {
-      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      await ctx.reply(`Иди нахуй, так нельзя🖕`);
       return;
     }
 
     if (amount < 100) {
-      ctx.reply("Минимальная сумма передачи 100 грамм");
+      await ctx.reply("Минимальная сумма передачи 100 грамм");
       return;
     }
 
@@ -48,7 +48,7 @@ const giveCoins = async (ctx) => {
     receiver.balance += amount;
     await sender.save();
     await receiver.save();
-    ctx.reply(
+    await ctx.reply(
       `Вы успешно отсыпали ${amount} грамм мефа ${message.from.first_name}`
     );
 
@@ -56,7 +56,7 @@ const giveCoins = async (ctx) => {
     await giveResoursesLog(sender, receiver, "меф", amount);
   } catch (error) {
     console.log(error);
-    ctx.reply("Ошибка при выполнении операции.");
+    await ctx.reply("Ошибка при выполнении операции.");
   }
 };
 
@@ -72,7 +72,7 @@ const giveItem = async (sender, id, ctx) => {
 
     // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
-      ctx.reply("Зачем боту предметы🧐");
+      await ctx.reply("Зачем боту предметы🧐");
       return;
     }
 
@@ -88,12 +88,12 @@ const giveItem = async (sender, id, ctx) => {
     });
 
     if (!item) {
-      ctx.reply(`У вас нет такой вещи😥`);
+      await ctx.reply(`У вас нет такой вещи😥`);
       return;
     }
 
     if (receiver.slots <= receiver.fullSlots) {
-      ctx.reply(`У ${receiver.firstname} нет места😥`);
+      await ctx.reply(`У ${receiver.firstname} нет места😥`);
       return;
     }
 
@@ -102,13 +102,13 @@ const giveItem = async (sender, id, ctx) => {
     }
 
     if (sender.id === receiver.id) {
-      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      await ctx.reply(`Иди нахуй, так нельзя🖕`);
       return;
     }
     sender.fullSlots--;
     receiver.fullSlots++;
     item.userId = receiver.id;
-    ctx.reply(
+    await ctx.reply(
       `Вы успешно передали ${item.itemName}[${item.id}] @${receiver.username}`
     );
 
@@ -143,7 +143,7 @@ const giveCase = async (sender, id, count, ctx) => {
 
     // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
-      ctx.reply("Зачем боту кейсы🧐");
+      await ctx.reply("Зачем боту кейсы🧐");
       return;
     }
 
@@ -154,26 +154,26 @@ const giveCase = async (sender, id, count, ctx) => {
     const needCase = cases[id];
 
     if (!needCase) {
-      ctx.reply("Такого кейса нет😥");
+      await ctx.reply("Такого кейса нет😥");
       return;
     }
 
     const caseCount = sender[needCase.dbName];
 
     if (count > caseCount) {
-      ctx.reply(`У вас не хватает кейсов ${needCase.name}📦`);
+      await ctx.reply(`У вас не хватает кейсов ${needCase.name}📦`);
       return;
     }
 
     if (sender.id === receiver.id) {
-      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      await ctx.reply(`Иди нахуй, так нельзя🖕`);
       return;
     }
 
     sender[needCase.dbName] -= count;
     receiver[needCase.dbName] += count;
 
-    ctx.reply(
+    await ctx.reply(
       `Вы успешно передали ${count} ${needCase.name}[${id}] @${receiver.username}`
     );
 
@@ -203,7 +203,7 @@ const giveDonateCase = async (sender, id, count, ctx) => {
 
     // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
-      ctx.reply("Зачем боту кейсы🧐");
+      await ctx.reply("Зачем боту кейсы🧐");
       return;
     }
 
@@ -214,26 +214,28 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     const needCase = id;
 
     if (needCase !== "донат") {
-      ctx.reply("Такого кейса нет😥");
+      await ctx.reply("Такого кейса нет😥");
       return;
     }
 
     const caseCount = sender.donateCase;
 
     if (count > caseCount) {
-      ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
+      await ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
       return;
     }
 
     if (sender.id === receiver.id) {
-      ctx.reply(`Иди нахуй, так нельзя🖕`);
+      await ctx.reply(`Иди нахуй, так нельзя🖕`);
       return;
     }
 
     sender.donateCase -= count;
     receiver.donateCase += count;
 
-    ctx.reply(`Вы успешно передали ${count} донаткейсов @${receiver.username}`);
+    await ctx.reply(
+      `Вы успешно передали ${count} донаткейсов @${receiver.username}`
+    );
 
     await sender.save();
     await receiver.save();

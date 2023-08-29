@@ -7,7 +7,7 @@ const { generatePassword } = require("../utils/helpers");
 
 const adminCommands = new Composer();
 
-adminTriggers = ["список вещей", "выдать", "основатель", "админка"];
+adminTriggers = ["список вещей", "выдать", "основатель", "админка", "-админка"];
 adminList = [1157591765];
 
 adminCommands.on("text", async (ctx, next) => {
@@ -29,7 +29,7 @@ adminCommands.on("text", async (ctx, next) => {
           result += `${i}) ${clothes[item].name}[${item}] Цена: ${clothes[item].price}\n`;
           i++;
         }
-        ctx.reply(result);
+        await ctx.reply(result);
       }
 
       if (userMessage == "основатель") {
@@ -81,20 +81,20 @@ adminCommands.on("text", async (ctx, next) => {
 
         if (word2 == "мани" && !isNaN(id)) {
           user.balance += id;
-          ctx.reply(`Успешно выдано ${id}MF`);
+          await ctx.reply(`Успешно выдано ${id}MF`);
           await user.save();
         }
 
         if (word2 == "кейс" && !isNaN(id)) {
           user.donateCase += id;
-          ctx.reply(`Успешно выдано ${id} донат кейсов`);
+          await ctx.reply(`Успешно выдано ${id} донат кейсов`);
           await user.save();
         }
 
         if (word2 == "вещь" && itemInfo && !isNaN(id)) {
           await buyItem(user, itemInfo, ctx);
         } else if (word2 == "вещь") {
-          ctx.reply("Такой вещи нет");
+          await ctx.reply("Такой вещи нет");
         }
       }
 
@@ -115,12 +115,12 @@ adminCommands.on("text", async (ctx, next) => {
                       const password = generatePassword(10);
 
                       Roles.create({ status: "manager", password: password })
-                        .then((newManager) => {
+                        .then(async (newManager) => {
                           needUser.setRole(newManager);
 
                           const message = `Пользователь ${needUser.username} теперь является менеджером. Пароль отправлен в лс`;
-                          ctx.reply(message);
-                          ctx.telegram.sendMessage(
+                          await ctx.reply(message);
+                          await ctx.telegram.sendMessage(
                             id,
                             `Вы теперь являетесь менеджером. Логин: ${needUser.chatId} Пароль: ${password}\n\nСсылка на админку http://mefadmin.ru`
                           );
@@ -141,6 +141,60 @@ adminCommands.on("text", async (ctx, next) => {
                 ctx.reply("Нет такого пользователя или он уже создан");
               }
             })
+            .catch(async (error) => {
+              if (
+                error.stack ==
+                "Error: 403: Forbidden: bot can't initiate conversation with a user"
+              ) {
+                ctx.reply(
+                  "Меня заблокировали поэтому я не смог отправить пароль("
+                );
+              } else {
+                await ctx.reply(
+                  "Произошла ошибка при поиске пользователя: " + error.name
+                );
+              }
+            });
+        }
+      }
+
+      if (word1 === "-админка") {
+        const id = Number(word2);
+
+        if (!isNaN(id)) {
+          User.findOne({ where: { chatId: id } })
+            .then((needUser) => {
+              if (needUser) {
+                Roles.findOne({
+                  where: { status: "manager", roleId: needUser.id },
+                })
+                  .then((existingManager) => {
+                    if (!existingManager) {
+                      ctx.reply("У данного пользователя нет роли админа");
+                    } else {
+                      existingManager
+                        .destroy()
+                        .then(() => {
+                          ctx.reply(
+                            "У пользователя успешно удалена роль админа"
+                          );
+                        })
+                        .catch((error) => {
+                          ctx.reply(
+                            "Произошла ошибка при удалении роли: " + error
+                          );
+                        });
+                    }
+                  })
+                  .catch((error) => {
+                    ctx.reply(
+                      "Произошла ошибка при поиске роли админки: " + error
+                    );
+                  });
+              } else {
+                ctx.reply("Нет такого пользователя");
+              }
+            })
             .catch((error) => {
               ctx.reply("Произошла ошибка при поиске пользователя: " + error);
             });
@@ -150,10 +204,10 @@ adminCommands.on("text", async (ctx, next) => {
       adminTriggers.includes(userMessage) ||
       adminTriggers.includes(word1)
     ) {
-      ctx.reply("Данная команда доступна только админам");
+      await ctx.reply("Данная команда доступна только админам");
     }
   } catch (e) {
-    ctx.reply("Какая то ошибка, " + e);
+    await ctx.reply("Какая то ошибка, " + e);
   }
   return next();
 });

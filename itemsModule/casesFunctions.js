@@ -114,7 +114,7 @@ const openminecraftCase = async (user, ctx, bot) => {
     result += " ничего😥";
   }
   await user.save();
-  ctx.reply(result);
+  await ctx.reply(result);
 };
 
 const openbrawlCase = async (user, ctx, bot) => {
@@ -163,7 +163,7 @@ const openbrawlCase = async (user, ctx, bot) => {
   }
 
   await user.save();
-  ctx.reply(result);
+  await ctx.reply(result);
 };
 
 const openfalloutCase = async (user, ctx, bot) => {
@@ -212,7 +212,7 @@ const openfalloutCase = async (user, ctx, bot) => {
   }
 
   await user.save();
-  ctx.reply(result);
+  await ctx.reply(result);
 };
 
 const openhotlineCase = async (user, ctx, bot) => {
@@ -261,12 +261,12 @@ const openhotlineCase = async (user, ctx, bot) => {
   }
 
   await user.save();
-  ctx.reply(result);
+  await ctx.reply(result);
 };
 
 const openDonateCase = async (user, ctx) => {
   if (user.donateCase === 0) {
-    ctx.reply(`Недостаточно мефкейсов😥`);
+    await ctx.reply(`Недостаточно мефкейсов😥`);
     return;
   }
 
@@ -310,11 +310,11 @@ const buyCase = async (user, id, count, ctx) => {
     }
 
     if (user.balance < price) {
-      ctx.reply(`У вас недостаточно мефа😥`);
+      await ctx.reply(`У вас недостаточно мефа😥`);
       return;
     }
 
-    ctx.reply(
+    await ctx.reply(
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
     user.balance -= price;
@@ -328,7 +328,7 @@ const buyCase = async (user, id, count, ctx) => {
     user[needCase.dbName] += count;
     await user.save();
   } else {
-    ctx.reply(`Такого мефкейса нет😥`);
+    await ctx.reply(`Такого мефкейса нет😥`);
   }
 };
 
@@ -343,14 +343,14 @@ const openCase = async (user, id, ctx, bot) => {
   const needCase = cases[id];
 
   if (!needCase) {
-    ctx.reply("Такого мефкейса нет😥");
+    await ctx.reply("Такого мефкейса нет😥");
     return;
   }
 
   const caseName = needCase.dbName;
 
   if (user[caseName] === 0) {
-    ctx.reply(`Недостаточно мефкейсов😥`);
+    await ctx.reply(`Недостаточно мефкейсов😥`);
     return;
   }
 
@@ -360,4 +360,17 @@ const openCase = async (user, id, ctx, bot) => {
   return;
 };
 
-module.exports = { openCase, buyCase, openDonateCase };
+const getCaseInfo = async (id, ctx) => {
+  const needCase = cases[id];
+
+  if (!needCase) {
+    await ctx.reply("Такого кейса вообще нет😥");
+    return;
+  }
+
+  const info = needCase.items;
+
+  await ctx.reply(`❗️${needCase.name}❗️\n\n${info}`);
+};
+
+module.exports = { openCase, buyCase, openDonateCase, getCaseInfo };

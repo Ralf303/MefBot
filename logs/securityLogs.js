@@ -60,7 +60,11 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "размут" || word1 == "говори" || userMessage == "снять мут") {
+      if (
+        word1 == "размут" ||
+        word1 == "говори" ||
+        userMessage == "снять мут"
+      ) {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `🔉 #РАЗМУТ
@@ -76,7 +80,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (userMessage == "снять варн" || word1 == "разварн"){
+      if (userMessage == "снять варн" || word1 == "разварн") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `⚠️ #РАЗВАРН
@@ -109,7 +113,7 @@ safety.on("text", async (ctx, next) => {
       }
     }
   } catch (e) {
-    ctx.reply("Какая то ошибка, " + e);
+    await ctx.reply("Какая то ошибка, " + e);
   }
   return next();
 });

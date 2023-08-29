@@ -11,6 +11,8 @@ const { ScenesGenerator } = require("./scenes.js");
 const { Timings } = require("./counter/prizeForActive.js");
 const { CaptureGenerator } = require("./commands/chatcommands.js");
 const { Cycles } = require("./cyclesScript.js");
+const gemsService = require("./services/gems-service.js");
+const tyneService = require("./services/tyne-service.js");
 
 const curScene = new ScenesGenerator();
 const BuyPrefix = curScene.prefix(bot);
@@ -28,15 +30,22 @@ const start = async () => {
 
   bot.use(
     rateLimit({
-      window: 3000,
-      limit: 5,
+      window: 5000,
+      limit: 10,
     })
   );
   bot.use(require("./middlewares.js"));
   Cycles(bot);
   Timings(bot);
   CaptureGenerator(bot);
+  gemsService.giveAllGems();
+  tyneService.changeLook();
   bot.launch();
+  try {
+    await bot.telegram.sendMessage(1157591765, "Бот перезапущен");
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 start();

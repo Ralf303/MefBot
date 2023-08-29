@@ -15,7 +15,7 @@ privatCommands.on("text", async (ctx, next) => {
   try {
     if (IsPrivate) {
       if (userMessage == "магазин") {
-        ctx.reply(
+        await ctx.reply(
           "Выберите что хотите купить:",
           Keyboard.inline([
             [
@@ -38,7 +38,7 @@ privatCommands.on("text", async (ctx, next) => {
         if (!isNaN(id)) {
           await tryItem(itemInfo, ctx, id);
         } else {
-          ctx.reply(
+          await ctx.reply(
             "Не правильное использование команды\n\nПопробуйте\n<<Примерить {Id вещи}>>"
           );
         }
@@ -48,10 +48,10 @@ privatCommands.on("text", async (ctx, next) => {
         privatTriggers.includes(word1)) &&
       !IsPrivate
     ) {
-      ctx.reply("Данная команда доступна только в лс");
+      await ctx.reply("Данная команда доступна только в лс");
     }
   } catch (e) {
-    ctx.reply("Какая то ошибка, " + e);
+    await ctx.reply("Какая то ошибка, " + e);
   }
   return next();
 });

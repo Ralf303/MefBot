@@ -12,7 +12,7 @@ compose.action("buy0", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 100000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 100000;
@@ -29,7 +29,7 @@ compose.action("buy0", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -41,7 +41,7 @@ compose.action("buy1", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 80000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 80000;
@@ -58,7 +58,7 @@ compose.action("buy1", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -70,7 +70,7 @@ compose.action("buy3", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 20000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
     );
     user.balance -= 20000;
@@ -87,7 +87,7 @@ compose.action("buy3", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -99,7 +99,7 @@ compose.action("buy4", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 150000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
     );
     user.balance -= 150000;
@@ -116,7 +116,7 @@ compose.action("buy4", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -128,7 +128,7 @@ compose.action("buy5", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 25000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
     );
     user.balance -= 25000;
@@ -145,7 +145,7 @@ compose.action("buy5", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -157,7 +157,7 @@ compose.action("buy7", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 100000) {
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
     );
     user.balance -= 100000;
@@ -174,7 +174,7 @@ compose.action("buy7", async (ctx) => {
     );
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -189,15 +189,15 @@ compose.action("timeapp", async (ctx) => {
     user.balance -= 10000;
     await loseLog(user, `меф`, "покупка в магазине");
     user.timelvl += 1;
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень времени " +
         user.timelvl
     );
     user.save();
   } else if (user.balance < 10000) {
-    ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно мефа😢");
   } else {
-    ctx.reply("Вы уже прокачали уровень времени на максимум");
+    await ctx.reply("Вы уже прокачали уровень времени на максимум");
   }
 });
 
@@ -212,15 +212,15 @@ compose.action("mefapp", async (ctx) => {
     user.balance -= 20000;
     await loseLog(user, `меф`, "покупка в магазине");
     user.meflvl += 1;
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь ваш уровень сбора " +
         user.meflvl
     );
     user.save();
   } else if (user.balance < 20000) {
-    ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно мефа😢");
   } else {
-    ctx.reply("Вы уже прокачали уровень сбора на максимум");
+    await ctx.reply("Вы уже прокачали уровень сбора на максимум");
   }
 });
 
@@ -237,12 +237,12 @@ compose.action("slotapp", async (ctx) => {
     user.balance -= 5000;
     await loseLog(user, `меф`, "покупка в магазине");
     user.slots += 1;
-    ctx.reply(
+    await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь у вас " + user.slots + " слотов"
     );
     await user.save();
   } else {
-    ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно мефа😢");
   }
 });
 
@@ -254,13 +254,13 @@ compose.action("buy2", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 40000) {
-    ctx.reply("Отлично, какой префикс ты хочешь?");
+    await ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 40000;
     await loseLog(user, `меф`, "покупка в магазине");
     ctx.scene.enter("BuyPrefix");
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 
@@ -272,13 +272,13 @@ compose.action("buy6", async (ctx) => {
   );
   ctx.deleteMessage();
   if (user.balance >= 10000) {
-    ctx.reply("Отлично, какой префикс ты хочешь?");
+    await ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 10000;
     await loseLog(user, `меф`, "покупка в магазине");
     ctx.scene.enter("ChangePrefix");
     user.save();
   } else {
-    ctx.reply("Не достаточно мефа😢");
+    await ctx.reply("Не достаточно мефа😢");
   }
 });
 

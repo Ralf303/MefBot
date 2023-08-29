@@ -67,7 +67,7 @@ MessageCounter.hears(/актив день/i, async (ctx, next) => {
     )
     .join("\n");
 
-  ctx.reply(
+  await ctx.reply(
     `❗️Топ-15 активных пользователей за день❗️\n
 ${message}`,
     {
@@ -100,7 +100,7 @@ MessageCounter.hears(/актив неделя/i, async (ctx, next) => {
     )
     .join("\n");
 
-  ctx.reply(
+  await ctx.reply(
     `❗️Топ-15 активных пользователей за неделю❗️\n
 ${message}`,
     {
@@ -133,7 +133,7 @@ MessageCounter.hears(/актив месяц/i, async (ctx, next) => {
     )
     .join("\n");
 
-  ctx.reply(
+  await ctx.reply(
     `❗️Топ-15 активных пользователей за месяц❗️\n
 ${message}`,
     {

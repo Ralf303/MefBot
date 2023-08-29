@@ -74,13 +74,15 @@ async function checkUserProfile(user, ctx) {
   const message = ctx.message.reply_to_message;
 
   if (!message) {
-    ctx.reply(
+    await ctx.reply(
       "Ваш ник: " +
         user.firstname +
         "\nId: " +
         user.chatId +
         "\nВаш меф: " +
         user.balance +
+        "\nВаши гемы: " +
+        user.gems +
         "\nКапчей введено: " +
         user.captureCounter +
         "\nВаш уровень сбора: " +
@@ -99,7 +101,7 @@ async function checkUserProfile(user, ctx) {
 
   // проверяем, что отправитель не является ботом
   if (message.from.is_bot) {
-    ctx.reply("У ботов не бывает профилей🙄");
+    await ctx.reply("У ботов не бывает профилей🙄");
     return;
   }
 
@@ -108,89 +110,99 @@ async function checkUserProfile(user, ctx) {
       where: { chatId: playerChatId },
     });
 
-    ctx.reply(
-      "Профиль " +
-        player.firstname +
-        "\nId: " +
-        player.chatId +
-        "\nГрамм мефа: " +
-        player.balance +
-        "\nКапчей введено: " +
-        player.captureCounter +
-        "\nУровень сбора: " +
-        player.meflvl +
-        "\nУровень времени: " +
-        player.timelvl +
-        "\nСлотов всего: " +
-        player.slots +
-        "\nСлотов занято: " +
-        player.fullSlots
-    );
+    if (player) {
+      await ctx.reply(
+        "Профиль " +
+          player.firstname +
+          "\nId: " +
+          player.chatId +
+          "\nГрамм мефа: " +
+          player.balance +
+          "\nГемы: " +
+          player.gems +
+          "\nКапчей введено: " +
+          player.captureCounter +
+          "\nУровень сбора: " +
+          player.meflvl +
+          "\nУровень времени: " +
+          player.timelvl +
+          "\nСлотов всего: " +
+          player.slots +
+          "\nСлотов занято: " +
+          player.fullSlots
+      );
+    } else {
+      await ctx.reply("Я ничего о нем не знаю...");
+    }
   } catch (error) {
     console.log(error);
-    ctx.reply("Ошибка при выполнении операции.");
+    await ctx.reply("Ошибка при выполнении операции.");
   }
 }
 
-function shopGenerator(id, ctx) {
+async function shopGenerator(id, ctx) {
   let result;
   if (id === "1") {
     result = 'Магазин "Bomj Gang"\n\n';
-    let i = 1;
+
     for (const item in clothes) {
       if (clothes[item].class === "low") {
         result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
-        i++;
       }
     }
   }
 
   if (id === "2") {
     result = 'Магазин "Paul Shop"\n\n';
-    let i = 1;
+
     for (const item in clothes) {
       if (clothes[item].class === "middle") {
         result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
-        i++;
       }
     }
   }
 
   if (id === "3") {
     result = 'Магазин "Clemente House"\n\n';
-    let i = 1;
+
     for (const item in clothes) {
       if (clothes[item].class === "elite") {
         result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
-        i++;
       }
     }
   }
 
   if (id === "4") {
     result = "Магазин donate\n\n";
-    let i = 1;
+
     for (const item in clothes) {
       if (clothes[item].class === "vip") {
         result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}\n`;
-        i++;
       }
     }
-    result +=
-      "\n❗️У некоторых вещей есть особенности, посмотри на них с помощью команды инфо {id} ❗️\n";
-    result += "\n❗️ЦЕНЫ УКАЗАНЫ В ИРИСКАХ, ПРИ ПОКУПКЕ ЗА РУБЛИ СКИДКА 50%❗️";
-    ctx.reply(result + "\n\nДля покупки связывайтесь с @ralf303");
+    await ctx.reply(
+      result + "\n\nДля покупки связывайтесь с @ralf303" + "\n\n📖Инфа id"
+    );
     return;
   }
-  ctx.reply(
-    result +
-      "\n\nПонравилась вещь? Примерь ее командой\n<<Примерить {Id вещи}>>\nЧтобы купить товар напишите команду\n<<Купить вещь {id вещи}>>"
-  );
+
+  if (id === "5") {
+    result = "💎Gem Shop💎\n\n";
+    const sortedClothes = Object.keys(clothes)
+      .filter((item) => clothes[item].class === "special")
+      .sort((a, b) => clothes[a].price - clothes[b].price);
+
+    sortedClothes.forEach((item) => {
+      result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price} гемов\n`;
+    });
+  }
+
+  await ctx.reply(result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id");
   return;
 }
 
-function notify(ctx, channel) {
-  ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
+async function notify(ctx, channel) {
+  await ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
 }
 module.exports = {
   getRandomInt,
