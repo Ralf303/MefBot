@@ -12,7 +12,7 @@ const cases = {
   },
 
   3: {
-    name: "Хотлайн кейс",
+    name: "Сигма кейс",
     dbName: "hotlineCase",
     price: 200,
   },

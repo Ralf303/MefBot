@@ -440,54 +440,54 @@ const clothes = {
   },
 
   50: {
-    name: "Кровавый тони",
-    bodyPart: "face",
-    src: "img/angry_tony.png",
+    name: "Тайлер Дерден",
+    bodyPart: "leg1",
+    src: "img/derden.png",
     price: 50,
     canBuy: false,
     class: "impossible",
   },
 
   51: {
-    name: "Джейк",
-    bodyPart: "face",
-    src: "img/jake.png",
+    name: "Гусеница Шелби",
+    bodyPart: "leg2",
+    src: "img/shelby.png",
     price: 50,
     canBuy: false,
     class: "impossible",
   },
 
   52: {
-    name: "Джонс",
-    bodyPart: "face",
-    src: "img/jons.png",
+    name: "Райан Гостлинг",
+    bodyPart: "leg1",
+    src: "img/gostling.png",
     price: 50,
     canBuy: false,
     class: "impossible",
   },
 
   53: {
-    name: "Рик",
+    name: "Рил Сигма",
     bodyPart: "face",
-    src: "img/rick.png",
+    src: "img/sigma.png",
     price: 50,
     canBuy: false,
     class: "impossible",
   },
 
   54: {
-    name: "Тони",
+    name: "Скала",
     bodyPart: "face",
-    src: "img/tony.png",
+    src: "img/skala.png",
     price: 50,
     canBuy: false,
     class: "impossible",
   },
 
   55: {
-    name: "Вильем",
-    bodyPart: "face",
-    src: "img/vily.png",
+    name: "CJ",
+    bodyPart: "leg1",
+    src: "img/cj.png",
     price: 50,
     canBuy: false,
     class: "impossible",
@@ -567,6 +567,105 @@ const clothes = {
     price: 50,
     canBuy: false,
     class: "impossible",
+  },
+
+  64: {
+    name: "Рик и морти",
+    bodyPart: "leg1",
+    src: "img/rick-and-morty.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  65: {
+    name: "zxc АмНям",
+    bodyPart: "leg1",
+    src: "img/zxc_nyme.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  66: {
+    name: "Аска",
+    bodyPart: "leg2",
+    src: "img/aska.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  67: {
+    name: "Рей",
+    bodyPart: "leg1",
+    src: "img/rey.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  68: {
+    name: "Каки Пуки",
+    bodyPart: "face",
+    src: "img/kaki_puki.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  69: {
+    name: "Мисато",
+    bodyPart: "leg2",
+    src: "img/misato.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  70: {
+    name: "Конфеты",
+    bodyPart: "left",
+    src: "img/narko.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  71: {
+    name: "АмНям",
+    bodyPart: "leg2",
+    src: "img/nyme.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  71: {
+    name: "Horny Tyan",
+    bodyPart: "leg1",
+    src: "img/tyne_1.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  72: {
+    name: "Horny Tyan",
+    bodyPart: "leg1",
+    src: "img/tyne_2.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
+  },
+
+  73: {
+    name: "Horny Tyan",
+    bodyPart: "leg1",
+    src: "img/tyne_3.png",
+    price: 50,
+    canBuy: false,
+    class: "special",
   },
 };
 

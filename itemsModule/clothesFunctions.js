@@ -149,6 +149,51 @@ const wearItem = async (user, id, ctx) => {
       await wornItem.save();
     }
 
+    if (bodyPart === "legs") {
+      // если надеваем вещь с bodyPart = 'legs', снимаем предыдущие items на leg1 и leg2
+      const wornLegItem1 = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "leg1",
+          isWorn: true,
+        },
+      });
+
+      const wornLegItem2 = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "leg2",
+          isWorn: true,
+        },
+      });
+
+      if (wornLegItem1) {
+        wornLegItem1.isWorn = false;
+        await wornLegItem1.save();
+      }
+
+      if (wornLegItem2) {
+        wornLegItem2.isWorn = false;
+        await wornLegItem2.save();
+      }
+    }
+
+    if (bodyPart === "leg1" || bodyPart === "leg2") {
+      // если надеваем вещь с bodyPart = 'leg1' или 'leg2', снимаем вещь с bodyPart = 'legs'
+      const wornLegsItem = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "legs",
+          isWorn: true,
+        },
+      });
+
+      if (wornLegsItem) {
+        wornLegsItem.isWorn = false;
+        await wornLegsItem.save();
+      }
+    }
+
     // надеваем указанный предмет
     item.isWorn = true;
     await item.save();
@@ -217,7 +262,11 @@ const getInventory = async (user, ctx) => {
     }
     rows.push(row);
   }
-  await ctx.reply(`Ваш инвентарь:\n${rows.join("\n")}`);
+  await ctx.reply(
+    `Ваш инвентарь:\n${rows.join(
+      "\n"
+    )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id`
+  );
 };
 
 const tryItem = async (itemInfo, ctx, id) => {

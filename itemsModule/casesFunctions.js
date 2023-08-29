@@ -217,7 +217,7 @@ const openfalloutCase = async (user, ctx, bot) => {
 
 const openhotlineCase = async (user, ctx, bot) => {
   const chance = getRandomInt(1, 1000);
-  let result = `${user.username} открыл Хотлайн кейс и получил`;
+  let result = `${user.username} открыл Сигма кейс и получил`;
   await loseLog(user, "кейс", "открытие");
   if (chance <= 499) {
     const win = getRandomInt(1, 250);
@@ -241,7 +241,7 @@ const openhotlineCase = async (user, ctx, bot) => {
     await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
     await bot.telegram.sendMessage(
       process.env.CHAT_ID,
-      `❗️@${user.username} испытал удачу при открытии Хотлайн кейса и выбил ${needItem.name}❗️`
+      `❗️@${user.username} испытал удачу при открытии Сигма кейса и выбил ${needItem.name}❗️`
     );
     await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
     await user.save();
