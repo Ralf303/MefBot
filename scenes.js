@@ -145,14 +145,14 @@ class ScenesGenerator {
     });
 
     rouletteScene.action("Отмена", async (ctx) => {
-      ctx.deleteMessage();
+      await ctx.deleteMessage();
       await ctx.reply("Игра отменена.");
       ctx.scene.leave();
     });
 
     rouletteScene.on("callback_query", async (ctx) => {
       try {
-        ctx.deleteMessage();
+        await ctx.deleteMessage();
         const { amount } = ctx.session;
         const rouletteMessage = ctx.session;
 

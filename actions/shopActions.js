@@ -25,7 +25,7 @@ async function beforeBuy(ctx, item, price, triger) {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     'Цена товара "' +
       item +
@@ -50,7 +50,7 @@ shopActions.action(trigers, async (ctx) => {
 });
 
 shopActions.action(numbers, async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   const { data } = ctx.callbackQuery;
   await shopGenerator(data, ctx);
 });
@@ -61,7 +61,7 @@ shopActions.action("farmApp", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nВаш уровень сбора: " +
       user.meflvl +
@@ -77,7 +77,7 @@ shopActions.action("farmApp", async (ctx) => {
 });
 
 shopActions.action("Улучшить сбор", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "💎Улучшение сбора💎\n\n1 лвл: 50-100 мефа за сбор\n2 лвл: 100-200 мефа за сбор\n3 лвл: 200-400 мефа за сбор\n4 лвл: 300-500 мефа за сбор\n\n💰Каждое улучшение стоит 20к💰",
     Keyboard.inline([
@@ -88,7 +88,7 @@ shopActions.action("Улучшить сбор", async (ctx) => {
 });
 
 shopActions.action("Улучшить время", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "🕘Улучшение времени🕘\n\nС каждым уровнем уменьшается количество времени между сбором\nНа первом уровне интервал сбора 4 часа. Всего уровней 4 и каждый сбрасывает время на один час.\n\n💰Цена одного улучшения 10к💰",
     Keyboard.inline([
@@ -99,7 +99,7 @@ shopActions.action("Улучшить время", async (ctx) => {
 });
 
 shopActions.action("Инвентарь", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "🎒Улучшение инвентаря🎒\n\nВсе просто, чем больше слотов тем больше вещей вы можете хранить\n\n💰1 слот стоит 5к💰",
     Keyboard.inline([
@@ -110,11 +110,11 @@ shopActions.action("Инвентарь", async (ctx) => {
 });
 
 shopActions.action("dell", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
 });
 
 shopActions.action("Улучшения", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "Что будем улучшать:",
     Keyboard.inline([
@@ -125,7 +125,7 @@ shopActions.action("Улучшения", async (ctx) => {
 });
 
 shopActions.action("Вещи", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "Отлично!\nВ какой магазин пойдем?",
     Keyboard.inline([
@@ -140,9 +140,9 @@ shopActions.action("Вещи", async (ctx) => {
 });
 
 shopActions.action("chatAssortiment", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
-    "Товары📦\n•ВИП статус в ирисе: 100к💰\n•+1лвл админа: 80к💰\n•Префикс: 40к💰\n•Снять варн: 20к💰\n•Купить анонимность: 150к💰\n•Доступ к логам: 25к💰\n•Смена префикса: 10к💰\n•Снять бан: 100к💰n\n❗️магазин не доступен 3+ рангам администраторов❗️",
+    "Товары📦\n•ВИП статус в ирисе: 100к💰\n•+1лвл админа: 80к💰\n•Префикс: 40к💰\n•Снять варн: 20к💰\n•Купить анонимность: 150к💰\n•Доступ к логам: 25к💰\n•Смена префикса: 10к💰\n•Снять бан: 100к💰\n❗️магазин не доступен 3+ рангам администраторов❗️",
     Keyboard.inline([
       ["ВИП", "Админка", "Префикс"],
       ["Снять Варн", "Анон", "Логи"],
@@ -153,7 +153,7 @@ shopActions.action("chatAssortiment", async (ctx) => {
 });
 
 shopActions.action("menu", async (ctx) => {
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   await ctx.reply(
     "Выберите что хотите купить:",
     Keyboard.inline([

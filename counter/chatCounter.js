@@ -16,7 +16,6 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
   const chatId = ctx.message.chat.id;
   const fromUserInfo = ctx.message.from;
   const invitedUserInfo = ctx.message.new_chat_members;
-  console.log(invitedUserInfo);
 
   const fromUser = await getUser(
     fromUserInfo.id,

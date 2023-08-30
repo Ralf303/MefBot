@@ -10,7 +10,7 @@ compose.action("buy0", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 100000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
@@ -39,7 +39,7 @@ compose.action("buy1", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 80000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
@@ -68,7 +68,7 @@ compose.action("buy3", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 20000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет варн, больше не нарушайте"
@@ -97,7 +97,7 @@ compose.action("buy4", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 150000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
@@ -126,7 +126,7 @@ compose.action("buy5", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 25000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nИмейте ввиду что за слив логов вы можете быть лишены их\n\nhttps://t.me/+XsHvpzExiSRhZDUy"
@@ -155,7 +155,7 @@ compose.action("buy7", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 100000) {
     await ctx.reply(
       "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
@@ -184,7 +184,7 @@ compose.action("timeapp", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 10000 && user.timelvl < 4) {
     user.balance -= 10000;
     await loseLog(user, `меф`, "покупка в магазине");
@@ -207,7 +207,7 @@ compose.action("mefapp", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 20000 && user.meflvl < 4) {
     user.balance -= 20000;
     await loseLog(user, `меф`, "покупка в магазине");
@@ -231,7 +231,7 @@ compose.action("slotapp", async (ctx) => {
     ctx.from.username
   );
 
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
 
   if (user.balance >= 5000) {
     user.balance -= 5000;
@@ -252,7 +252,7 @@ compose.action("buy2", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 40000) {
     await ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 40000;
@@ -270,7 +270,7 @@ compose.action("buy6", async (ctx) => {
     ctx.from.first_name,
     ctx.from.username
   );
-  ctx.deleteMessage();
+  await ctx.deleteMessage();
   if (user.balance >= 10000) {
     await ctx.reply("Отлично, какой префикс ты хочешь?");
     user.balance -= 10000;

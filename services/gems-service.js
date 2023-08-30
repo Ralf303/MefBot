@@ -46,7 +46,7 @@ class GemService {
       await sender.save();
       await receiver.save();
       await ctx.reply(
-        `Вы успешно отсыпали ${amount} грамм мефа ${message.from.first_name}`
+        `Вы успешно передали ${amount} гемов ${message.from.first_name}`
       );
 
       await loseLog(sender, "гемы", "передача другому юзеру");
