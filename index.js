@@ -30,8 +30,8 @@ const start = async () => {
 
   bot.use(
     rateLimit({
-      window: 5000,
-      limit: 10,
+      window: 3000,
+      limit: 5,
     })
   );
   bot.use(require("./middlewares.js"));
