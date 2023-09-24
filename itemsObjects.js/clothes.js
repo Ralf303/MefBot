@@ -678,6 +678,15 @@ const clothes = {
     class: "impossible",
     info: "Добывает дополнительный гем каждый час",
   },
+
+  76: {
+    name: "New York Yankees",
+    bodyPart: "head",
+    src: "img/new-york-yankees.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

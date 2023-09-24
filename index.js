@@ -34,13 +34,16 @@ const start = async () => {
       limit: 5,
     })
   );
+
   bot.use(require("./middlewares.js"));
   Cycles(bot);
   Timings(bot);
   CaptureGenerator(bot);
   gemsService.giveAllGems();
   tyneService.changeLook();
-  bot.launch();
+
+  bot.launch({ dropPendingUpdates: true });
+
   try {
     await bot.telegram.sendMessage(1157591765, "Бот перезапущен");
   } catch (error) {
