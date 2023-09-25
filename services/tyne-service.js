@@ -4,7 +4,7 @@ const CronJob = require("cron").CronJob;
 class TyneService {
   async changeLook() {
     new CronJob(
-      "2 */5 6-16 * * *",
+      "2 */5 6-15 * * *",
       async function () {
         await Item.update(
           {
@@ -23,7 +23,7 @@ class TyneService {
     );
 
     new CronJob(
-      "2 */5 17-21 * * *",
+      "2 */5 16-20 * * *",
       async function () {
         await Item.update(
           {
@@ -42,7 +42,7 @@ class TyneService {
     );
 
     new CronJob(
-      "2 */5 22-23 * * *",
+      "2 */5 21-23 * * *",
       async function () {
         await Item.update(
           {

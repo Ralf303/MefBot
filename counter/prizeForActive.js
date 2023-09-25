@@ -86,7 +86,7 @@ function Timings(bot) {
   );
 
   new CronJob(
-    "20 0 0 * * 0",
+    "20 0 0 * * 1",
     async function () {
       const topUser = await findTopUserInWeek();
       await resetWeekCounter();

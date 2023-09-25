@@ -1,9 +1,11 @@
 const sequelize = require("../db/db.js");
+const { connectToDb } = require("../db/functions.js");
 const logMessage = require("../utils/logMessage.js");
 
 // Функция для сброса таблиц
 async function resetTables() {
   try {
+    await connectToDb();
     // Удаление таблицы items
     await sequelize.drop("items");
     logMessage("Таблица items удалена", "blue");

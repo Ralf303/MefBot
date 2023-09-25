@@ -147,7 +147,7 @@ async function shopGenerator(id, ctx) {
 
     for (const item in clothes) {
       if (clothes[item].class === "low") {
-        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}MF\n`;
       }
     }
   }
@@ -157,7 +157,7 @@ async function shopGenerator(id, ctx) {
 
     for (const item in clothes) {
       if (clothes[item].class === "middle") {
-        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}MF\n`;
       }
     }
   }
@@ -167,7 +167,7 @@ async function shopGenerator(id, ctx) {
 
     for (const item in clothes) {
       if (clothes[item].class === "elite") {
-        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}MF\n`;
+        result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}MF\n`;
       }
     }
   }
@@ -177,7 +177,7 @@ async function shopGenerator(id, ctx) {
 
     for (const item in clothes) {
       if (clothes[item].class === "vip") {
-        result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price}\n`;
+        result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}\n`;
       }
     }
     await ctx.reply(
@@ -193,11 +193,13 @@ async function shopGenerator(id, ctx) {
       .sort((a, b) => clothes[a].price - clothes[b].price);
 
     sortedClothes.forEach((item) => {
-      result += `• ${clothes[item].name}[${item}] Цена: ${clothes[item].price} гемов\n`;
+      result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price} гемов\n`;
     });
   }
 
-  await ctx.reply(result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id");
+  await ctx.replyWithHTML(
+    result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id"
+  );
   return;
 }
 

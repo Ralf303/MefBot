@@ -53,8 +53,8 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   user.fullSlots++;
   await user.addItem(item);
   await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
-  await ctx.reply(
-    `Вы купили: ${item.itemName}[${item.id}]\n\n📖Надеть ${item.id}`
+  await ctx.replyWithHTML(
+    `Вы купили: ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
   );
   await resiveLog(
     user,
@@ -224,7 +224,9 @@ const getWornItems = async (user, ctx) => {
     });
 
     // формируем массив с названиями вещей и их идентификаторами
-    const wornItems = items.map((item) => `${item.itemName}[${item.id}]`);
+    const wornItems = items.map(
+      (item) => `${item.itemName}[<code>${item.id}</code>]`
+    );
     const src = items.map((item) => `${item.src}`);
     if (wornItems.length === 0) {
       await ctx.replyWithPhoto(
@@ -246,7 +248,7 @@ const getWornItems = async (user, ctx) => {
     // возвращаем список надетых вещей
     await ctx.replyWithPhoto(
       { source: await blendImages(src) },
-      { caption: `На вас надето:\n${rows.join("\n")}` }
+      { parse_mode: "HTML", caption: `На вас надето:\n${rows.join("\n")}` }
     );
     return;
   } catch (error) {
@@ -261,7 +263,9 @@ const getInventory = async (user, ctx) => {
     await ctx.reply("Ваш инвентарь пуст.");
     return;
   }
-  const itemNames = items.map((item) => `${item.itemName}[${item.id}]`);
+  const itemNames = items.map(
+    (item) => `${item.itemName}[<code>${item.id}</code>]`
+  );
   const rows = [];
   for (let i = 0; i < itemNames.length; i += 2) {
     let row = itemNames[i];
@@ -271,7 +275,7 @@ const getInventory = async (user, ctx) => {
     }
     rows.push(row);
   }
-  await ctx.reply(
+  await ctx.replyWithHTML(
     `Ваш инвентарь:\n${rows.join(
       "\n"
     )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id`
@@ -289,7 +293,8 @@ const tryItem = async (itemInfo, ctx, id) => {
   await ctx.replyWithPhoto(
     { source: await blendImages(src) },
     {
-      caption: `Вот как будет выглядить ${itemInfo.name}[${id}]\nКупить ее можно командой:\n<<Купить вещь ${id}>>`,
+      parse_mode: "HTML",
+      caption: `Вот как будет выглядить ${itemInfo.name}[${id}]\nКупить ее можно командой:\n<code>Купить вещь ${id}</code>`,
     }
   );
 };
