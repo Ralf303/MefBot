@@ -180,7 +180,7 @@ async function shopGenerator(id, ctx) {
         result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}\n`;
       }
     }
-    await ctx.reply(
+    await ctx.replyWithHTML(
       result + "\n\nДля покупки связывайтесь с @ralf303" + "\n\n📖Инфа id"
     );
     return;

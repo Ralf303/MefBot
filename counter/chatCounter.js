@@ -153,7 +153,6 @@ MessageCounter.on("message", async (ctx, next) => {
         "Я не могу находиться в этом чате😘\n\nБот создан только для чата @mefpablo"
       );
       await ctx.leaveChat();
-      return;
     } catch (error) {
       console.log(error);
     }
