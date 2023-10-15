@@ -2,7 +2,7 @@ const { Item, User } = require("../db/models");
 const cases = require("../itemsObjects/cases");
 const clothes = require("../itemsObjects/clothes");
 const { resiveLog, loseLog } = require("../logs/globalLogs");
-const { getRandomInt, sleep } = require("../utils/helpers");
+const { getRandomInt } = require("../utils/helpers");
 
 const openDonateCase = async (user, ctx) => {
   if (user.donateCase === 0) {
@@ -134,12 +134,10 @@ const openCase = async (user, id, ctx) => {
     }
 
     const caseName = needCase.dbName;
-    console.log(`У юзера ${user[caseName]}`);
 
     if (user[caseName] > 0) {
       await open(user, ctx, needCase);
       await user.save();
-      console.log(`Теперь ${user[caseName]}`);
       await loseLog(user, user[caseName], "открытие");
     } else {
       await ctx.reply("Недостаточно мефкейсов😥");
