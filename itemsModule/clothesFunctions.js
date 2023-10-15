@@ -1,6 +1,6 @@
 const Jimp = require("jimp");
 const { Item } = require("../db/models");
-const clothes = require("../itemsObjects.js/clothes");
+const clothes = require("../itemsObjects/clothes");
 const { loseLog, resiveLog } = require("../logs/globalLogs");
 
 async function blendImages(imagePaths) {

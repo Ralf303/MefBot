@@ -1,6 +1,6 @@
 const { Item } = require("../db/models");
-const clothes = require("../itemsObjects.js/clothes");
-const craftItems = require("../itemsObjects.js/crafts");
+const clothes = require("../itemsObjects/clothes");
+const craftItems = require("../itemsObjects/crafts");
 const { loseLog, resiveLog } = require("../logs/globalLogs");
 
 class CrafService {

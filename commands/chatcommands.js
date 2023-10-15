@@ -19,7 +19,7 @@ const {
   giveCase,
   giveDonateCase,
 } = require("./giveScripts.js");
-const clothes = require("../itemsObjects.js/clothes");
+const clothes = require("../itemsObjects/clothes");
 const {
   getInventory,
   deleteItem,
@@ -32,7 +32,7 @@ const {
 const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
 const { Item } = require("../db/models");
-const cases = require("../itemsObjects.js/cases");
+const cases = require("../itemsObjects/cases");
 const rp = require("../utils/arrays/rp-array");
 const craftService = require("../services/craft-service");
 const gemsService = require("../services/gems-service");

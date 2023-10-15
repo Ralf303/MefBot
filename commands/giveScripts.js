@@ -1,5 +1,5 @@
 const { User, Item } = require("../db/models");
-const cases = require("../itemsObjects.js/cases");
+const cases = require("../itemsObjects/cases");
 const { giveResoursesLog, loseLog } = require("../logs/globalLogs");
 
 const giveCoins = async (ctx) => {

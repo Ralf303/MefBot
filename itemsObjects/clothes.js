@@ -143,12 +143,12 @@ const clothes = {
   },
 
   17: {
-    name: "Прототип",
-    bodyPart: "right",
-    src: "img/prototype.png",
-    price: 50000,
-    canBuy: true,
-    class: "elite",
+    name: "Диз",
+    bodyPart: "extra",
+    src: "img/diz.png",
+    price: 500,
+    canBuy: false,
+    class: "impossible",
   },
 
   18: {

@@ -1,5 +1,5 @@
 const { Composer } = require("telegraf");
-const clothes = require("../itemsObjects.js/clothes");
+const clothes = require("../itemsObjects/clothes");
 const { buyItem } = require("../itemsModule/clothesFunctions");
 const { getUser } = require("../db/functions");
 const { User, Roles } = require("../db/models");

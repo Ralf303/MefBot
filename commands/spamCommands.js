@@ -1,6 +1,6 @@
 const { Composer } = require("telegraf");
 const { openCase, openDonateCase } = require("../itemsModule/casesFunctions");
-const cases = require("../itemsObjects.js/cases");
+const cases = require("../itemsObjects/cases");
 const { getUser } = require("../db/functions");
 
 const spamCommands = new Composer();
@@ -29,7 +29,8 @@ spamCommands.on("text", async (ctx, next) => {
         }
 
         if (!isNaN(id)) {
-          await openCase(user, id, ctx, ctx);
+          await openCase(user, id, ctx);
+          return;
         } else if (word1 == "открыть") {
           await ctx.reply(
             "Не правильное использование команды\n\nПопробуйте\n<<Открыть Id>>"

@@ -21,7 +21,7 @@ const rouletteScene = curScene.rouletteScene(bot);
 const stage = new Scenes.Stage([BuyPrefix, ChangePrefix, rouletteScene]);
 
 const start = async () => {
-  bot.catch((err) => {
+  bot.catch(async (err) => {
     console.log(`Error occurred: ${err}`);
   });
   await connectToDb();
@@ -30,8 +30,8 @@ const start = async () => {
 
   bot.use(
     rateLimit({
-      window: 3000,
-      limit: 5,
+      window: 1000,
+      limit: 2,
     })
   );
 

@@ -1,5 +1,5 @@
 const { User } = require("../db/models");
-const clothes = require("../itemsObjects.js/clothes");
+const clothes = require("../itemsObjects/clothes");
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
