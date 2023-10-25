@@ -10,7 +10,7 @@ middleware.use((ctx, next) => {
   if (
     channelPost &&
     channelPost.text &&
-    channelPost.text.toLowerCase().includes("бонус")
+    channelPost.text.toLowerCase() == "бонус"
   ) {
     bonusService.createBonus(ctx);
   }
