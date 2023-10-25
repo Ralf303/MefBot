@@ -23,7 +23,10 @@ privatCommands.on("text", async (ctx, next) => {
               "Улучшения",
               "Вещи",
             ],
-            [Key.callback("Закрыть", "dell")],
+            [
+              Key.callback("Закрыть", "dell"),
+              Key.callback("🤑DonateLand🤑", "4"),
+            ],
           ])
         );
       }

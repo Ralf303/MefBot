@@ -42,13 +42,16 @@ spamCommands.on("text", async (ctx, next) => {
         let result = "Доступные кейсы:\n";
         let i = 1;
         for (const item in cases) {
-          result += `${i}) ${cases[item].name} Цена: ${cases[item].price}MF\n`;
+          let price = cases[item].price;
+          if (cases[item].class) {
+            price += ` гемов`;
+          } else {
+            price += ` MF`;
+          }
+          result += `${i}) ${cases[item].name} Цена: ${price}\n`;
           i++;
         }
-        await ctx.reply(
-          result +
-            "\n\nТак же есть Донат кейс за 25 рублей\nИз него выпадает одна рандомная вещь\n\nКупить => @ralf303\n\n📖Купить мефкейс id\n📖Инфа мефкейс id"
-        );
+        await ctx.reply(result + "\n📖Купить мефкейс id\n📖Инфа мефкейс id");
       }
     } else if (
       (spamTriggers.includes(userMessage) || spamTriggers.includes(word1)) &&

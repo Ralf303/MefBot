@@ -80,12 +80,12 @@ const clothes = {
   },
 
   10: {
-    name: "Банан",
-    bodyPart: "right",
-    src: "img/banana.png",
-    price: 1000,
+    name: "Бандана",
+    bodyPart: "face",
+    src: "img/bandana.png",
+    price: 777,
     canBuy: true,
-    class: "low",
+    class: "special",
   },
 
   11: {
@@ -680,10 +680,157 @@ const clothes = {
   },
 
   76: {
-    name: "New York Yankees",
-    bodyPart: "head",
-    src: "img/new-york-yankees.png",
-    price: 50,
+    name: "Мазелов",
+    bodyPart: "face",
+    src: "img/mazelov.png",
+    price: 897,
+    canBuy: true,
+    class: "special",
+  },
+
+  77: {
+    name: "Бейби бандит",
+    bodyPart: "right",
+    src: "img/baby_bandit.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  78: {
+    name: "BEARBRICKS",
+    bodyPart: "leg2",
+    src: "img/bear_1.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+    info: "Каждый раз, при просмотре Пабло, медведь меняется",
+  },
+
+  79: {
+    name: "Тянки",
+    bodyPart: "legs",
+    src: "img/tynki.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  80: {
+    name: "Сет: Пабло с района",
+    bodyPart: "set",
+    src: "img/pablo_street.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  81: {
+    name: "Сет: ZXC",
+    bodyPart: "set",
+    src: "img/gul_set.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  82: {
+    name: "Найк хакки",
+    bodyPart: "legs",
+    src: "img/hikka_jordan.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  83: {
+    name: "Кот",
+    bodyPart: "leg1",
+    src: "img/tik_tok_cat.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  84: {
+    name: "Мульти кроссы",
+    bodyPart: "legs",
+    src: "img/multi_1.png",
+    price: 250000,
+    canBuy: true,
+    class: "elite",
+    info: "Каждые 30 минут меняют облик",
+  },
+
+  85: {
+    name: "Шайлушай",
+    bodyPart: "leg1",
+    src: "img/white_shalusha.png",
+    price: 111111,
+    canBuy: true,
+    class: "elite",
+    info: "Можно изменить шайлушая с помощью команды /change",
+  },
+
+  86: {
+    name: "Кот",
+    bodyPart: "leg1",
+    src: "img/tik_tok_cat.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  87: {
+    name: "Павел Дуров",
+    bodyPart: "leg2",
+    src: "img/durov.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  88: {
+    name: "Эль Примо",
+    bodyPart: "leg1",
+    src: "img/primo.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  89: {
+    name: "Леон",
+    bodyPart: "leg2",
+    src: "img/leon.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  90: {
+    name: "Майн кот",
+    bodyPart: "leg1",
+    src: "img/mine_cat.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  91: {
+    name: "Попуга",
+    bodyPart: "leg2",
+    src: "img/parrot.png",
+    price: 150,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  92: {
+    name: "Ендер дракон",
+    bodyPart: "extra",
+    src: "img/ender.png",
+    price: 150,
     canBuy: false,
     class: "impossible",
   },

@@ -23,10 +23,8 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
     fromUserInfo.username
   );
 
-  let invitedUser;
-
   for (let i = 0; i < invitedUserInfo.length; i++) {
-    invitedUser = await User.findOne({
+    let invitedUser = await User.findOne({
       where: { chatId: invitedUserInfo[i].id },
     });
 
@@ -37,7 +35,8 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
         username: invitedUserInfo[i].username,
       });
 
-      fromUser.balance += 5000;
+      fromUser.balance += 1000;
+      await invitedUser.save();
       await fromUser.save();
     }
   }

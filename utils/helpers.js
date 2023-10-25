@@ -56,17 +56,20 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function checkUserSub(ctx, channel, trigger, msg, triggers, bot) {
-  const chatMember = await bot.telegram.getChatMember(channel, ctx.from.id);
-  const status = chatMember.status;
-  NeedResult = ["member", "administrator", "creator"];
-  if (
-    NeedResult.includes(status) &&
-    (triggers.includes(trigger) || triggers.includes(msg))
-  ) {
-    return true;
-  } else {
-    return false;
+async function checkUserSub(ctx, channel) {
+  try {
+    const chatMember = await ctx.telegram.getChatMember(channel, ctx.from.id);
+    const status = chatMember.status;
+    const needStatus = ["member", "administrator", "creator"];
+
+    if (needStatus.includes(status)) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Произошла ошибка:", error);
+    return false; // Если возникла ошибка при получении статуса пользователя, считаем, что у него нет подписки
   }
 }
 
@@ -173,15 +176,20 @@ async function shopGenerator(id, ctx) {
   }
 
   if (id === "4") {
-    result = "Магазин donate\n\n";
+    result = "Донат услуги\n\n";
 
     for (const item in clothes) {
       if (clothes[item].class === "vip") {
         result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}\n`;
       }
     }
+
+    result +=
+      "• Донат кейс Цена: 25\n• 1000 мефа Цена: 1\n\n❗️Все цены в ру рублях❗️\n";
     await ctx.replyWithHTML(
-      result + "\n\nДля покупки связывайтесь с @ralf303" + "\n\n📖Инфа id"
+      result +
+        "\nДля покупки связывайтесь с @ralf303" +
+        "\n\n📖Инфа id\n📖Инфа мефкейс донат"
     );
     return;
   }

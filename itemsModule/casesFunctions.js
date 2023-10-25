@@ -102,22 +102,47 @@ const buyCase = async (user, id, count, ctx) => {
       count = 1;
     }
 
-    if (user.balance < price) {
+    if (user.balance < price && needCase.class !== "gem") {
       await ctx.reply(`У вас недостаточно мефа😥`);
       return;
+    } else if (needCase.class !== "gem") {
+      user.balance -= price;
+      await loseLog(
+        user,
+        "меф",
+        `покупка ${needCase.name} в количестве ${count}`
+      );
+
+      await resiveLog(
+        user,
+        `${needCase.name}`,
+        `${count}`,
+        "покупка в магазине"
+      );
+    }
+
+    if (user.gems < price && needCase.class === "gem") {
+      await ctx.reply(`У вас недостаточно гемов😥`);
+      return;
+    } else if (needCase.class === "gem") {
+      user.gems -= price;
+      await loseLog(
+        user,
+        "гемы",
+        `покупка ${needCase.name} в количестве ${count}`
+      );
+
+      await resiveLog(
+        user,
+        `${needCase.name}`,
+        `${count}`,
+        "покупка в магазине"
+      );
     }
 
     await ctx.reply(
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
-    user.balance -= price;
-    await loseLog(
-      user,
-      "меф",
-      `покупка ${needCase.name} в количестве ${count}`
-    );
-
-    await resiveLog(user, `${needCase.name}`, `${count}`, "покупка в магазине");
     user[needCase.dbName] += count;
     await user.save();
   } else {

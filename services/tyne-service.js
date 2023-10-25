@@ -1,4 +1,5 @@
 const { Item } = require("../db/models");
+const { getRandomInt } = require("../utils/helpers");
 const CronJob = require("cron").CronJob;
 
 class TyneService {
@@ -13,6 +14,48 @@ class TyneService {
           {
             where: {
               itemName: "Horny Tyan",
+            },
+          }
+        );
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+
+    new CronJob(
+      "2 */30 * * * *",
+      async function () {
+        const number = getRandomInt(1, 6);
+        const src = `img/multi_${number}.png`;
+        await Item.update(
+          {
+            src: src,
+          },
+          {
+            where: {
+              itemName: "Мульти кроссы",
+            },
+          }
+        );
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+
+    new CronJob(
+      "2 */30 * * * *",
+      async function () {
+        const number = getRandomInt(1, 6);
+        const src = `img/multi_${number}.png`;
+        await Item.update(
+          {
+            src: src,
+          },
+          {
+            where: {
+              itemName: "Мульти кроссы",
             },
           }
         );

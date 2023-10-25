@@ -27,6 +27,8 @@ const User = sequelize.define("user", {
   donateCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   falloutCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   gems: { type: DataTypes.INTEGER, defaultValue: 0 },
+  gemCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {
@@ -67,7 +69,17 @@ const Roles = sequelize.define("roles", {
   password: { type: DataTypes.STRING },
 });
 
+const Bonus = sequelize.define("bonus", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  time: { type: DataTypes.INTEGER, defaultValue: 0 },
+});
+
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
 
-module.exports = { User, Item, Logs, Roles };
+module.exports = { User, Item, Logs, Roles, Bonus };

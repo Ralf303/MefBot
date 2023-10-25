@@ -10,6 +10,7 @@ const {
   notify,
   checkUserSub,
   checkUserProfile,
+  shopGenerator,
 } = require("../utils/helpers");
 const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
 const { getUser } = require("../db/functions.js");
@@ -135,7 +136,7 @@ chatCommands.on("text", async (ctx, next) => {
       await ctx.reply("Верно, ты получил " + randommef + " мефа", {
         reply_to_message_id: ctx.message.message_id,
       });
-      capture = 342234242;
+      capture = getRandomInt(0, 99999);
     }
 
     if (word1 == "куб") {
@@ -153,13 +154,19 @@ chatCommands.on("text", async (ctx, next) => {
       }
       await ctx.reply(
         result +
-          "\n\n💰Донат кейс - " +
+          "\n💰Донат кейс - " +
           user.donateCase +
-          "шт💰\n\nЧтобы открыть Донат кейс\n<<Открыть донат>>\nИз него выпадает одна рандомная вещь\n\nКупить => @ralf303\n\n📖Открыть id\n📖Передать мефкейс id"
+          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать мефкейс id\n📖Передать мефкейс донат"
       );
     }
 
     if (userMessage == "ферма" || userMessage == "фарма") {
+      const checkSub = await checkUserSub(ctx, -1002015930296);
+
+      if (!checkSub) {
+        ctx.reply("📝 Для сбора мефа нужно быть подписанным на канал @mef_dev");
+        return;
+      }
       await userFerma(ctx, user);
     }
 
@@ -225,9 +232,13 @@ chatCommands.on("text", async (ctx, next) => {
       await getWornItems(user, ctx);
     }
 
-    if (userMessage == "курс") {
+    if (userMessage == "донат") {
+      await shopGenerator("4", ctx);
+    }
+
+    if (userMessage == "инфа мефкейс донат") {
       await ctx.reply(
-        "🤑Активный курс обмена🤑\n\n1 бкоин - 5 мефа\n2 рдно - 1 меф\n1 ириска - 500 мефа\n1 рубль - 1000 мефа\n\nМенять можно у @ralf303"
+        "❗️Донат кейс❗️\n\nВыпадает любая случайная вещь, от обычных до донатных"
       );
     }
 

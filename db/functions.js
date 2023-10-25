@@ -6,9 +6,14 @@ const getUser = async (chatId, firstName, username) => {
   if (!user) {
     user = await User.create({ chatId, firstname: firstName, username });
   } else {
-    if (!user.username || !(user.username === username)) {
+    if (!username) {
+      user = await user.update({ username: "dont_have_tag" });
+    }
+
+    if (!(user.username === username)) {
       user = await user.update({ username });
     }
+
     if (!user.firstname || !(user.firstname === firstName)) {
       user = await user.update({ firstname: firstName });
     }

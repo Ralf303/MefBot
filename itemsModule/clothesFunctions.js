@@ -2,6 +2,7 @@ const Jimp = require("jimp");
 const { Item } = require("../db/models");
 const clothes = require("../itemsObjects/clothes");
 const { loseLog, resiveLog } = require("../logs/globalLogs");
+const { getRandomInt } = require("../utils/helpers");
 
 async function blendImages(imagePaths) {
   const bg = await Jimp.read("img/bg.jpg");
@@ -87,6 +88,7 @@ const deleteItem = async (user, id, ctx) => {
   user.balance += cashBack;
   user.fullSlots--;
   await item.destroy();
+  await user.save();
 };
 
 const removeItem = async (user, id, ctx) => {
@@ -203,6 +205,49 @@ const wearItem = async (user, id, ctx) => {
       }
     }
 
+    if (bodyPart === "set") {
+      const wornFace = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "face",
+          isWorn: true,
+        },
+      });
+
+      const wornHead = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "head",
+          isWorn: true,
+        },
+      });
+
+      if (wornFace) {
+        wornFace.isWorn = false;
+        await wornFace.save();
+      }
+
+      if (wornHead) {
+        wornHead.isWorn = false;
+        await wornHead.save();
+      }
+    }
+
+    if (bodyPart === "face" || bodyPart === "head") {
+      const wornSetItem = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "set",
+          isWorn: true,
+        },
+      });
+
+      if (wornSetItem) {
+        wornSetItem.isWorn = false;
+        await wornSetItem.save();
+      }
+    }
+
     // надеваем указанный предмет
     item.isWorn = true;
     await item.save();
@@ -221,6 +266,14 @@ const getWornItems = async (user, ctx) => {
         userId: user.id,
         isWorn: true,
       },
+    });
+
+    items.forEach(async (item) => {
+      if (item.itemName === "BEARBRICKS") {
+        const number = getRandomInt(1, 32);
+        item.src = `img/bear_${number}.png`;
+        await item.save();
+      }
     });
 
     // формируем массив с названиями вещей и их идентификаторами
@@ -245,6 +298,7 @@ const getWornItems = async (user, ctx) => {
       }
       rows.push(row);
     }
+
     // возвращаем список надетых вещей
     await ctx.replyWithPhoto(
       { source: await blendImages(src) },
