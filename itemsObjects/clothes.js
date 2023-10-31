@@ -834,6 +834,24 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  93: {
+    name: "Темная сторона",
+    bodyPart: "left",
+    src: "img/red_droch.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  94: {
+    name: "Светлая сторона",
+    bodyPart: "left",
+    src: "img/blue_droch.png",
+    price: 50,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

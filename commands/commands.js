@@ -10,9 +10,22 @@ const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 command.start(async (ctx) => {
   try {
     if (ctx.startPayload) {
+      const value = ctx.startPayload;
       const { id, first_name, username } = ctx.from;
       const user = await getUser(id, first_name, username);
-      bonusService.takeBonus(user, ctx, ctx.startPayload);
+
+      if (/^\d+$/.test(value)) {
+        bonusService.takeBonus(user, ctx, value);
+      }
+
+      if (value === "sith") {
+        bonusService.sith(user, ctx);
+      }
+
+      if (value === "jeday") {
+        bonusService.jeday(user, ctx);
+      }
+      ctx.reply(value);
     } else {
       await ctx.reply(
         "Привет " +

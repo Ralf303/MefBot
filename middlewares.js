@@ -15,6 +15,13 @@ middleware.use((ctx, next) => {
     bonusService.createBonus(ctx);
   }
 
+  if (
+    channelPost &&
+    channelPost.text &&
+    channelPost.text.toLowerCase() == "ноябрь"
+  ) {
+    bonusService.droch(ctx);
+  }
   next();
 });
 middleware.use(require("./counter/chatCounter.js"));
