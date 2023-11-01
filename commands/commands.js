@@ -25,7 +25,6 @@ command.start(async (ctx) => {
       if (value === "jeday") {
         bonusService.jeday(user, ctx);
       }
-      ctx.reply(value);
     } else {
       await ctx.reply(
         "Привет " +
