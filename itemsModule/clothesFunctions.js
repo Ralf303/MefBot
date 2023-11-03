@@ -380,4 +380,5 @@ module.exports = {
   removeItem,
   tryItem,
   getItemInfo,
+  blendImages,
 };

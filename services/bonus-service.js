@@ -5,9 +5,10 @@ require("dotenv").config({
 const { User, Bonus, Item } = require("../db/models");
 const { getRandomInt } = require("../utils/helpers");
 const clothes = require("../itemsObjects/clothes");
+const { blendImages } = require("../itemsModule/clothesFunctions");
 
 class BonusService {
-  #chatId = -1002015930296;
+  #chatId = Number(process.env.CHANNEL_ID);
 
   async #createBonusInDb() {
     try {
@@ -22,14 +23,18 @@ class BonusService {
     }
   }
 
-  async sith(user, ctx) {
-    const itemInfo = clothes[93];
+  async giveItem(user, ctx, id) {
+    const itemInfo = clothes[id];
 
     if (user.slots < user.fullSlots) {
       await ctx.reply("Недостаточно слотов😥");
       return;
     }
 
+    if (user.takeBonus >= 2) {
+      await ctx.reply("Вы уже учавствовали в раздаче");
+      return;
+    }
     const item = await Item.create({
       src: itemInfo.src,
       itemName: itemInfo.name,
@@ -38,55 +43,54 @@ class BonusService {
       price: itemInfo.price,
     });
 
+    const prize = getRandomInt(1000, 10000);
+    user.takeBonus += 2;
+    user.balance += prize;
     user.fullSlots++;
     await user.addItem(item);
     await user.save();
     await item.save();
     await ctx.replyWithHTML(
-      `Ты выбрал верную сторону, темная сила захватит все😈\n\n📖<code>Надеть ${item.id}</code>`
+      `Спасибо за участие в раздаче)\n\nВы получили:\n•${itemInfo.name}\n•${prize} мефа\n\n📖<code>Надеть ${item.id}</code>`
     );
   }
 
-  async jeday(user, ctx) {
-    const itemInfo = clothes[94];
-
-    if (user.slots < user.fullSlots) {
-      await ctx.reply("Недостаточно слотов😥");
-      return;
-    }
-
-    const item = await Item.create({
-      src: itemInfo.src,
-      itemName: itemInfo.name,
-      bodyPart: itemInfo.bodyPart,
-      isWorn: false,
-      price: itemInfo.price,
-    });
-
-    user.fullSlots++;
-    await user.addItem(item);
-    await user.save();
-    await item.save();
-    await ctx.replyWithHTML(
-      `Да прибудет с тобой сила, юный джедай💪\n\n📖<code>Надеть ${item.id}</code>`
-    );
-  }
-
-  async droch(ctx) {
+  async sendEvent(ctx, id) {
     if (ctx.channelPost.chat.id !== this.#chatId) {
       await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "ИДИ НАХУЙ");
       return;
     }
 
-    await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
+    if (!id) {
+      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Не указан айди");
+      return;
+    }
+    const itemInfo = clothes[id];
 
-    await ctx.telegram.sendMessage(
+    if (!itemInfo) {
+      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Такой вещи нет");
+      return;
+    }
+    await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
+    await User.update({ takeBonus: 0 }, { where: {} });
+    const keyboard = {
+      inline_keyboard: [
+        [
+          {
+            text: "❗️УЧАВСТВУЮ❗️",
+            url: `${process.env.BOT_URL}?start=event_${id}`,
+          },
+        ],
+      ],
+    };
+
+    await ctx.telegram.sendPhoto(
       this.#chatId,
-      "❗️НЕДРОЧАБРЬ❗️\n\nВыбирай на чьей стороне ты будешь",
-      Keyboard.inline([
-        Key.url("💪Джедай", `${process.env.BOT_URL}?start=jeday`),
-        Key.url("🥵Ситх", `${process.env.BOT_URL}?start=sith`),
-      ])
+      { source: await blendImages([itemInfo.src]) },
+      {
+        caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на этот канал\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее учавствуй👇`,
+        reply_markup: keyboard,
+      }
     );
   }
 

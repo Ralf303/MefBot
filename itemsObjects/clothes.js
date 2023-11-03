@@ -852,6 +852,15 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  95: {
+    name: "Джеб Керман",
+    bodyPart: "leg2",
+    src: "img/jeb_kerman.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

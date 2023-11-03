@@ -18,12 +18,8 @@ command.start(async (ctx) => {
         bonusService.takeBonus(user, ctx, value);
       }
 
-      if (value === "sith") {
-        bonusService.sith(user, ctx);
-      }
-
-      if (value === "jeday") {
-        bonusService.jeday(user, ctx);
+      if (value.includes("event_")) {
+        bonusService.giveItem(user, ctx, value.slice(6));
       }
     } else {
       await ctx.reply(
