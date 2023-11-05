@@ -44,11 +44,14 @@ const open = async (user, ctx, box) => {
     );
     const chance = getRandomInt(1, 1000);
     let result = `${user.username} открыл ${box.name} и получил`;
+    let winAmount = 0;
+
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
       user.balance += win;
       result += ` ${win}MF`;
-      await resiveLog(user, "меф", `${win}`, "приз из кейса");
+      await resiveLog(user, "меф", win, "приз из кейса");
+      winAmount = win;
     }
 
     if (chance >= 500 && chance <= 510) {
@@ -68,7 +71,7 @@ const open = async (user, ctx, box) => {
         process.env.CHAT_ID,
         `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${needItem.name}❗️`
       );
-      await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
+      await resiveLog(user, needItem.name, 1, "приз из кейса");
       await item.save();
       return;
     }
@@ -77,7 +80,8 @@ const open = async (user, ctx, box) => {
       const win = getRandomInt(250, 1000);
       user.balance += win;
       result += ` ${win}MF`;
-      await resiveLog(user, "меф", `${win}`, "приз из кейса");
+      await resiveLog(user, "меф", win, "приз из кейса");
+      winAmount = win;
     }
 
     if (chance >= 600) {
@@ -89,6 +93,7 @@ const open = async (user, ctx, box) => {
     console.log(e);
   }
 };
+
 /*****************************************************************************************************/
 
 const buyCase = async (user, id, count, ctx) => {

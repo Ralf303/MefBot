@@ -31,7 +31,7 @@ const start = async () => {
   bot.use(
     rateLimit({
       window: 1000,
-      limit: 2,
+      limit: 5,
     })
   );
 
