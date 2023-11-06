@@ -42,6 +42,14 @@ const cases = {
     itemsId: [78, 79, 77, 80, 81, 82, 83],
     class: "gem",
   },
+
+  6: {
+    name: "ФНАФ кейс",
+    dbName: "fnafCase",
+    price: 666,
+    items: "Мангл\nФреди\nБонни\nЧика\nФокси\nБалун бой\nБон Бон",
+    itemsId: [96, 97, 98, 99, 101, 102, 103],
+  },
 };
 
 module.exports = cases;

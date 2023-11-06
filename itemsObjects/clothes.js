@@ -861,6 +861,78 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  96: {
+    name: "Бон Бон",
+    bodyPart: "left",
+    src: "img/bonbon.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  97: {
+    name: "Фреди",
+    bodyPart: "fnaf_set2",
+    src: "img/fnaf_freddy_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  98: {
+    name: "Фокси",
+    bodyPart: "fnaf_set1",
+    src: "img/fnaf_foxy_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  99: {
+    name: "Чика",
+    bodyPart: "fnaf_set4",
+    src: "img/fnaf_chika_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  100: {
+    name: "Пупс «Удача»",
+    bodyPart: "pups_set3",
+    src: "img/pups_lucky.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  101: {
+    name: "Балун Бой",
+    bodyPart: "fnaf_set5",
+    src: "img/fnaf_baloon_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  102: {
+    name: "Бонни",
+    bodyPart: "fnaf_set3",
+    src: "img/fnaf_boney_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  103: {
+    name: "Мангл",
+    bodyPart: "extra",
+    src: "img/mangl.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

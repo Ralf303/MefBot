@@ -178,6 +178,21 @@ const wearItem = async (user, id, ctx) => {
         },
       });
 
+      for (let i = 1; i <= 5; i++) {
+        const wornFnafItem = await Item.findOne({
+          where: {
+            userId: user.id,
+            bodyPart: `fnaf_set${i}`,
+            isWorn: true,
+          },
+        });
+
+        if (wornFnafItem) {
+          wornFnafItem.isWorn = false;
+          await wornFnafItem.save();
+        }
+      }
+
       if (wornLegItem1) {
         wornLegItem1.isWorn = false;
         await wornLegItem1.save();
@@ -199,9 +214,64 @@ const wearItem = async (user, id, ctx) => {
         },
       });
 
+      for (let i = 1; i <= 5; i++) {
+        const wornFnafItem = await Item.findOne({
+          where: {
+            userId: user.id,
+            bodyPart: `fnaf_set${i}`,
+            isWorn: true,
+          },
+        });
+
+        if (wornFnafItem) {
+          wornFnafItem.isWorn = false;
+          await wornFnafItem.save();
+        }
+      }
+
       if (wornLegsItem) {
         wornLegsItem.isWorn = false;
         await wornLegsItem.save();
+      }
+    }
+
+    if (bodyPart.includes("fnaf_set")) {
+      const wornLegItem1 = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "leg1",
+          isWorn: true,
+        },
+      });
+
+      const wornLegItem2 = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "leg2",
+          isWorn: true,
+        },
+      });
+
+      const wornLegItem3 = await Item.findOne({
+        where: {
+          userId: user.id,
+          bodyPart: "legs",
+          isWorn: true,
+        },
+      });
+      if (wornLegItem1) {
+        wornLegItem1.isWorn = false;
+        await wornLegItem1.save();
+      }
+
+      if (wornLegItem2) {
+        wornLegItem2.isWorn = false;
+        await wornLegItem2.save();
+      }
+
+      if (wornLegItem3) {
+        wornLegItem3.isWorn = false;
+        await wornLegItem3.save();
       }
     }
 
