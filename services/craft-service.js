@@ -39,7 +39,7 @@ class CrafService {
 
       let chance = Math.random() * 100;
 
-      // Проверка, если у пользователя есть и надета "Дрон 'ЭД-Э'"
+      // Проверка, если у пользователя есть и надет ли "Дрон 'ЭД-Э'"
       const droneItem = await Item.findOne({
         where: {
           userId: user.id,
@@ -50,6 +50,18 @@ class CrafService {
 
       if (droneItem) {
         chance -= 25;
+      }
+
+      const pupsItem = await Item.findOne({
+        where: {
+          userId: user.id,
+          itemName: "Пупс «Удача»",
+          isWorn: true,
+        },
+      });
+
+      if (pupsItem) {
+        chance -= 5;
       }
 
       if (chance <= craft.chance) {

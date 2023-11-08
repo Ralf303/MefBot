@@ -35,6 +35,7 @@ class BonusService {
       await ctx.reply("Вы уже учавствовали в раздаче");
       return;
     }
+
     const item = await Item.create({
       src: itemInfo.src,
       itemName: itemInfo.name,
@@ -43,7 +44,20 @@ class BonusService {
       price: itemInfo.price,
     });
 
-    const prize = getRandomInt(1000, 10000);
+    let prize = getRandomInt(1000, 10000);
+
+    const pupsItem = await Item.findOne({
+      where: {
+        userId: user.id,
+        itemName: "Пупс «Удача»",
+        isWorn: true,
+      },
+    });
+
+    if (pupsItem) {
+      prize += 500;
+    }
+
     user.takeBonus += 2;
     user.balance += prize;
     user.fullSlots++;
@@ -144,7 +158,20 @@ class BonusService {
         return ctx.reply("поздно...");
       }
 
-      const prize = getRandomInt(1000, 10000);
+      let prize = getRandomInt(1000, 10000);
+
+      const pupsItem = await Item.findOne({
+        where: {
+          userId: user.id,
+          itemName: "Пупс «Удача»",
+          isWorn: true,
+        },
+      });
+
+      if (pupsItem) {
+        prize += 500;
+      }
+
       user.takeBonus++;
       user.balance += prize;
       await user.save();

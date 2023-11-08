@@ -933,6 +933,24 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  104: {
+    name: "Пупс «Красноречие»",
+    bodyPart: "pups_set6",
+    src: "img/pups_speech.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  105: {
+    name: "Кекс",
+    bodyPart: "right",
+    src: "img/keks_d.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

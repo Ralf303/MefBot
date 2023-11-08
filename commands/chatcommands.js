@@ -71,6 +71,12 @@ chatCommands.on("text", async (ctx, next) => {
       await checkUserProfile(user, ctx);
     }
 
+    if (userMessage == "пупсы") {
+      await ctx.reply(
+        `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n\nУдачи в поисках)`
+      );
+    }
+
     if (
       userMessage == "мой меф" ||
       userMessage == "меф" ||
@@ -165,9 +171,9 @@ chatCommands.on("text", async (ctx, next) => {
 
       if (!checkSub) {
         ctx.reply("📝 Для сбора мефа нужно быть подписанным на канал @mef_dev");
-        return;
+      } else {
+        await userFerma(ctx, user);
       }
-      await userFerma(ctx, user);
     }
 
     if (word1 == "бандит") {

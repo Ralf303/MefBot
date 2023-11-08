@@ -84,7 +84,28 @@ const open = async (user, ctx, box) => {
       winAmount = win;
     }
 
-    if (chance >= 600) {
+    if (chance === 600) {
+      const needItem = clothes[100];
+      const item = await Item.create({
+        src: needItem.src,
+        itemName: needItem.name,
+        bodyPart: needItem.bodyPart,
+        isWorn: false,
+      });
+
+      user.fullSlots++;
+      await user.addItem(item);
+      await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+      await ctx.telegram.sendMessage(
+        process.env.CHAT_ID,
+        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${needItem.name}❗️`
+      );
+      await resiveLog(user, needItem.name, 1, "приз из кейса");
+      await item.save();
+      return;
+    }
+
+    if (chance > 600) {
       result += " ничего😥";
     }
 

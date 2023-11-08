@@ -101,6 +101,17 @@ class TyneService {
             },
           }
         );
+
+        await Item.update(
+          {
+            src: "img/keks_n.png",
+          },
+          {
+            where: {
+              itemName: "Бонни",
+            },
+          }
+        );
       },
       null,
       true,
@@ -157,6 +168,17 @@ class TyneService {
         await Item.update(
           {
             src: "img/fnaf_boney_d.png",
+          },
+          {
+            where: {
+              itemName: "Бонни",
+            },
+          }
+        );
+
+        await Item.update(
+          {
+            src: "img/keks_d.png",
           },
           {
             where: {

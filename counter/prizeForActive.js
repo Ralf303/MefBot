@@ -9,17 +9,54 @@ const {
   findTopUserInMonth,
   findTopUserInWeek,
 } = require("../db/functions.js");
+const { Item } = require("../db/models.js");
+const clothes = require("../itemsObjects/clothes.js");
 const { resiveLog } = require("../logs/globalLogs.js");
+const { getRandomInt } = require("../utils/helpers.js");
 const CronJob = require("cron").CronJob;
 
 function Timings(bot) {
   new CronJob(
-    "5 0 0 * * *",
+    "40 0 0 * * *",
     async function () {
       const topUsers = await findTopUserInDay(); // вызываем функцию findTopUsersInDay
+      const chance = getRandomInt(0, 100);
+
+      if (chance <= 5) {
+        const randUser = getRandomInt(0, 2);
+        const itemInfo = clothes[104];
+        const item = await Item.create({
+          src: itemInfo.src,
+          itemName: itemInfo.name,
+          bodyPart: itemInfo.bodyPart,
+          isWorn: false,
+        });
+
+        const user = topUsers[randUser];
+        user.fullSlots++;
+        await user.addItem(item);
+        await bot.telegram.sendMessage(
+          process.env.CHAT_ID,
+          `❗️@${user.username} испытал удачу активчике и получил ${itemInfo.name}❗️`
+        );
+        await item.save();
+      }
+
       await resetDayCounter();
       if (topUsers[0]) {
-        const balanceToAdd = topUsers[0].dayMessageCounter + 500; // баланс первого пользователя равен его количеству сообщений + 500
+        let balanceToAdd = topUsers[0].dayMessageCounter + 500; // баланс первого пользователя равен его количеству сообщений + 500
+        const findItem = await Item.findOne({
+          where: {
+            userId: topUsers[0].id,
+            itemName: "Пупс «Красноречие»",
+            isWorn: true,
+          },
+        });
+
+        if (findItem) {
+          balanceToAdd += 500;
+        }
+
         topUsers[0].balance += balanceToAdd; // обновляем баланс первого пользователя
         await resiveLog(
           topUsers[0],
@@ -38,7 +75,19 @@ function Timings(bot) {
         );
       }
       if (topUsers[1]) {
-        const balanceToAdd = topUsers[1].dayMessageCounter; // баланс второго пользователя равен его количеству сообщений
+        let balanceToAdd = topUsers[1].dayMessageCounter; // баланс второго пользователя равен его количеству сообщений
+        const findItem = await Item.findOne({
+          where: {
+            userId: topUsers[1].id,
+            itemName: "Пупс «Красноречие»",
+            isWorn: true,
+          },
+        });
+
+        if (findItem) {
+          balanceToAdd += 500;
+        }
+
         topUsers[1].balance += balanceToAdd; // обновляем баланс второго пользователя
         await resiveLog(
           topUsers[1],
@@ -57,7 +106,19 @@ function Timings(bot) {
         );
       }
       if (topUsers[2]) {
-        const balanceToAdd = topUsers[2].dayMessageCounter; // баланс третьего пользователя равен его количеству сообщений
+        let balanceToAdd = topUsers[2].dayMessageCounter; // баланс третьего пользователя равен его количеству сообщений
+        const findItem = await Item.findOne({
+          where: {
+            userId: topUsers[2].id,
+            itemName: "Пупс «Красноречие»",
+            isWorn: true,
+          },
+        });
+
+        if (findItem) {
+          balanceToAdd += 500;
+        }
+
         topUsers[2].balance += balanceToAdd; // обновляем баланс третьего пользователя
         await resiveLog(
           topUsers[2],
@@ -89,6 +150,7 @@ function Timings(bot) {
     "20 0 0 * * 1",
     async function () {
       const topUser = await findTopUserInWeek();
+
       await resetWeekCounter();
       if (topUser) {
         await topUser.update({ balance: topUser.balance + 15000 });

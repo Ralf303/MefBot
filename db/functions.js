@@ -2,23 +2,27 @@ const sequelize = require("./db.js");
 const { User } = require("./models");
 
 const getUser = async (chatId, firstName, username) => {
-  let user = await User.findOne({ where: { chatId } });
-  if (!user) {
-    user = await User.create({ chatId, firstname: firstName, username });
-  } else {
-    if (!username) {
-      user = await user.update({ username: "dont_have_tag" });
-    }
+  try {
+    let user = await User.findOne({ where: { chatId } });
+    if (!user) {
+      user = await User.create({ chatId, firstname: firstName, username });
+    } else {
+      if (!username) {
+        user = await user.update({ username: "dont_have_tag" });
+      }
 
-    if (!(user.username === username)) {
-      user = await user.update({ username });
-    }
+      if (!(user.username === username)) {
+        user = await user.update({ username });
+      }
 
-    if (!user.firstname || !(user.firstname === firstName)) {
-      user = await user.update({ firstname: firstName });
+      if (!user.firstname || !(user.firstname === firstName)) {
+        user = await user.update({ firstname: firstName });
+      }
     }
+    return user;
+  } catch (e) {
+    console.log(e);
   }
-  return user;
 };
 
 async function findTopUserInDay() {

@@ -155,6 +155,18 @@ async function userFerma(ctx, user) {
       randmef *= 5;
     }
 
+    const hasPups = await Item.findOne({
+      where: {
+        userId: user.id,
+        itemName: "Пупс «Удача»",
+        isWorn: true,
+      },
+    });
+
+    if (hasPups) {
+      randmef += 555;
+    }
+
     await ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
     await resiveLog(user, "меф", randmef, "сбор фермы");
