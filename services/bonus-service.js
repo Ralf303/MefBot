@@ -91,7 +91,7 @@ class BonusService {
       inline_keyboard: [
         [
           {
-            text: "❗️УЧАВСТВУЮ❗️",
+            text: "❗️УЧАСТВУЮ❗️",
             url: `${process.env.BOT_URL}?start=event_${id}`,
           },
         ],
@@ -102,7 +102,7 @@ class BonusService {
       this.#chatId,
       { source: await blendImages([itemInfo.src]) },
       {
-        caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на этот канал\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее учавствуй👇`,
+        caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на этот канал\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее участвуй👇`,
         reply_markup: keyboard,
       }
     );

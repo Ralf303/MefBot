@@ -108,7 +108,7 @@ class TyneService {
           },
           {
             where: {
-              itemName: "Бонни",
+              itemName: "Кекс",
             },
           }
         );
@@ -182,7 +182,7 @@ class TyneService {
           },
           {
             where: {
-              itemName: "Бонни",
+              itemName: "Кекс",
             },
           }
         );

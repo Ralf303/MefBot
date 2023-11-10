@@ -20,7 +20,7 @@ function Timings(bot) {
     "40 0 0 * * *",
     async function () {
       const topUsers = await findTopUserInDay(); // вызываем функцию findTopUsersInDay
-      const chance = getRandomInt(0, 100);
+      const chance = getRandomInt(0, 50);
 
       if (chance <= 5) {
         const randUser = getRandomInt(0, 2);
@@ -37,7 +37,7 @@ function Timings(bot) {
         await user.addItem(item);
         await bot.telegram.sendMessage(
           process.env.CHAT_ID,
-          `❗️@${user.username} испытал удачу активчике и получил ${itemInfo.name}❗️`
+          `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
         );
         await item.save();
       }
