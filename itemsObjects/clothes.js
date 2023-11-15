@@ -951,6 +951,15 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  106: {
+    name: "Пупс «Харизма»",
+    bodyPart: "pups_set1",
+    src: "img/pups_charizma.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

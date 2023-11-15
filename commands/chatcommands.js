@@ -73,7 +73,7 @@ chatCommands.on("text", async (ctx, next) => {
 
     if (userMessage == "пупсы") {
       await ctx.reply(
-        `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n\nУдачи в поисках)`
+        `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n\nУдачи в поисках)`
       );
     }
 
@@ -180,7 +180,7 @@ chatCommands.on("text", async (ctx, next) => {
       await bandit(word2, user, ctx);
     }
 
-    if (word1 == "крафты") {
+    if (userMessage == "крафты") {
       craftService.craftList(ctx);
     }
 
@@ -238,7 +238,7 @@ chatCommands.on("text", async (ctx, next) => {
       await getWornItems(user, ctx);
     }
 
-    if (userMessage == "донат") {
+    if (userMessage.includes("донат")) {
       await shopGenerator("4", ctx);
     }
 

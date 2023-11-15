@@ -80,7 +80,7 @@ const deleteItem = async (user, id, ctx) => {
     return;
   }
 
-  const cashBack = Math.floor(item.price / 2);
+  const cashBack = item.price / 2;
   await ctx.reply(
     `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`
   );

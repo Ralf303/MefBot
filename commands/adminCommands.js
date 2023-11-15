@@ -7,7 +7,14 @@ const { generatePassword } = require("../utils/helpers");
 
 const adminCommands = new Composer();
 
-adminTriggers = ["список вещей", "выдать", "основатель", "админка", "-админка"];
+adminTriggers = [
+  "список вещей",
+  "выдать",
+  "основатель",
+  "админка",
+  "-админка",
+  "-ферма",
+];
 adminList = [1157591765];
 
 adminCommands.on("text", async (ctx, next) => {
@@ -30,6 +37,11 @@ adminCommands.on("text", async (ctx, next) => {
           i++;
         }
         await ctx.reply(result);
+      }
+
+      if (userMessage == "-ферма") {
+        await User.update({ farmtime: 0 }, { where: {} });
+        await ctx.reply("готово :)");
       }
 
       if (userMessage == "основатель") {
