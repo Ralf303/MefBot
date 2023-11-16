@@ -960,6 +960,15 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  107: {
+    name: "Мне пора. Удачи!",
+    bodyPart: "extra",
+    src: "img/mne_pora.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;
