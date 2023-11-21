@@ -969,6 +969,51 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  108: {
+    name: "Кавасаки",
+    bodyPart: "leg1",
+    src: "img/kavasaki.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  109: {
+    name: "Эстрипер",
+    bodyPart: "leg2",
+    src: "img/estriper.png",
+    price: 666,
+    canBuy: true,
+    class: "special",
+  },
+
+  110: {
+    name: "Каго",
+    bodyPart: "leg1",
+    src: "img/kago.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  111: {
+    name: "Крико",
+    bodyPart: "leg2",
+    src: "img/kriko.png",
+    price: 44444,
+    canBuy: true,
+    class: "middle",
+  },
+
+  112: {
+    name: "Морф",
+    bodyPart: "leg2",
+    src: "img/morf.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;
