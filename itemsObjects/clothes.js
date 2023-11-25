@@ -878,6 +878,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   98: {
@@ -887,6 +888,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   99: {
@@ -896,6 +898,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   100: {
@@ -905,6 +908,7 @@ const clothes = {
     price: 50000,
     canBuy: false,
     class: "impossible",
+    info: "С этой штукой вам подозрительно будет везти",
   },
 
   101: {
@@ -914,6 +918,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   102: {
@@ -923,6 +928,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   103: {
@@ -941,6 +947,7 @@ const clothes = {
     price: 50000,
     canBuy: false,
     class: "impossible",
+    info: "Ваше общение будет оплачиваться в два раза выше!",
   },
 
   105: {
@@ -950,6 +957,7 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+    info: "Лучше не смотри на них с 00:00 до 6:00....",
   },
 
   106: {
@@ -959,6 +967,7 @@ const clothes = {
     price: 50000,
     canBuy: false,
     class: "impossible",
+    info: "Пользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду",
   },
 
   107: {
@@ -1007,12 +1016,13 @@ const clothes = {
   },
 
   112: {
-    name: "Морф",
-    bodyPart: "leg2",
-    src: "img/morf.png",
-    price: 0,
-    canBuy: false,
-    class: "impossible",
+    name: "Пупс «Интелект»",
+    bodyPart: "pups_set2",
+    src: "img/pups_inte.png",
+    price: 50000,
+    canBuy: true,
+    class: "elite",
+    info: "С ним вы будете казаться умнее, а еще все знают какой вы богатый)",
   },
 };
 

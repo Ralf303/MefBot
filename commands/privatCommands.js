@@ -1,11 +1,10 @@
-const { Keyboard, Key } = require("telegram-keyboard");
 const { Composer } = require("telegraf");
 const clothes = require("../itemsObjects/clothes");
 const { tryItem } = require("../itemsModule/clothesFunctions");
 
 const privatCommands = new Composer();
 
-privatTriggers = ["магазин", "примерить", "рулетка"];
+privatTriggers = ["примерить", "рулетка"];
 
 privatCommands.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
@@ -14,23 +13,6 @@ privatCommands.on("text", async (ctx, next) => {
 
   try {
     if (IsPrivate) {
-      if (userMessage == "магазин") {
-        await ctx.reply(
-          "Выберите что хотите купить:",
-          Keyboard.inline([
-            [
-              Key.callback("Товары чата", "chatAssortiment"),
-              "Улучшения",
-              "Вещи",
-            ],
-            [
-              Key.callback("Закрыть", "dell"),
-              Key.callback("🤑DonateLand🤑", "4"),
-            ],
-          ])
-        );
-      }
-
       if (userMessage == "рулетка") {
         ctx.scene.enter("rouletteScene");
       }

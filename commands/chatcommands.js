@@ -7,7 +7,6 @@ require("dotenv").config({
 const {
   getRandomInt,
   generateCapcha,
-  notify,
   checkUserSub,
   checkUserProfile,
   shopGenerator,
@@ -29,6 +28,7 @@ const {
   getWornItems,
   buyItem,
   getItemInfo,
+  checkId,
 } = require("../itemsModule/clothesFunctions");
 const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
@@ -37,6 +37,7 @@ const cases = require("../itemsObjects/cases");
 const rp = require("../utils/arrays/rp-array");
 const craftService = require("../services/craft-service");
 const gemsService = require("../services/gems-service");
+const { Keyboard, Key } = require("telegram-keyboard");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -72,9 +73,72 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "пупсы") {
-      await ctx.reply(
-        `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n\nУдачи в поисках)`
-      );
+      try {
+        await ctx.telegram.sendMessage(
+          ctx.from.id,
+          `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n•Пупс «Интелект»\nС ним вы будете казаться умнее, а еще все знают какой вы богатый)\n\n\nУдачи в поисках)`
+        );
+
+        if (ctx.chat.type !== "private") {
+          await ctx.replyWithHTML(
+            'Информация о пупсах отправлена в <a href="https://t.me/PablMefBot">ЛС бота</a>',
+            {
+              reply_to_message_id: ctx.message.message_id,
+              disable_web_page_preview: true,
+            }
+          );
+        }
+      } catch (error) {
+        console.log(error);
+        await ctx.reply(
+          "Я не смог отправить тебе секретную инфу так как ты меня заблокал",
+          { reply_to_message_id: ctx.message.message_id }
+        );
+      }
+    }
+
+    if (userMessage == "магазин") {
+      try {
+        await ctx.telegram.sendMessage(
+          ctx.from.id,
+          "Выберите что хотите купить:",
+          Keyboard.inline([
+            [
+              Key.callback("Товары чата", "chatAssortiment"),
+              "Улучшения",
+              "Вещи",
+            ],
+            [
+              Key.callback("Закрыть", "dell"),
+              Key.callback("🤑DonateLand🤑", "4"),
+            ],
+          ])
+        );
+
+        if (ctx.chat.type !== "private") {
+          await ctx.replyWithHTML(
+            'Магазин уже открыт в <a href="https://t.me/PablMefBot">ЛС бота</a>',
+            {
+              reply_to_message_id: ctx.message.message_id,
+              disable_web_page_preview: true,
+            }
+          );
+        }
+      } catch (e) {
+        await ctx.reply("Я не смог открыть магазин так как ты меня заблокал", {
+          reply_to_message_id: ctx.message.message_id,
+        });
+      }
+    }
+
+    if (word1 == "узнать") {
+      const id = Number(word3);
+
+      if (!isNaN(id) && word2 == "айди") {
+        await checkId(id, ctx);
+
+        return;
+      }
     }
 
     if (

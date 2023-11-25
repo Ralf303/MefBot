@@ -455,7 +455,10 @@ const getWornItems = async (user, ctx) => {
     if (wornItems.length === 0) {
       await ctx.replyWithPhoto(
         { source: "img/bg.jpg" },
-        { caption: `На вас ничего не надето` }
+        {
+          caption: `На вас ничего не надето`,
+          reply_to_message_id: ctx.message.message_id,
+        }
       );
       return;
     }
@@ -473,7 +476,11 @@ const getWornItems = async (user, ctx) => {
     // возвращаем список надетых вещей
     await ctx.replyWithPhoto(
       { source: await blendImages(src) },
-      { parse_mode: "HTML", caption: `На вас надето:\n${rows.join("\n")}` }
+      {
+        parse_mode: "HTML",
+        caption: `На вас надето:\n${rows.join("\n")}`,
+        reply_to_message_id: ctx.message.message_id,
+      }
     );
     return;
   } catch (error) {
@@ -542,6 +549,26 @@ const getItemInfo = async (id, ctx) => {
   await ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
 };
 
+const checkId = async (id, ctx) => {
+  const needItem = await Item.findOne({ where: { id: id } }); // Изменение условия для поиска элемента в базе данных
+  if (!needItem) {
+    await ctx.reply("Такой вещи вообще нет😥");
+    return;
+  }
+  let info;
+
+  for (let itemId in clothes) {
+    // Изменение имени переменной id на itemId
+    if (clothes[itemId].name === needItem.itemName) {
+      info = itemId;
+    }
+  }
+
+  await ctx.replyWithHTML(`<code>инфа ${info}</code>`);
+
+  // await ctx.reply(`❗️${needItem.name}❗️\n\n${info}`); // Вероятно здесь также произошла опечатка в шаблонной строке, необходимо использовать обратные кавычки (`) вместо кавычек (')
+};
+
 module.exports = {
   buyItem,
   deleteItem,
@@ -552,4 +579,5 @@ module.exports = {
   tryItem,
   getItemInfo,
   blendImages,
+  checkId,
 };

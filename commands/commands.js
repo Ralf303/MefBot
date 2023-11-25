@@ -16,10 +16,12 @@ command.start(async (ctx) => {
 
       if (/^\d+$/.test(value)) {
         bonusService.takeBonus(user, ctx, value);
+        return;
       }
 
       if (value.includes("event_")) {
         bonusService.giveItem(user, ctx, value.slice(6));
+        return;
       }
     } else {
       await ctx.reply(
