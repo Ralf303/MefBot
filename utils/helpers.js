@@ -77,12 +77,12 @@ async function checkUserProfile(user, ctx) {
   const message = ctx.message.reply_to_message;
 
   if (!message) {
-    await ctx.reply(
+    await ctx.replyWithHTML(
       "Ваш ник: " +
         user.firstname +
-        "\nId: " +
+        "\nId: <code>" +
         user.chatId +
-        "\nВаш меф: " +
+        "</code>\nВаш меф: " +
         user.balance +
         "\nВаши гемы: " +
         user.gems +
@@ -114,12 +114,12 @@ async function checkUserProfile(user, ctx) {
     });
 
     if (player) {
-      await ctx.reply(
+      await ctx.replyWithHTML(
         "Профиль " +
           player.firstname +
-          "\nId: " +
+          "\nId: <code>" +
           player.chatId +
-          "\nГрамм мефа: " +
+          "</code>\nГрамм мефа: " +
           player.balance +
           "\nГемы: " +
           player.gems +

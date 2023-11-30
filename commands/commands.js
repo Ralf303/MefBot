@@ -3,6 +3,7 @@ const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions.js");
 const { Item } = require("../db/models.js");
 const bonusService = require("../services/bonus-service.js");
+const { Sequelize } = require("../db/db.js");
 
 const command = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -106,6 +107,38 @@ command.command("change", async (ctx) => {
     ctx.reply("Шайлушай изменен");
   } catch (error) {
     console.log(error);
+  }
+});
+
+command.command("time", async (ctx) => {
+  try {
+    const user = await getUser(
+      ctx.from.id,
+      ctx.from.first_name,
+      ctx.from.username
+    );
+
+    const item = await Item.findOne({
+      where: {
+        itemName: {
+          [Sequelize.Op.like]: "%Часы%",
+        },
+        userId: user.id,
+        isWorn: true,
+      },
+    });
+
+    if (item) {
+      const date = new Date();
+      const hours = (date.getHours() < 10 ? "0" : "") + date.getHours();
+      const minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
+
+      ctx.reply(`${item.itemName} показали: ${hours}:${minutes} по МСК`);
+    } else {
+      ctx.reply("У вас нет часов😢");
+    }
+  } catch (e) {
+    console.log(e);
   }
 });
 

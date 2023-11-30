@@ -565,8 +565,6 @@ const checkId = async (id, ctx) => {
   }
 
   await ctx.replyWithHTML(`<code>инфа ${info}</code>`);
-
-  // await ctx.reply(`❗️${needItem.name}❗️\n\n${info}`); // Вероятно здесь также произошла опечатка в шаблонной строке, необходимо использовать обратные кавычки (`) вместо кавычек (')
 };
 
 module.exports = {
