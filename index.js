@@ -1,5 +1,7 @@
 const { Telegraf, session, Scenes } = require("telegraf");
 const express = require("express");
+const https = require("https");
+const fs = require("fs");
 const rateLimit = require("telegraf-ratelimit");
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
@@ -52,7 +54,13 @@ const start = async () => {
           domain: process.env.WEB_HOOK_URL,
         })
       );
-      app.listen(port, () => console.log("Listening on port", port));
+      const options = {
+        key: fs.readFileSync(process.env.SECRET_KEY),
+        cert: fs.readFileSync(process.env.SERTIFICATE),
+      };
+      https.createServer(options, app).listen(port, () => {
+        console.log("Бот работает на порту", port);
+      });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на веб хуке");
     } else {
       bot.launch({ dropPendingUpdates: true });
