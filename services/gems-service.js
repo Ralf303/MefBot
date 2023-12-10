@@ -1,6 +1,8 @@
-const { User } = require("../db/models");
+const e = require("express");
+const { User, Item } = require("../db/models");
 const { loseLog, giveResoursesLog } = require("../logs/globalLogs");
 const sequelize = require("sequelize");
+const { getRandomInt } = require("../utils/helpers");
 const CronJob = require("cron").CronJob;
 
 class GemService {
@@ -83,6 +85,35 @@ class GemService {
       true,
       "Europe/Moscow"
     );
+  }
+
+  async sintez(user, amount) {
+    try {
+      if (user.gems < amount) {
+        return "Недостаточно гемов🥲";
+      }
+
+      const hasPups = await Item.findOne({
+        where: {
+          userId: user.id,
+          itemName: "Пупс «Наука»",
+          isWorn: true,
+        },
+      });
+
+      if (hasPups) {
+        const mef = amount * getRandomInt(1, 5);
+
+        user.gems -= amount;
+        user.balance += mef;
+        await user.save();
+
+        return `Вы успешно синтезировали ${amount} гемов в ${mef} грамм мефа🧪`;
+      } else return "У вас нет пупса науки🥲";
+    } catch (error) {
+      console.log(error);
+      return "Ошибка при выполнении операции.", error;
+    }
   }
 }
 

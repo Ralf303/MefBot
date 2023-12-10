@@ -245,4 +245,64 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     console.log(error);
   }
 };
-module.exports = { giveCoins, giveItem, giveCase, giveDonateCase };
+
+const giveSnowflakes = async (ctx) => {
+  const chatId = ctx.from.id;
+  const message = ctx.message.reply_to_message;
+
+  if (!message) {
+    return;
+  }
+
+  const receiverChatId = message.from.id;
+  const amount = parseInt(ctx.message.text.split(" ")[2]);
+
+  if (isNaN(amount) || amount <= 0) {
+    return;
+  }
+
+  // проверяем, что отправитель не является ботом
+  if (message.from.is_bot) {
+    await ctx.reply("Зачем боту снежинки🧐");
+    return;
+  }
+
+  try {
+    const sender = await User.findOne({ where: { chatId } });
+    let receiver = await User.findOne({
+      where: { chatId: receiverChatId },
+    });
+
+    if (sender.event < amount) {
+      await ctx.reply("Недостаточно снежинок🥲");
+      return;
+    }
+
+    if (sender.id === receiver.id) {
+      await ctx.reply("Нельзя передавать снежинки самому себе🖕");
+      return;
+    }
+
+    sender.event -= amount;
+    receiver.event += amount;
+    await sender.save();
+    await receiver.save();
+    await ctx.reply(
+      `Вы успешно передали ${amount} снежинок пользователю ${message.from.first_name}`
+    );
+
+    await loseLog(sender, "снежинки", "передача другому пользователю");
+    await giveResoursesLog(sender, receiver, "снежинки", amount);
+  } catch (error) {
+    console.log(error);
+    await ctx.reply("Ошибка при выполнении операции.");
+  }
+};
+
+module.exports = {
+  giveCoins,
+  giveItem,
+  giveCase,
+  giveDonateCase,
+  giveSnowflakes,
+};

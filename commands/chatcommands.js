@@ -18,6 +18,7 @@ const {
   giveItem,
   giveCase,
   giveDonateCase,
+  giveSnowflakes,
 } = require("./giveScripts.js");
 const clothes = require("../itemsObjects/clothes");
 const {
@@ -146,11 +147,26 @@ chatCommands.on("text", async (ctx, next) => {
       userMessage == "меф" ||
       userMessage == "б"
     ) {
-      await ctx.reply("Ваш меф: " + user.balance + "\nВаши гемы: " + user.gems);
+      await ctx.reply(
+        "Ваш меф: " +
+          user.balance +
+          "\nВаши гемы: " +
+          user.gems +
+          "\nВаши снежинки: " +
+          user.event
+      );
     }
 
     if (word1 == "отсыпать") {
       await giveCoins(ctx);
+    }
+
+    if (word1 == "передать" && word2 == "снежинки") {
+      await giveSnowflakes(ctx);
+    }
+
+    if (userMessage == "нг шоп") {
+      await shopGenerator("6", ctx);
     }
 
     if (userMessage == "бот") {
@@ -236,6 +252,7 @@ chatCommands.on("text", async (ctx, next) => {
       if (!checkSub) {
         ctx.reply("📝 Для сбора мефа нужно быть подписанным на канал @mef_dev");
       } else {
+        user.event += getRandomInt(1, 5);
         await userFerma(ctx, user);
       }
     }
@@ -339,6 +356,14 @@ chatCommands.on("text", async (ctx, next) => {
       }
     }
 
+    if (word1 == "синтез") {
+      const amount = Number(word2);
+      if (!isNaN(amount) && amount > 0) {
+        const response = await gemsService.sintez(user, amount);
+        await ctx.reply(response);
+      }
+    }
+
     await user.save();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);
@@ -347,7 +372,7 @@ chatCommands.on("text", async (ctx, next) => {
 });
 
 function CaptureGenerator(bot) {
-  const job = new CronJob(
+  new CronJob(
     "0 5 */2 * * *",
     async function () {
       try {

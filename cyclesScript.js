@@ -1,5 +1,5 @@
 const { Item, User } = require("./db/models");
-const { calculateMiningAmount } = require("./utils/helpers");
+const { calculateMiningAmount, sleep } = require("./utils/helpers");
 
 const CronJob = require("cron").CronJob;
 require("dotenv").config({
@@ -44,24 +44,27 @@ function Cycles(bot) {
   new CronJob(
     "20 0 13 * * *",
     async function () {
-      try {
-        const drones = await Item.findAll({
-          where: {
-            itemName: "Дрон Майнер",
-            isWorn: true,
-          },
-        });
+      const drones = await Item.findAll({
+        where: {
+          itemName: "Дрон Майнер",
+          isWorn: true,
+        },
+      });
 
+      if (drones) {
         for (const drone of drones) {
-          const user = await User.findOne({ where: { id: drone.userId } });
-          const minedAmount = calculateMiningAmount(user.balance);
-          user.balance += minedAmount;
-          await user.save();
-          const message = `Я намайнил ${minedAmount} мефа🤑`;
-          await bot.telegram.sendMessage(user.chatId, message);
+          try {
+            const user = await User.findOne({ where: { id: drone.userId } });
+            const minedAmount = calculateMiningAmount(user.balance);
+            user.balance += minedAmount;
+            await user.save();
+            const message = `Я намайнил ${minedAmount} мефа🤑`;
+            await bot.telegram.sendMessage(user.chatId, message);
+            await sleep(200);
+          } catch (error) {
+            console.log(error);
+          }
         }
-      } catch (error) {
-        console.log(error);
       }
     },
     null,

@@ -1024,6 +1024,61 @@ const clothes = {
     class: "elite",
     info: "С ним вы будете казаться умнее, а еще все знают какой вы богатый)",
   },
+
+  113: {
+    name: "Пупс «Наука»",
+    bodyPart: "pups_set5",
+    src: "img/pups_nauka.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+    info: "Интелект пораждает науку, наука раскрывает невероятные способности...",
+  },
+
+  114: {
+    name: "Елка",
+    bodyPart: "leg2",
+    src: "img/elka.png",
+    price: 5,
+    canBuy: true,
+    class: "event",
+  },
+
+  115: {
+    name: "Бенгальский огонь",
+    bodyPart: "left",
+    src: "img/ogon.png",
+    price: 25,
+    canBuy: true,
+    class: "event",
+  },
+
+  116: {
+    name: "Пряня",
+    bodyPart: "face",
+    src: "img/pryna.png",
+    price: 100,
+    canBuy: true,
+    class: "event",
+  },
+
+  117: {
+    name: "Подарки",
+    bodyPart: "leg1",
+    src: "img/podarki.png",
+    price: 75,
+    canBuy: true,
+    class: "event",
+  },
+
+  118: {
+    name: "Новогодняя шапочка",
+    bodyPart: "head",
+    src: "img/ng_hat.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;

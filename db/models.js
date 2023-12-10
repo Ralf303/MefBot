@@ -30,6 +30,7 @@ const User = sequelize.define("user", {
   gemCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
   fnafCase: { type: DataTypes.INTEGER, defaultValue: 0 },
+  event: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {
