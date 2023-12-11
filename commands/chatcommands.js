@@ -252,7 +252,6 @@ chatCommands.on("text", async (ctx, next) => {
       if (!checkSub) {
         ctx.reply("📝 Для сбора мефа нужно быть подписанным на канал @mef_dev");
       } else {
-        user.event += getRandomInt(1, 5);
         await userFerma(ctx, user);
       }
     }

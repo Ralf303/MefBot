@@ -169,6 +169,7 @@ async function userFerma(ctx, user) {
 
     await ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
+    user.event += getRandomInt(1, 5);
     await resiveLog(user, "меф", randmef, "сбор фермы");
   } else {
     let remainingTime;
