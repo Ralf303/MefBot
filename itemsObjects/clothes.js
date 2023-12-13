@@ -1079,6 +1079,33 @@ const clothes = {
     canBuy: false,
     class: "impossible",
   },
+
+  119: {
+    name: "Нг нэ будет",
+    bodyPart: "leg2",
+    src: "img/ne_budet.png",
+    price: 200,
+    canBuy: true,
+    class: "event",
+  },
+
+  120: {
+    name: "Нг котейка",
+    bodyPart: "leg1",
+    src: "img/ng_cat.png",
+    price: 150,
+    canBuy: true,
+    class: "event",
+  },
+
+  121: {
+    name: "Снеговик",
+    bodyPart: "head",
+    src: "img/snegovik.png",
+    price: 111,
+    canBuy: true,
+    class: "event",
+  },
 };
 
 module.exports = clothes;
