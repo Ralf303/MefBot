@@ -112,7 +112,19 @@ class TyneService {
             },
           }
         );
+
+        await Item.update(
+          {
+            src: "img/mangl_n.png",
+          },
+          {
+            where: {
+              itemName: "Мангл",
+            },
+          }
+        );
       },
+
       null,
       true,
       "Europe/Moscow"
@@ -183,6 +195,17 @@ class TyneService {
           {
             where: {
               itemName: "Кекс",
+            },
+          }
+        );
+
+        await Item.update(
+          {
+            src: "img/mangl_d.png",
+          },
+          {
+            where: {
+              itemName: "Мангл",
             },
           }
         );

@@ -934,7 +934,7 @@ const clothes = {
   103: {
     name: "Мангл",
     bodyPart: "extra",
-    src: "img/mangl.png",
+    src: "img/mangl_d.png",
     price: 0,
     canBuy: false,
     class: "impossible",
