@@ -1106,6 +1106,15 @@ const clothes = {
     canBuy: true,
     class: "event",
   },
+
+  122: {
+    name: "Банан",
+    bodyPart: "right",
+    src: "img/banana.png",
+    price: 49,
+    canBuy: true,
+    class: "low",
+  },
 };
 
 module.exports = clothes;
