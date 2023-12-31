@@ -1115,6 +1115,24 @@ const clothes = {
     canBuy: true,
     class: "low",
   },
+
+  123: {
+    name: "Нг тян",
+    bodyPart: "leg1",
+    src: "img/ng-tyne.png",
+    price: 1000,
+    canBuy: true,
+    class: "event",
+  },
+
+  124: {
+    name: "1000-7",
+    bodyPart: "legs",
+    src: "img/plushka.png",
+    price: 0,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;
