@@ -1119,7 +1119,7 @@ const clothes = {
   123: {
     name: "Нг тян",
     bodyPart: "leg1",
-    src: "img/ng-tyne.png",
+    src: "img/ng_tyne.png",
     price: 1000,
     canBuy: true,
     class: "event",
