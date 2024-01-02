@@ -102,7 +102,7 @@ class GemService {
       });
 
       if (hasPups) {
-        const mef = amount * getRandomInt(1, 5);
+        const mef = amount * getRandomInt(1, 100);
 
         user.gems -= amount;
         user.balance += mef;

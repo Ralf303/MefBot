@@ -56,6 +56,11 @@ function Cycles(bot) {
           try {
             const user = await User.findOne({ where: { id: drone.userId } });
             const minedAmount = calculateMiningAmount(user.balance);
+
+            if (minedAmount > 100000) {
+              minedAmount = 100000;
+            }
+
             user.balance += minedAmount;
             await user.save();
             const message = `Я намайнил ${minedAmount} мефа🤑`;
