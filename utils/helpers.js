@@ -20,7 +20,7 @@ function generateCapcha() {
 }
 
 function calculateMiningAmount(balance) {
-  return Math.floor(balance * 0.05);
+  return Math.floor(balance * 0.1);
 }
 
 function generatePassword(length) {

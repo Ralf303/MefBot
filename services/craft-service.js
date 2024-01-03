@@ -1,4 +1,5 @@
 const { Item } = require("../db/models");
+const { checkItem } = require("../itemsModule/clothesFunctions");
 const clothes = require("../itemsObjects/clothes");
 const craftItems = require("../itemsObjects/crafts");
 const { loseLog, resiveLog } = require("../logs/globalLogs");
@@ -40,26 +41,13 @@ class CrafService {
       let chance = Math.random() * 100;
 
       // Проверка, если у пользователя есть и надет ли "Дрон 'ЭД-Э'"
-      const droneItem = await Item.findOne({
-        where: {
-          userId: user.id,
-          itemName: 'Дрон "ЭД-Э"',
-          isWorn: true,
-        },
-      });
+      const droneItem = await checkItem(user.id, 'Дрон "ЭД-Э"');
 
       if (droneItem) {
         chance -= 25;
       }
 
-      const pupsItem = await Item.findOne({
-        where: {
-          userId: user.id,
-          itemName: "Пупс «Удача»",
-          isWorn: true,
-        },
-      });
-
+      const pupsItem = await checkItem(user.id, "Пупс «Удача»");
       if (pupsItem) {
         chance -= 5;
       }

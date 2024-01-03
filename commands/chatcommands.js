@@ -30,6 +30,7 @@ const {
   buyItem,
   getItemInfo,
   checkId,
+  checkItem,
 } = require("../itemsModule/clothesFunctions");
 const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
@@ -77,7 +78,7 @@ chatCommands.on("text", async (ctx, next) => {
       try {
         await ctx.telegram.sendMessage(
           ctx.from.id,
-          `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n•Пупс «Интелект»\nС ним вы будете казаться умнее, а еще все знают какой вы богатый)\n\n•Пупс «Наука»\nИспользуй команду синтез для конвертации гемов в меф\n\n\nУдачи в поисках)`
+          `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n•Пупс «Интелект»\nС ним вы будете казаться умнее, а еще все знают какой вы богатый)\n\n•Пупс «Наука»\nИспользуй команду синтез для конвертации гемов в меф\n\n•Пупс «Бартер»\nПри продаже вещей вы получаете полную ее стоимость, а не 50%\n\n\nУдачи в поисках)`
         );
 
         if (ctx.chat.type !== "private") {
@@ -187,13 +188,7 @@ chatCommands.on("text", async (ctx, next) => {
     if (userMessage === capture) {
       let randommef = getRandomInt(500, 1000);
 
-      const hasCalculator = await Item.findOne({
-        where: {
-          userId: user.id,
-          itemName: "Калькулятор",
-          isWorn: true,
-        },
-      });
+      const hasCalculator = await checkItem(user.id, "Калькулятор");
 
       if (hasCalculator) {
         randommef *= 3;

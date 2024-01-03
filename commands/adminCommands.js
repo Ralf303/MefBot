@@ -33,10 +33,10 @@ adminCommands.on("text", async (ctx, next) => {
         let result = "Список всех вещей\n";
         let i = 1;
         for (const item in clothes) {
-          result += `${i}) ${clothes[item].name}[${item}] Цена: ${clothes[item].price}\n`;
+          result += `${clothes[item].name}[<code>${item}</code>]\n`;
           i++;
         }
-        await ctx.reply(result);
+        await ctx.replyWithHTML(result);
       }
 
       if (userMessage == "-ферма") {

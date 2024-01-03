@@ -520,7 +520,7 @@ const clothes = {
     price: 50,
     canBuy: false,
     class: "impossible",
-    info: "Майнит 5% от вашего общего количества мефа раз в сутки, когда надет на пабло",
+    info: "Майнит 10% от вашего общего количества мефа раз в сутки, когда надет на пабло\n\nМаксимальная сумма майнинга 100к",
   },
 
   59: {
@@ -1132,6 +1132,16 @@ const clothes = {
     price: 0,
     canBuy: false,
     class: "impossible",
+  },
+
+  125: {
+    name: "Пупс «Бартер»",
+    bodyPart: "pups_set7",
+    src: "img/pups_barter.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+    info: "При продаже вещей вы получаете полную ее стоимость, а не 50%",
   },
 };
 

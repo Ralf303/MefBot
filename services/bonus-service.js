@@ -5,7 +5,7 @@ require("dotenv").config({
 const { User, Bonus, Item } = require("../db/models");
 const { getRandomInt } = require("../utils/helpers");
 const clothes = require("../itemsObjects/clothes");
-const { blendImages } = require("../itemsModule/clothesFunctions");
+const { blendImages, checkItem } = require("../itemsModule/clothesFunctions");
 
 class BonusService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -46,13 +46,7 @@ class BonusService {
 
     let prize = getRandomInt(1000, 10000);
 
-    const pupsItem = await Item.findOne({
-      where: {
-        userId: user.id,
-        itemName: "Пупс «Удача»",
-        isWorn: true,
-      },
-    });
+    const pupsItem = await checkItem(user.id, "Пупс «Удача»");
 
     if (pupsItem) {
       prize += 500;
@@ -163,7 +157,7 @@ class BonusService {
       const pupsItem = await Item.findOne({
         where: {
           userId: user.id,
-          itemName: "Пупс «Удача»",
+          itemName: "",
           isWorn: true,
         },
       });

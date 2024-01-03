@@ -10,6 +10,7 @@ const {
   findTopUserInWeek,
 } = require("../db/functions.js");
 const { Item } = require("../db/models.js");
+const { checkItem } = require("../itemsModule/clothesFunctions.js");
 const clothes = require("../itemsObjects/clothes.js");
 const { resiveLog } = require("../logs/globalLogs.js");
 const { getRandomInt } = require("../utils/helpers.js");
@@ -45,13 +46,8 @@ function Timings(bot) {
       await resetDayCounter();
       if (topUsers[0]) {
         let balanceToAdd = topUsers[0].dayMessageCounter + 500; // баланс первого пользователя равен его количеству сообщений + 500
-        const findItem = await Item.findOne({
-          where: {
-            userId: topUsers[0].id,
-            itemName: "Пупс «Красноречие»",
-            isWorn: true,
-          },
-        });
+
+        const findItem = await checkItem(topUsers[0].id, "Пупс «Красноречие»");
 
         if (findItem) {
           balanceToAdd += 500;
@@ -76,13 +72,7 @@ function Timings(bot) {
       }
       if (topUsers[1]) {
         let balanceToAdd = topUsers[1].dayMessageCounter; // баланс второго пользователя равен его количеству сообщений
-        const findItem = await Item.findOne({
-          where: {
-            userId: topUsers[1].id,
-            itemName: "Пупс «Красноречие»",
-            isWorn: true,
-          },
-        });
+        const findItem = await checkItem(topUsers[1].id, "Пупс «Красноречие»");
 
         if (findItem) {
           balanceToAdd += 500;
@@ -107,13 +97,7 @@ function Timings(bot) {
       }
       if (topUsers[2]) {
         let balanceToAdd = topUsers[2].dayMessageCounter; // баланс третьего пользователя равен его количеству сообщений
-        const findItem = await Item.findOne({
-          where: {
-            userId: topUsers[2].id,
-            itemName: "Пупс «Красноречие»",
-            isWorn: true,
-          },
-        });
+        const findItem = await checkItem(topUsers[2].id, "Пупс «Красноречие»");
 
         if (findItem) {
           balanceToAdd += 500;

@@ -3,6 +3,7 @@ const { User, Item } = require("../db/models");
 const { loseLog, giveResoursesLog } = require("../logs/globalLogs");
 const sequelize = require("sequelize");
 const { getRandomInt } = require("../utils/helpers");
+const { checkItem } = require("../itemsModule/clothesFunctions");
 const CronJob = require("cron").CronJob;
 
 class GemService {
@@ -93,16 +94,10 @@ class GemService {
         return "Недостаточно гемов🥲";
       }
 
-      const hasPups = await Item.findOne({
-        where: {
-          userId: user.id,
-          itemName: "Пупс «Наука»",
-          isWorn: true,
-        },
-      });
+      const hasPups = await checkItem(user.id, "Пупс «Наука»");
 
       if (hasPups) {
-        const mef = amount * getRandomInt(1, 100);
+        const mef = amount * getRandomInt(1, 50);
 
         user.gems -= amount;
         user.balance += mef;

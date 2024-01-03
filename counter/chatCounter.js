@@ -8,6 +8,7 @@ const { getUser } = require("../db/functions.js");
 const { User, Item } = require("../db/models.js");
 const { getRandomInt } = require("../utils/helpers.js");
 const clothes = require("../itemsObjects/clothes.js");
+const { checkItem } = require("../itemsModule/clothesFunctions.js");
 
 const MessageCounter = new Composer();
 
@@ -62,13 +63,7 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
           await item.save();
         }
 
-        const hasPups = await Item.findOne({
-          where: {
-            userId: fromUser.id,
-            itemName: "Пупс «Харизма»",
-            isWorn: true,
-          },
-        });
+        const hasPups = await checkItem(fromUser.id, "Пупс «Харизма»");
 
         if (hasPups) {
           sum += 1000;

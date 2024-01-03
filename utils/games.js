@@ -1,4 +1,5 @@
 const { Item } = require("../db/models.js");
+const { checkItem } = require("../itemsModule/clothesFunctions.js");
 const { gamesLog, resiveLog } = require("../logs/globalLogs.js");
 const { sleep, formatTime, getRandomInt } = require("./helpers.js");
 
@@ -142,26 +143,13 @@ async function userFerma(ctx, user) {
       randmef = getRandomInt(300, 500);
     }
 
-    // Check if the user has an item named "Супер Грабли"
-    const hasSuperGrabli = await Item.findOne({
-      where: {
-        userId: user.id,
-        itemName: "Супер Грабли",
-        isWorn: true,
-      },
-    });
+    const hasSuperGrabli = await checkItem(user.id, "Супер Грабли");
 
     if (hasSuperGrabli) {
       randmef *= 5;
     }
 
-    const hasPups = await Item.findOne({
-      where: {
-        userId: user.id,
-        itemName: "Пупс «Удача»",
-        isWorn: true,
-      },
-    });
+    const hasPups = await checkItem(user.id, "Пупс «Удача»");
 
     if (hasPups) {
       randmef += 555;

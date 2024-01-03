@@ -104,6 +104,28 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     "1",
     "покупка в магазине"
   );
+
+  const chance = getRandomInt(0, 100);
+
+  if (chance === 5) {
+    const itemInfo = clothes[125];
+    const item = await Item.create({
+      src: itemInfo.src,
+      itemName: itemInfo.name,
+      bodyPart: itemInfo.bodyPart,
+      isWorn: false,
+    });
+
+    user.fullSlots++;
+    await user.addItem(item);
+    await ctx.replyWithHTML(
+      `❗️Ты испытал удачу и получил ${itemInfo.name}❗️`
+    );
+    await ctx.telegram.sendMessage(
+      process.env.CHAT_ID,
+      `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
+    );
+  }
   await user.save();
   await item.save();
 };
@@ -120,8 +142,14 @@ const deleteItem = async (user, id, ctx) => {
     await ctx.reply(`У вас нет такой вещи😥`);
     return;
   }
+  const havePups = await checkItem(user.id, "Пупс «Бартер»");
+  let cashBack;
+  if (havePups) {
+    cashBack = item.price;
+  } else {
+    cashBack = item.price / 2;
+  }
 
-  const cashBack = item.price / 2;
   await ctx.reply(
     `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`
   );
@@ -608,6 +636,20 @@ const checkId = async (id, ctx) => {
   await ctx.replyWithHTML(`<code>инфа ${info}</code>`);
 };
 
+const checkItem = async (id, name) => {
+  const hasItem = await Item.findOne({
+    where: {
+      userId: id,
+      itemName: `${name}`,
+      isWorn: true,
+    },
+  });
+
+  if (hasItem) {
+    return true;
+  } else return false;
+};
+
 module.exports = {
   buyItem,
   deleteItem,
@@ -619,4 +661,5 @@ module.exports = {
   getItemInfo,
   blendImages,
   checkId,
+  checkItem,
 };
