@@ -1,5 +1,11 @@
 const { Item, User } = require("./db/models");
-const { calculateMiningAmount, sleep } = require("./utils/helpers");
+const { checkItem } = require("./itemsModule/clothesFunctions");
+const clothes = require("./itemsObjects/clothes");
+const {
+  calculateMiningAmount,
+  sleep,
+  getRandomInt,
+} = require("./utils/helpers");
 
 const CronJob = require("cron").CronJob;
 require("dotenv").config({
@@ -57,8 +63,31 @@ function Cycles(bot) {
             const user = await User.findOne({ where: { id: drone.userId } });
             let minedAmount = calculateMiningAmount(user.balance);
 
-            if (minedAmount > 100000) {
+            if (await checkItem(user.id, "Пупс «Ремонт»")) {
+              minedAmount = Math.min(minedAmount + 50000, 150000);
+            } else if (minedAmount > 100000) {
               minedAmount = 100000;
+            }
+
+            const chance = getRandomInt(0, 100);
+
+            if (chance <= 2) {
+              const itemInfo = clothes[1];
+
+              const item = await Item.create({
+                src: itemInfo.src,
+                itemName: itemInfo.name,
+                bodyPart: itemInfo.bodyPart,
+                isWorn: false,
+              });
+
+              user.fullSlots++;
+              await user.addItem(item);
+              await bot.telegram.sendMessage(
+                process.env.CHAT_ID,
+                `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
+              );
+              await item.save();
             }
 
             user.balance += minedAmount;

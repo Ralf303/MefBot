@@ -1143,6 +1143,16 @@ const clothes = {
     class: "impossible",
     info: "При продаже вещей вы получаете полную ее стоимость, а не 50%",
   },
+
+  126: {
+    name: "Пупс «Ремонт»",
+    bodyPart: "pups_set4",
+    src: "img/pups_repair.png",
+    price: 50000,
+    canBuy: false,
+    class: "impossible",
+    info: "Увеличивает максимальный доход с дрона майнера до 150к",
+  },
 };
 
 module.exports = clothes;
