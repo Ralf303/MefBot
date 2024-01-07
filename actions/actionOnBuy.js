@@ -4,7 +4,7 @@ const { loseLog } = require("../logs/globalLogs");
 const compose = new Composer();
 const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
 
-compose.action("buy1", async (ctx) => {
+compose.action("buy0", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
     ctx.from.first_name,
@@ -33,7 +33,7 @@ compose.action("buy1", async (ctx) => {
   }
 });
 
-compose.action("buy3", async (ctx) => {
+compose.action("buy2", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
     ctx.from.first_name,
@@ -61,8 +61,7 @@ compose.action("buy3", async (ctx) => {
     await ctx.reply("Не достаточно мефа😢");
   }
 });
-
-compose.action("buy5", async (ctx) => {
+compose.action("buy3", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
     ctx.from.first_name,
@@ -114,6 +113,42 @@ compose.action("timeapp", async (ctx) => {
   }
 });
 
+compose.action("buy1", async (ctx) => {
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
+  await ctx.deleteMessage();
+  if (user.balance >= 40000) {
+    await ctx.reply("Отлично, какой префикс ты хочешь?");
+    user.balance -= 40000;
+    await loseLog(user, `меф`, "покупка в магазине");
+    ctx.scene.enter("BuyPrefix");
+    user.save();
+  } else {
+    await ctx.reply("Не достаточно мефа😢");
+  }
+});
+
+compose.action("buy4", async (ctx) => {
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
+  await ctx.deleteMessage();
+  if (user.balance >= 10000) {
+    await ctx.reply("Отлично, какой префикс ты хочешь?");
+    user.balance -= 10000;
+    await loseLog(user, `меф`, "покупка в магазине");
+    ctx.scene.enter("ChangePrefix");
+    user.save();
+  } else {
+    await ctx.reply("Не достаточно мефа😢");
+  }
+});
+
 compose.action("mefapp", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
@@ -158,41 +193,4 @@ compose.action("slotapp", async (ctx) => {
     await ctx.reply("Недостаточно мефа😢");
   }
 });
-
-compose.action("buy2", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  await ctx.deleteMessage();
-  if (user.balance >= 40000) {
-    await ctx.reply("Отлично, какой префикс ты хочешь?");
-    user.balance -= 40000;
-    await loseLog(user, `меф`, "покупка в магазине");
-    ctx.scene.enter("BuyPrefix");
-    user.save();
-  } else {
-    await ctx.reply("Не достаточно мефа😢");
-  }
-});
-
-compose.action("buy6", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  await ctx.deleteMessage();
-  if (user.balance >= 10000) {
-    await ctx.reply("Отлично, какой префикс ты хочешь?");
-    user.balance -= 10000;
-    await loseLog(user, `меф`, "покупка в магазине");
-    ctx.scene.enter("ChangePrefix");
-    user.save();
-  } else {
-    await ctx.reply("Не достаточно мефа😢");
-  }
-});
-
 module.exports = compose;
