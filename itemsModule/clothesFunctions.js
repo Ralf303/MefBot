@@ -29,59 +29,18 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     return;
   }
 
-  //ивент удалить не забудь
-
-  // if (user.balance < itemInfo.price && status && itemInfo.class !== "special") {
-  //   await ctx.reply("Недостаточно мефа😢");
-  //   return;
-  // } else if (status && itemInfo.class !== "special") {
-  //   user.balance -= itemInfo.price;
-  // }
-
-  // if (user.gems < itemInfo.price && status && itemInfo.class === "special") {
-  //   await ctx.reply("Недостаточно гемов😢");
-  //   return;
-  // } else if (status && itemInfo.class === "special") {
-  //   user.gems -= itemInfo.price;
-  // }
-
-  if (
-    user.balance < itemInfo.price &&
-    status &&
-    itemInfo.class !== "special" &&
-    itemInfo.class !== "event"
-  ) {
+  if (user.balance < itemInfo.price && status && itemInfo.class !== "special") {
     await ctx.reply("Недостаточно мефа😢");
     return;
-  } else if (
-    status &&
-    itemInfo.class !== "special" &&
-    itemInfo.class !== "event"
-  ) {
+  } else if (status && itemInfo.class !== "special") {
     user.balance -= itemInfo.price;
   }
 
-  if (
-    user.gems < itemInfo.price &&
-    status &&
-    itemInfo.class === "special" &&
-    itemInfo.class !== "event"
-  ) {
+  if (user.gems < itemInfo.price && status && itemInfo.class === "special") {
     await ctx.reply("Недостаточно гемов😢");
     return;
-  } else if (
-    status &&
-    itemInfo.class === "special" &&
-    itemInfo.class !== "event"
-  ) {
+  } else if (status && itemInfo.class === "special") {
     user.gems -= itemInfo.price;
-  }
-
-  if (user.event < itemInfo.price && status && itemInfo.class === "event") {
-    await ctx.reply("Недостаточно снежинок😢");
-    return;
-  } else if (status && itemInfo.class === "event") {
-    user.event -= itemInfo.price;
   }
 
   const item = await Item.create({

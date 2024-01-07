@@ -21,16 +21,7 @@ const User = sequelize.define("user", {
   farmtime: { type: DataTypes.INTEGER, defaultValue: 0 },
   slots: { type: DataTypes.INTEGER, defaultValue: 10 },
   fullSlots: { type: DataTypes.INTEGER, defaultValue: 0 },
-  minecraftCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  brawlCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  hotlineCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  donateCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  falloutCase: { type: DataTypes.INTEGER, defaultValue: 0 },
   gems: { type: DataTypes.INTEGER, defaultValue: 0 },
-  gemCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
-  fnafCase: { type: DataTypes.INTEGER, defaultValue: 0 },
-  event: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {
@@ -45,6 +36,26 @@ const Item = sequelize.define("item", {
   bodyPart: { type: DataTypes.STRING },
   isWorn: { type: DataTypes.BOOLEAN, defaultValue: false },
   price: { type: DataTypes.INTEGER },
+});
+
+const Case = sequelize.define("case", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    unique: true,
+  },
+  minecraft: { type: DataTypes.INTEGER, defaultValue: 0 },
+  brawl: { type: DataTypes.INTEGER, defaultValue: 0 },
+  hotline: { type: DataTypes.INTEGER, defaultValue: 0 },
+  donate: { type: DataTypes.INTEGER, defaultValue: 0 },
+  fallout: { type: DataTypes.INTEGER, defaultValue: 0 },
+  fnaf: { type: DataTypes.INTEGER, defaultValue: 0 },
+  gem: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Logs = sequelize.define("logs", {
@@ -81,7 +92,9 @@ const Bonus = sequelize.define("bonus", {
   time: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
+User.hasOne(Case);
+Case.belongsTo(User);
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
 
-module.exports = { User, Item, Logs, Roles, Bonus };
+module.exports = { User, Item, Logs, Roles, Bonus, Case };

@@ -1,4 +1,3 @@
-const { Item } = require("../db/models.js");
 const { checkItem } = require("../itemsModule/clothesFunctions.js");
 const { gamesLog, resiveLog } = require("../logs/globalLogs.js");
 const { sleep, formatTime, getRandomInt } = require("./helpers.js");
@@ -13,10 +12,9 @@ async function dice(word3, word2, user, bot, ctx) {
 
   if (userTrueImput && user.balance >= stake && stake >= 500) {
     user.balance -= stake;
-    const info = await bot.telegram.sendDice(ctx.chat.id);
-    await sleep(3800);
-    const dice = info.dice.value;
-
+    // const info = await bot.telegram.sendDice(ctx.chat.id);
+    // const dice = info.dice.value;
+    const dice = getRandomInt(1, 6);
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
         await ctx.reply(
@@ -157,7 +155,6 @@ async function userFerma(ctx, user) {
 
     await ctx.reply("✅Меф собран " + randmef);
     user.balance += randmef;
-    user.event += getRandomInt(1, 5);
     await resiveLog(user, "меф", randmef, "сбор фермы");
   } else {
     let remainingTime;

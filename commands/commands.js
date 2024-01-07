@@ -4,6 +4,7 @@ const { getUser } = require("../db/functions.js");
 const { Item } = require("../db/models.js");
 const bonusService = require("../services/bonus-service.js");
 const { Sequelize } = require("../db/db.js");
+const ru_text = require("../ru_text.js");
 
 const command = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -46,9 +47,7 @@ command.command("command", async (ctx) => {
 
 command.command("help", async (ctx) => {
   try {
-    await ctx.replyWithHTML(
-      "Помощь по боту:\n/command все функции бота\n/start перезапуск бота\n/shop магазин\n\nТакже если вы нашли ошибку пишите @ralf303"
-    );
+    await ctx.replyWithHTML(ru_text.help);
   } catch (error) {
     console.log(error);
   }

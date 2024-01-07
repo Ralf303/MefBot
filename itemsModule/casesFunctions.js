@@ -1,4 +1,5 @@
-const { Item, User } = require("../db/models");
+const { getUserCase } = require("../db/functions");
+const { Item, User, Case } = require("../db/models");
 const cases = require("../itemsObjects/cases");
 const clothes = require("../itemsObjects/clothes");
 const { resiveLog, loseLog } = require("../logs/globalLogs");
@@ -38,11 +39,8 @@ const openDonateCase = async (user, ctx) => {
 
 const open = async (user, ctx, box) => {
   try {
-    await User.update(
-      { [box.dbName]: user[box.dbName] - 1 },
-      { where: { id: user.id } }
-    );
-    const chance = getRandomInt(1, 1000);
+    await Case.decrement({ [box.dbName]: 1 }, { where: { userId: user.id } });
+    const chance = getRandomInt(1, 2000);
     let result = `${user.username} открыл ${box.name} и получил`;
     let winAmount = 0;
 
@@ -76,15 +74,7 @@ const open = async (user, ctx, box) => {
       return;
     }
 
-    if (chance >= 511 && chance <= 599) {
-      const win = getRandomInt(250, 1000);
-      user.balance += win;
-      result += ` ${win}MF`;
-      await resiveLog(user, "меф", win, "приз из кейса");
-      winAmount = win;
-    }
-
-    if (chance === 600) {
+    if (chance === 511) {
       const needItem = clothes[100];
       const item = await Item.create({
         src: needItem.src,
@@ -105,7 +95,15 @@ const open = async (user, ctx, box) => {
       return;
     }
 
-    if (chance > 600) {
+    if (chance >= 512 && chance <= 1000) {
+      const win = getRandomInt(250, 1000);
+      user.balance += win;
+      result += ` ${win}MF`;
+      await resiveLog(user, "меф", win, "приз из кейса");
+      winAmount = win;
+    }
+
+    if (chance > 1000) {
       result += " ничего😥";
     }
 
@@ -119,6 +117,7 @@ const open = async (user, ctx, box) => {
 
 const buyCase = async (user, id, count, ctx) => {
   const needCase = cases[id];
+  const userCase = await getUserCase(user.id);
 
   if (needCase) {
     let price = needCase.price;
@@ -165,12 +164,13 @@ const buyCase = async (user, id, count, ctx) => {
         "покупка в магазине"
       );
     }
+    userCase[needCase.dbName] += count;
+    await userCase.save();
+    await user.save();
 
     await ctx.reply(
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
-    user[needCase.dbName] += count;
-    await user.save();
   } else {
     await ctx.reply(`Такого мефкейса нет😥`);
   }
@@ -185,9 +185,11 @@ const openCase = async (user, id, ctx) => {
     }
 
     const caseName = needCase.dbName;
+    const userCase = await getUserCase(user.id);
 
-    if (user[caseName] > 0) {
+    if (userCase[caseName] > 0) {
       await open(user, ctx, needCase);
+      await userCase.save();
       await user.save();
       await loseLog(user, user[caseName], "открытие");
     } else {

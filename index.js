@@ -52,6 +52,7 @@ const start = async () => {
       app.use(
         await bot.createWebhook({
           domain: process.env.WEB_HOOK_URL,
+          drop_pending_updates: true,
         })
       );
       const options = {

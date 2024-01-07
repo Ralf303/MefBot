@@ -1,7 +1,7 @@
 const cases = {
   1: {
     name: "Майнкрафт кейс",
-    dbName: "minecraftCase",
+    dbName: "minecraft",
     price: 250,
     items:
       "Алмазный меч\nАлмазная кирка\nКурочка на глову\nСтив\nМайн кот\nЭнедер дракон\nПопуга",
@@ -10,7 +10,7 @@ const cases = {
 
   2: {
     name: "Бравл кейс",
-    dbName: "brawlCase",
+    dbName: "brawl",
     price: 500,
     items: "Разные маски из бравла\nДиз\nЭль примо\nЛеон",
     itemsId: [40, 41, 42, 43, 44, 45, 46, 47, 17, 88, 89],
@@ -18,7 +18,7 @@ const cases = {
 
   3: {
     name: "Сигма кейс",
-    dbName: "hotlineCase",
+    dbName: "hotline",
     price: 200,
     items:
       "Гусеница Шелби\nРил сигма\nСкала\nРайан гостлинг\nТайлер дерден\nCJ\nПавел Дуров",
@@ -27,7 +27,7 @@ const cases = {
 
   4: {
     name: "Фоллаут Кейс",
-    dbName: "falloutCase",
+    dbName: "fallout",
     price: 100,
     items: "Лазерная Винтовка\nСиловая броня\nПип-Бой\nШляпа мафиози",
     itemsId: [60, 63, 61, 62],
@@ -35,7 +35,7 @@ const cases = {
 
   5: {
     name: "Гем Кейс",
-    dbName: "gemCase",
+    dbName: "gem",
     price: 5,
     items:
       "BEARBRICKS[78]\nТянки\nБейби бандит\nСет: Пабло с района\nСет: ZXC\nНайк хакки\nКот",
@@ -45,7 +45,7 @@ const cases = {
 
   6: {
     name: "ФНАФ кейс",
-    dbName: "fnafCase",
+    dbName: "fnaf",
     price: 666,
     items: "Мангл\nФреди\nБонни\nЧика\nФокси\nБалун бой\nБон Бон",
     itemsId: [96, 97, 98, 99, 101, 102, 103],

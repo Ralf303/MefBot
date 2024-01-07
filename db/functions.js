@@ -1,14 +1,19 @@
 const sequelize = require("./db.js");
-const { User } = require("./models");
+const { User, Case } = require("./models");
 
 const getUser = async (chatId, firstName, username) => {
   try {
-    let user = await User.findOne({ where: { chatId } });
+    let user = await User.findOne({
+      where: { chatId },
+      include: Case,
+    });
     if (!user) {
       user = await User.create({ chatId, firstname: firstName, username });
+      // Создание таблицы кейс для нового пользователя
+      await Case.create({ userId: user.id, status: "active" });
     } else {
       if (!username) {
-        user = await user.update({ username: "dont_have_tag" });
+        user = await user.update({ username: "donthavetag" });
       }
 
       if (!(user.username === username)) {
@@ -18,11 +23,22 @@ const getUser = async (chatId, firstName, username) => {
       if (!user.firstname || !(user.firstname === firstName)) {
         user = await user.update({ firstname: firstName });
       }
+
+      // Проверка на наличие таблицы кейс и создание, если отсутствует
+      let cases = await Case.findAll({ where: { userId: user.id } });
+      if (cases.length === 0) {
+        await Case.create({ userId: user.id, status: "active" });
+      }
     }
     return user;
   } catch (e) {
     console.log(e);
   }
+};
+
+const getUserCase = async (id) => {
+  let cases = await Case.findOne({ where: { userId: id } });
+  return cases;
 };
 
 async function findTopUserInDay() {
@@ -79,4 +95,5 @@ module.exports = {
   findTopUserInMonth,
   resetWeekCounter,
   resetMonthCounter,
+  getUserCase,
 };

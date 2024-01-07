@@ -1,3 +1,4 @@
+const { getUserCase } = require("../db/functions");
 const { User, Item } = require("../db/models");
 const cases = require("../itemsObjects/cases");
 const { giveResoursesLog, loseLog } = require("../logs/globalLogs");
@@ -134,7 +135,7 @@ const giveItem = async (sender, id, ctx) => {
 const giveCase = async (sender, id, count, ctx) => {
   try {
     const message = ctx.message.reply_to_message;
-
+    const intCount = parseInt(count);
     if (!message) {
       return;
     }
@@ -151,6 +152,8 @@ const giveCase = async (sender, id, count, ctx) => {
       where: { chatId: receiverChatId },
     });
 
+    const receiverCase = await getUserCase(receiver.id);
+    const senderCase = await getUserCase(sender.id);
     const needCase = cases[id];
 
     if (!needCase) {
@@ -158,10 +161,10 @@ const giveCase = async (sender, id, count, ctx) => {
       return;
     }
 
-    const caseCount = sender[needCase.dbName];
+    const caseCount = senderCase[needCase.dbName];
 
-    if (count > caseCount) {
-      await ctx.reply(`У вас не хватает кейсов ${needCase.name}📦`);
+    if (intCount > caseCount) {
+      await ctx.reply(`У вас не хватает ${needCase.name}📦`);
       return;
     }
 
@@ -170,15 +173,15 @@ const giveCase = async (sender, id, count, ctx) => {
       return;
     }
 
-    sender[needCase.dbName] -= count;
-    receiver[needCase.dbName] += count;
+    senderCase[needCase.dbName] -= intCount;
+    receiverCase[needCase.dbName] += intCount;
 
     await ctx.reply(
-      `Вы успешно передали ${count} ${needCase.name}[${id}] @${receiver.username}`
+      `Вы успешно передали ${intCount} ${needCase.name}[${id}] @${receiver.username}`
     );
 
-    await sender.save();
-    await receiver.save();
+    await senderCase.save();
+    await receiverCase.save();
     await loseLog(sender, `${needCase.name}[${id}]`, "передача другому юзеру");
     await giveResoursesLog(
       sender,
@@ -246,63 +249,9 @@ const giveDonateCase = async (sender, id, count, ctx) => {
   }
 };
 
-const giveSnowflakes = async (ctx) => {
-  const chatId = ctx.from.id;
-  const message = ctx.message.reply_to_message;
-
-  if (!message) {
-    return;
-  }
-
-  const receiverChatId = message.from.id;
-  const amount = parseInt(ctx.message.text.split(" ")[2]);
-
-  if (isNaN(amount) || amount <= 0) {
-    return;
-  }
-
-  // проверяем, что отправитель не является ботом
-  if (message.from.is_bot) {
-    await ctx.reply("Зачем боту снежинки🧐");
-    return;
-  }
-
-  try {
-    const sender = await User.findOne({ where: { chatId } });
-    let receiver = await User.findOne({
-      where: { chatId: receiverChatId },
-    });
-
-    if (sender.event < amount) {
-      await ctx.reply("Недостаточно снежинок🥲");
-      return;
-    }
-
-    if (sender.id === receiver.id) {
-      await ctx.reply("Нельзя передавать снежинки самому себе🖕");
-      return;
-    }
-
-    sender.event -= amount;
-    receiver.event += amount;
-    await sender.save();
-    await receiver.save();
-    await ctx.reply(
-      `Вы успешно передали ${amount} снежинок пользователю ${message.from.first_name}`
-    );
-
-    await loseLog(sender, "снежинки", "передача другому пользователю");
-    await giveResoursesLog(sender, receiver, "снежинки", amount);
-  } catch (error) {
-    console.log(error);
-    await ctx.reply("Ошибка при выполнении операции.");
-  }
-};
-
 module.exports = {
   giveCoins,
   giveItem,
   giveCase,
   giveDonateCase,
-  giveSnowflakes,
 };

@@ -18,7 +18,6 @@ const {
   giveItem,
   giveCase,
   giveDonateCase,
-  giveSnowflakes,
 } = require("./giveScripts.js");
 const clothes = require("../itemsObjects/clothes");
 const {
@@ -40,6 +39,7 @@ const rp = require("../utils/arrays/rp-array");
 const craftService = require("../services/craft-service");
 const gemsService = require("../services/gems-service");
 const { Keyboard, Key } = require("telegram-keyboard");
+const ru_text = require("../ru_text.js");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -76,10 +76,7 @@ chatCommands.on("text", async (ctx, next) => {
 
     if (userMessage == "пупсы") {
       try {
-        await ctx.telegram.sendMessage(
-          ctx.from.id,
-          `❗️ПУПСЫ❗️\n\n•Пупс «Удача»\nС этой штукой вам подозрительно будет везти\n\n•Пупс «Красноречие»\nВаше общение будет оплачиваться в два раза выше!\n\n•Пупс «Харизма»\nПользуясь своей харизмой, вы профессионально созываете всех в чат и получаете большую награду\n\n•Пупс «Интелект»\nС ним вы будете казаться умнее, а еще все знают какой вы богатый)\n\n•Пупс «Наука»\nИспользуй команду синтез для конвертации гемов в меф\n\n•Пупс «Бартер»\nПри продаже вещей вы получаете полную ее стоимость, а не 50%\n\n•"Пупс «Ремонт»\nУвеличивает максимальный доход с дрона майнера до 150к\n\n\nУдачи в поисках)`
-        );
+        await ctx.telegram.sendMessage(ctx.from.id, ru_text.pups);
 
         if (ctx.chat.type !== "private") {
           await ctx.replyWithHTML(
@@ -92,10 +89,9 @@ chatCommands.on("text", async (ctx, next) => {
         }
       } catch (error) {
         console.log(error);
-        await ctx.reply(
-          "Я не смог отправить тебе секретную инфу так как ты меня заблокал",
-          { reply_to_message_id: ctx.message.message_id }
-        );
+        await ctx.reply(ru_text.pups_err, {
+          reply_to_message_id: ctx.message.message_id,
+        });
       }
     }
 
@@ -127,7 +123,7 @@ chatCommands.on("text", async (ctx, next) => {
           );
         }
       } catch (e) {
-        await ctx.reply("Я не смог открыть магазин так как ты меня заблокал", {
+        await ctx.reply(ru_text.shop_err, {
           reply_to_message_id: ctx.message.message_id,
         });
       }
@@ -148,26 +144,11 @@ chatCommands.on("text", async (ctx, next) => {
       userMessage == "меф" ||
       userMessage == "б"
     ) {
-      await ctx.reply(
-        "Ваш меф: " +
-          user.balance +
-          "\nВаши гемы: " +
-          user.gems +
-          "\nВаши снежинки: " +
-          user.event
-      );
+      await ctx.reply("Ваш меф: " + user.balance + "\nВаши гемы: " + user.gems);
     }
 
     if (word1 == "отсыпать") {
       await giveCoins(ctx);
-    }
-
-    if (word1 == "передать" && word2 == "снежинки") {
-      await giveSnowflakes(ctx);
-    }
-
-    if (userMessage == "нг шоп") {
-      await shopGenerator("6", ctx);
     }
 
     if (userMessage == "бот") {
@@ -229,14 +210,14 @@ chatCommands.on("text", async (ctx, next) => {
       let i = 1;
       for (const item in cases) {
         result += `${i}) ${cases[item].name} - ${
-          user[cases[item].dbName]
+          user.case[cases[item].dbName]
         } шт.\n`;
         i++;
       }
       await ctx.reply(
         result +
           "\n💰Донат кейс - " +
-          user.donateCase +
+          user.case.donate +
           "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать мефкейс id\n📖Передать мефкейс донат"
       );
     }
@@ -245,7 +226,7 @@ chatCommands.on("text", async (ctx, next) => {
       const checkSub = await checkUserSub(ctx, -1002015930296);
 
       if (!checkSub) {
-        ctx.reply("📝 Для сбора мефа нужно быть подписанным на канал @mef_dev");
+        ctx.reply(ru_text.sub);
       } else {
         await userFerma(ctx, user);
       }

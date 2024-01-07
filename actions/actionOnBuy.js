@@ -4,35 +4,6 @@ const { loseLog } = require("../logs/globalLogs");
 const compose = new Composer();
 const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
 
-compose.action("buy0", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  await ctx.deleteMessage();
-  if (user.balance >= 100000) {
-    await ctx.reply(
-      "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
-    );
-    user.balance -= 100000;
-    await loseLog(user, `меф`, "покупка в магазине");
-    ctx.telegram.sendMessage(
-      "1157591765",
-      "Заявка на покупку!\n\nИмя покупателя " +
-        `[${user.firstname.replace(regex, "\\$&")}]` +
-        `(tg://user?id=${user.chatId})
-        \n\nТовар: ВИП`,
-      {
-        parse_mode: "Markdown",
-      }
-    );
-    user.save();
-  } else {
-    await ctx.reply("Не достаточно мефа😢");
-  }
-});
-
 compose.action("buy1", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
@@ -91,35 +62,6 @@ compose.action("buy3", async (ctx) => {
   }
 });
 
-compose.action("buy4", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  await ctx.deleteMessage();
-  if (user.balance >= 150000) {
-    await ctx.reply(
-      "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор вам все выдаст"
-    );
-    user.balance -= 150000;
-    await loseLog(user, `меф`, "покупка в магазине");
-    ctx.telegram.sendMessage(
-      "1157591765",
-      "Заявка на покупку!\n\nИмя покупателя " +
-        `[${user.firstname.replace(regex, "\\$&")}]` +
-        `(tg://user?id=${user.chatId})
-        \n\nТовар: Анонимность`,
-      {
-        parse_mode: "Markdown",
-      }
-    );
-    user.save();
-  } else {
-    await ctx.reply("Не достаточно мефа😢");
-  }
-});
-
 compose.action("buy5", async (ctx) => {
   const user = await getUser(
     ctx.from.id,
@@ -139,35 +81,6 @@ compose.action("buy5", async (ctx) => {
         `[${user.firstname.replace(regex, "\\$&")}]` +
         `(tg://user?id=${user.chatId})
         \n\nТовар: Логи`,
-      {
-        parse_mode: "Markdown",
-      }
-    );
-    user.save();
-  } else {
-    await ctx.reply("Не достаточно мефа😢");
-  }
-});
-
-compose.action("buy7", async (ctx) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  await ctx.deleteMessage();
-  if (user.balance >= 100000) {
-    await ctx.reply(
-      "Поздравляем с покупкой!\n\nОжидайте, вскоре администратор снимет бан, больше не нарушайте!"
-    );
-    user.balance -= 100000;
-    await loseLog(user, `меф`, "покупка в магазине");
-    ctx.telegram.sendMessage(
-      "1157591765",
-      "Заявка на покупку!\n\nИмя покупателя " +
-        `[${user.firstname.replace(regex, "\\$&")}]` +
-        `(tg://user?id=${user.chatId})
-        \n\nТовар: Снятие бана`,
       {
         parse_mode: "Markdown",
       }

@@ -205,17 +205,6 @@ async function shopGenerator(id, ctx) {
     });
   }
 
-  if (id === "6") {
-    result = "🎄НГ ШОП🎄\n\n";
-    const sortedClothes = Object.keys(clothes)
-      .filter((item) => clothes[item].class === "event")
-      .sort((a, b) => clothes[a].price - clothes[b].price);
-
-    sortedClothes.forEach((item) => {
-      result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}❄️\n`;
-    });
-  }
-
   await ctx.replyWithHTML(
     result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id"
   );
