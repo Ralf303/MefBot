@@ -20,9 +20,9 @@ const clothes = {
     name: "Воздушный шар №1",
     bodyPart: "extra",
     src: "img/ball_1.png",
-    price: 25,
+    price: 50,
     canBuy: false,
-    class: "vip",
+    class: "donate",
   },
 
   4: {
@@ -65,18 +65,18 @@ const clothes = {
     name: "Воздушный шар №2",
     bodyPart: "extra",
     src: "img/ball_2.png",
-    price: 25,
+    price: 50,
     canBuy: false,
-    class: "vip",
+    class: "donate",
   },
 
   9: {
     name: "Воздушный шар №3",
     bodyPart: "extra",
     src: "img/ball_3.png",
-    price: 25,
+    price: 50,
     canBuy: false,
-    class: "vip",
+    class: "donate",
   },
 
   10: {
@@ -497,9 +497,9 @@ const clothes = {
     name: "Супер Грабли",
     bodyPart: "left",
     src: "img/grabli.png",
-    price: 150,
+    price: 300,
     canBuy: false,
-    class: "vip",
+    class: "donate",
     info: "Умножает сбор мефа в пять раз когда надеты на пабло",
   },
 

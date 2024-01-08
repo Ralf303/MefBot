@@ -179,7 +179,7 @@ async function shopGenerator(id, ctx) {
     result = "Донат услуги\n\n";
 
     for (const item in clothes) {
-      if (clothes[item].class === "vip") {
+      if (clothes[item].class === "donate") {
         result += `• ${clothes[item].name}[<code>${item}</code>] Цена: ${clothes[item].price}\n`;
       }
     }
