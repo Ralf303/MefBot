@@ -9,9 +9,8 @@ const {
   findTopUserInMonth,
   findTopUserInWeek,
 } = require("../db/functions.js");
-const { Item } = require("../db/models.js");
+require("../db/models.js");
 const { checkItem, createItem } = require("../itemsModule/clothesFunctions.js");
-const clothes = require("../itemsObjects/clothes.js");
 const { resiveLog } = require("../logs/globalLogs.js");
 const { getRandomInt } = require("../utils/helpers.js");
 const CronJob = require("cron").CronJob;
