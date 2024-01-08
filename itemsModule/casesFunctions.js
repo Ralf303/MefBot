@@ -1,9 +1,10 @@
 const { getUserCase } = require("../db/functions");
-const { Item, User, Case } = require("../db/models");
+const { Case } = require("../db/models");
 const cases = require("../itemsObjects/cases");
 const clothes = require("../itemsObjects/clothes");
 const { resiveLog, loseLog } = require("../logs/globalLogs");
 const { getRandomInt } = require("../utils/helpers");
+const { createItem } = require("./clothesFunctions");
 
 const openDonateCase = async (user, ctx) => {
   if (user.donateCase === 0) {
@@ -17,22 +18,17 @@ const openDonateCase = async (user, ctx) => {
   let result = `${user.username} открыл Донат кейс и получил`;
   const randomItem =
     Math.floor(Math.random() * Object.keys(clothes).length) + 1;
-  const needItem = clothes[randomItem];
-  const item = await Item.create({
-    src: needItem.src,
-    itemName: needItem.name,
-    bodyPart: needItem.bodyPart,
-    isWorn: false,
-  });
+  console.log(randomItem);
+  const item = await createItem(randomItem);
 
   user.fullSlots++;
   await user.addItem(item);
-  await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+  await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
   await ctx.telegram.sendMessage(
     process.env.CHAT_ID,
-    `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${needItem.name}❗️`
+    `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`
   );
-  await resiveLog(user, `${needItem.name}`, `1`, "приз из кейса");
+  await resiveLog(user, `${item.itemName}`, `1`, "приз из кейса");
   await user.save();
   await item.save();
 };
@@ -40,7 +36,7 @@ const openDonateCase = async (user, ctx) => {
 const open = async (user, ctx, box) => {
   try {
     await Case.decrement({ [box.dbName]: 1 }, { where: { userId: user.id } });
-    const chance = getRandomInt(1, 2000);
+    const chance = getRandomInt(1, 5000);
     let result = `${user.username} открыл ${box.name} и получил`;
     let winAmount = 0;
 
@@ -54,48 +50,22 @@ const open = async (user, ctx, box) => {
 
     if (chance >= 500 && chance <= 510) {
       const randomItem = getRandomInt(0, box.itemsId.length);
-      const needItem = clothes[box.itemsId[randomItem]];
-      const item = await Item.create({
-        src: needItem.src,
-        itemName: needItem.name,
-        bodyPart: needItem.bodyPart,
-        isWorn: false,
-      });
+
+      const item = await createItem(box.itemsId[randomItem]);
 
       user.fullSlots++;
       await user.addItem(item);
-      await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
+      await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
       await ctx.telegram.sendMessage(
         process.env.CHAT_ID,
-        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${needItem.name}❗️`
+        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`
       );
-      await resiveLog(user, needItem.name, 1, "приз из кейса");
+      await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
       return;
     }
 
-    if (chance === 511) {
-      const needItem = clothes[100];
-      const item = await Item.create({
-        src: needItem.src,
-        itemName: needItem.name,
-        bodyPart: needItem.bodyPart,
-        isWorn: false,
-      });
-
-      user.fullSlots++;
-      await user.addItem(item);
-      await ctx.reply(`❗️@${result} ${needItem.name}❗️`);
-      await ctx.telegram.sendMessage(
-        process.env.CHAT_ID,
-        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${needItem.name}❗️`
-      );
-      await resiveLog(user, needItem.name, 1, "приз из кейса");
-      await item.save();
-      return;
-    }
-
-    if (chance >= 512 && chance <= 1000) {
+    if (chance >= 512 && chance <= 1500) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
       result += ` ${win}MF`;
@@ -103,7 +73,22 @@ const open = async (user, ctx, box) => {
       winAmount = win;
     }
 
-    if (chance > 1000) {
+    if (chance === 1501) {
+      const item = await createItem(100);
+
+      user.fullSlots++;
+      await user.addItem(item);
+      await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
+      await ctx.telegram.sendMessage(
+        process.env.CHAT_ID,
+        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`
+      );
+      await resiveLog(user, item.itemName, 1, "приз из кейса");
+      await item.save();
+      return;
+    }
+
+    if (chance > 1502) {
       result += " ничего😥";
     }
 

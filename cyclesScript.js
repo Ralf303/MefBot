@@ -1,5 +1,5 @@
 const { Item, User } = require("./db/models");
-const { checkItem } = require("./itemsModule/clothesFunctions");
+const { checkItem, createItem } = require("./itemsModule/clothesFunctions");
 const clothes = require("./itemsObjects/clothes");
 const {
   calculateMiningAmount,
@@ -72,20 +72,13 @@ function Cycles(bot) {
             const chance = getRandomInt(0, 100);
 
             if (chance <= 2) {
-              const itemInfo = clothes[1];
-
-              const item = await Item.create({
-                src: itemInfo.src,
-                itemName: itemInfo.name,
-                bodyPart: itemInfo.bodyPart,
-                isWorn: false,
-              });
+              const item = await createItem(126);
 
               user.fullSlots++;
               await user.addItem(item);
               await bot.telegram.sendMessage(
                 process.env.CHAT_ID,
-                `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
+                `❗️@${user.username} испытал удачу и получил ${item.itemName}❗️`
               );
               await item.save();
             }

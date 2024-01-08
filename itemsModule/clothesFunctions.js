@@ -609,6 +609,20 @@ const checkItem = async (id, name) => {
   } else return false;
 };
 
+const createItem = async (id) => {
+  const itemInfo = clothes[id];
+
+  const item = await Item.create({
+    src: itemInfo.src,
+    itemName: itemInfo.name,
+    bodyPart: itemInfo.bodyPart,
+    isWorn: false,
+    price: itemInfo.price,
+  });
+
+  return item;
+};
+
 module.exports = {
   buyItem,
   deleteItem,
@@ -621,4 +635,5 @@ module.exports = {
   blendImages,
   checkId,
   checkItem,
+  createItem,
 };

@@ -28,7 +28,7 @@ safety.on("text", async (ctx, next) => {
         );
       }
 
-      if (word1 == "варн") {
+      if (word1 == "варн" || word1 == "пред") {
         ctx.telegram.sendMessage(
           "-1001497936733",
           `⚠️ #ВАРН

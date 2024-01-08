@@ -8,7 +8,7 @@ const { getUser } = require("../db/functions.js");
 const { User, Item } = require("../db/models.js");
 const { getRandomInt } = require("../utils/helpers.js");
 const clothes = require("../itemsObjects/clothes.js");
-const { checkItem } = require("../itemsModule/clothesFunctions.js");
+const { checkItem, createItem } = require("../itemsModule/clothesFunctions.js");
 
 const MessageCounter = new Composer();
 
@@ -46,19 +46,13 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
         const chance = getRandomInt(0, 100);
 
         if (chance <= 10) {
-          const itemInfo = clothes[106];
-          const item = await Item.create({
-            src: itemInfo.src,
-            itemName: itemInfo.name,
-            bodyPart: itemInfo.bodyPart,
-            isWorn: false,
-          });
+          const item = await createItem(106);
 
           fromUser.fullSlots++;
           await fromUser.addItem(item);
           await ctx.telegram.sendMessage(
             process.env.CHAT_ID,
-            `❗️@${fromUser.username} испытал удачу и получил ${itemInfo.name}❗️`
+            `❗️@${fromUser.username} испытал удачу и получил ${item.itemName}❗️`
           );
           await item.save();
         }

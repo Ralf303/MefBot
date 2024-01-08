@@ -30,6 +30,7 @@ const {
   getItemInfo,
   checkId,
   checkItem,
+  createItem,
 } = require("../itemsModule/clothesFunctions");
 const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
@@ -177,13 +178,7 @@ chatCommands.on("text", async (ctx, next) => {
       user.captureCounter += 1;
 
       if (user.captureCounter === 100) {
-        const item = await Item.create({
-          src: "img/calculator.png",
-          itemName: "Калькулятор",
-          bodyPart: "right",
-          isWorn: false,
-          price: 50,
-        });
+        const item = await createItem(57);
 
         user.fullSlots++;
         await user.addItem(item);

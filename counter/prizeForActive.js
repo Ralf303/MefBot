@@ -10,7 +10,7 @@ const {
   findTopUserInWeek,
 } = require("../db/functions.js");
 const { Item } = require("../db/models.js");
-const { checkItem } = require("../itemsModule/clothesFunctions.js");
+const { checkItem, createItem } = require("../itemsModule/clothesFunctions.js");
 const clothes = require("../itemsObjects/clothes.js");
 const { resiveLog } = require("../logs/globalLogs.js");
 const { getRandomInt } = require("../utils/helpers.js");
@@ -25,20 +25,14 @@ function Timings(bot) {
 
       if (chance <= 5) {
         const randUser = getRandomInt(0, 2);
-        const itemInfo = clothes[104];
-        const item = await Item.create({
-          src: itemInfo.src,
-          itemName: itemInfo.name,
-          bodyPart: itemInfo.bodyPart,
-          isWorn: false,
-        });
+        const item = await createItem(104);
 
         const user = topUsers[randUser];
         user.fullSlots++;
         await user.addItem(item);
         await bot.telegram.sendMessage(
           process.env.CHAT_ID,
-          `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
+          `❗️@${user.username} испытал удачу и получил ${item.itemName}❗️`
         );
         await item.save();
       }
