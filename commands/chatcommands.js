@@ -11,7 +11,6 @@ const {
   checkUserProfile,
   shopGenerator,
 } = require("../utils/helpers");
-const { dice, bandit, userFerma, createRP } = require("../utils/games.js");
 const { getUser } = require("../db/functions.js");
 const {
   giveCoins,
@@ -34,13 +33,17 @@ const {
 } = require("../itemsModule/clothesFunctions");
 const { buyCase, getCaseInfo } = require("../itemsModule/casesFunctions");
 const { resiveLog } = require("../logs/globalLogs");
-const { Item } = require("../db/models");
 const cases = require("../itemsObjects/cases");
 const rp = require("../utils/arrays/rp-array");
 const craftService = require("../services/craft-service");
 const gemsService = require("../services/gems-service");
 const { Keyboard, Key } = require("telegram-keyboard");
 const ru_text = require("../ru_text.js");
+const { dice } = require("../utils/games/dice.js");
+const { bandit } = require("../utils/games/bandit.js");
+const { createRP } = require("../utils/games/rp.js");
+const { userFerma } = require("../utils/games/ferma.js");
+const { dice_bandit } = require("../utils/games/dice_bandit.js");
 
 const chatCommands = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -197,7 +200,7 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (word1 == "куб") {
-      await dice(word3, word2, user, ctx, ctx);
+      await dice(word3, word2, user, ctx);
     }
 
     if (userMessage == "мои мефкейсы") {

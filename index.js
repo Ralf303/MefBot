@@ -2,6 +2,7 @@ const { Telegraf, session, Scenes } = require("telegraf");
 const express = require("express");
 const https = require("https");
 const fs = require("fs");
+
 const rateLimit = require("telegraf-ratelimit");
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
@@ -17,12 +18,19 @@ const { CaptureGenerator } = require("./commands/chatcommands.js");
 const { Cycles } = require("./cyclesScript.js");
 const gemsService = require("./services/gems-service.js");
 const tyneService = require("./services/tyne-service.js");
+const diceScene = require("./diceBanditScene.js");
 
 const curScene = new ScenesGenerator();
 const BuyPrefix = curScene.prefix(bot);
 const ChangePrefix = curScene.ChangePrefix(bot);
 const rouletteScene = curScene.rouletteScene(bot);
-const stage = new Scenes.Stage([BuyPrefix, ChangePrefix, rouletteScene]);
+const stage = new Scenes.Stage([
+  BuyPrefix,
+  ChangePrefix,
+  rouletteScene,
+  diceScene,
+]);
+
 const port = 88;
 
 const start = async () => {
@@ -30,6 +38,7 @@ const start = async () => {
     bot.catch(async (err) => {
       console.log(`Error occurred: ${err}`);
     });
+
     await connectToDb();
     bot.use(session());
     bot.use(stage.middleware());

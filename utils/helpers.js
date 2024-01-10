@@ -1,5 +1,12 @@
+const { createClient } = require("redis");
 const { User } = require("../db/models");
 const clothes = require("../itemsObjects/clothes");
+
+const client = createClient({
+  host: "127.0.0.1",
+  port: 6379,
+});
+client.on("error", (err) => console.log("Redis Client Error", err));
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -214,6 +221,36 @@ async function shopGenerator(id, ctx) {
 async function notify(ctx, channel) {
   await ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
 }
+
+async function checkAction(id, ctx) {
+  try {
+    await client.connect();
+    const queryId = ctx?.update?.callback_query?.message?.message_id;
+    const value = await client.get(String(id));
+
+    if (String(value) === String(queryId)) {
+      await client.disconnect();
+      return;
+    } else {
+      await client.disconnect();
+      throw new Error("Остановка выполнения");
+    }
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function saveAction(id, message) {
+  try {
+    await client.connect();
+    const messageId = message?.message_id;
+    await client.set(String(id), String(messageId));
+    await client.disconnect();
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getRandomInt,
   generateCapcha,
@@ -225,4 +262,6 @@ module.exports = {
   shopGenerator,
   generatePassword,
   calculateMiningAmount,
+  checkAction,
+  saveAction,
 };

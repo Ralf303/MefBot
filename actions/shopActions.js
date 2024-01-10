@@ -108,7 +108,12 @@ shopActions.action("Инвентарь", async (ctx) => {
 });
 
 shopActions.action("dell", async (ctx) => {
-  await ctx.deleteMessage();
+  try {
+    await ctx.deleteMessage();
+    ctx.scene.leave();
+  } catch (error) {
+    console.log(e);
+  }
 });
 
 shopActions.action("Улучшения", async (ctx) => {
