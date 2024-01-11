@@ -22,6 +22,7 @@ const User = sequelize.define("user", {
   slots: { type: DataTypes.INTEGER, defaultValue: 10 },
   fullSlots: { type: DataTypes.INTEGER, defaultValue: 0 },
   gems: { type: DataTypes.INTEGER, defaultValue: 0 },
+  takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {
