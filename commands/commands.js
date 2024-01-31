@@ -136,8 +136,8 @@ command.command("time", async (ctx) => {
     } else {
       ctx.reply("У вас нет часов😢");
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 });
 

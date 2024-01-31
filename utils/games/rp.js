@@ -22,8 +22,8 @@ async function createRP(rp, emoji, ctx, replyToMessage, comment) {
       reply_to_message_id: replyToMessage.message_id,
       parse_mode: "MarkdownV2",
     });
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 

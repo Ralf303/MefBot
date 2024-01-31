@@ -97,8 +97,8 @@ const open = async (user, ctx, box) => {
     }
 
     await ctx.reply(result);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -184,8 +184,8 @@ const openCase = async (user, id, ctx) => {
     } else {
       await ctx.reply("Недостаточно мефкейсов😥");
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 };
 

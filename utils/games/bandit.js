@@ -52,8 +52,8 @@ async function bandit(word2, user, ctx) {
     } else {
       await ctx.reply('Введи "бандит [ставка]" больше 500');
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 }
 

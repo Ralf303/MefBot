@@ -31,8 +31,8 @@ const getUser = async (chatId, firstName, username) => {
       }
     }
     return user;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 };
 

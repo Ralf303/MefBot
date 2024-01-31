@@ -170,8 +170,8 @@ class BonusService {
       user.balance += prize;
       await user.save();
       await ctx.reply(`Бонус в размере ${prize}MF успешно получен`);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   }
 }

@@ -72,8 +72,8 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
         );
       }
     }
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
   }
 
   return next();

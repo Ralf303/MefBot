@@ -95,8 +95,8 @@ class ScenesGenerator {
             rouletteMessage.rouletteMessage
           );
         }
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.log(error);
       }
 
       const amount = Number(ctx.match[1]);
@@ -241,8 +241,8 @@ class ScenesGenerator {
           );
           ctx.scene.leave();
         }
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        console.log(error);
       }
     });
     return rouletteScene;

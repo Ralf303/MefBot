@@ -112,7 +112,7 @@ shopActions.action("dell", async (ctx) => {
     await ctx.deleteMessage();
     ctx.scene.leave();
   } catch (error) {
-    console.log(e);
+    console.log(error);
   }
 });
 
