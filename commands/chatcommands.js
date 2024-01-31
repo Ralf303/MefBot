@@ -292,7 +292,7 @@ chatCommands.on("text", async (ctx, next) => {
       await getWornItems(user, ctx);
     }
 
-    if (userMessage.includes("донат")) {
+    if (word1 == "донат") {
       await shopGenerator("4", ctx);
     }
 

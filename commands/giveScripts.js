@@ -197,7 +197,7 @@ const giveCase = async (sender, id, count, ctx) => {
 const giveDonateCase = async (sender, id, count, ctx) => {
   try {
     const message = ctx.message.reply_to_message;
-
+    const senderCase = await getUserCase(sender.id);
     if (!message) {
       return;
     }
@@ -213,7 +213,7 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     const receiver = await User.findOne({
       where: { chatId: receiverChatId },
     });
-
+    const receiverCase = await getUserCase(receiver.id);
     const needCase = id;
 
     if (needCase !== "донат") {
@@ -221,9 +221,7 @@ const giveDonateCase = async (sender, id, count, ctx) => {
       return;
     }
 
-    const caseCount = sender.donateCase;
-
-    if (count > caseCount) {
+    if (count > senderCase.donate) {
       await ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
       return;
     }
@@ -233,15 +231,15 @@ const giveDonateCase = async (sender, id, count, ctx) => {
       return;
     }
 
-    sender.donateCase -= count;
-    receiver.donateCase += count;
+    senderCase.donate -= count;
+    receiverCase.donate += count;
 
     await ctx.reply(
       `Вы успешно передали ${count} донаткейсов @${receiver.username}`
     );
 
-    await sender.save();
-    await receiver.save();
+    await senderCase.save();
+    await receiverCase.save();
     await loseLog(sender, `донат кейс`, "передача другому юзеру");
     await giveResoursesLog(sender, receiver, `донат кейс`, `${count}`);
   } catch (error) {

@@ -7,30 +7,34 @@ const { getRandomInt } = require("../utils/helpers");
 const { createItem } = require("./clothesFunctions");
 
 const openDonateCase = async (user, ctx) => {
-  if (user.donateCase === 0) {
-    await ctx.reply(`Недостаточно мефкейсов😥`);
-    return;
+  try {
+    const userCase = await getUserCase(user.id);
+    if (userCase.donate === 0) {
+      await ctx.reply(`Недостаточно мефкейсов😥`);
+      return;
+    }
+
+    userCase.donate--;
+    await userCase.save();
+
+    let result = `${user.username} открыл Донат кейс и получил`;
+    const randomItem =
+      Math.floor(Math.random() * Object.keys(clothes).length) + 1;
+    const item = await createItem(randomItem);
+
+    user.fullSlots++;
+    await user.addItem(item);
+    await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
+    await ctx.telegram.sendMessage(
+      process.env.CHAT_ID,
+      `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`
+    );
+    await resiveLog(user, `${item.itemName}`, `1`, "приз из кейса");
+    await user.save();
+    await item.save();
+  } catch (error) {
+    console.log(error);
   }
-
-  user.donateCase--;
-  await user.save();
-
-  let result = `${user.username} открыл Донат кейс и получил`;
-  const randomItem =
-    Math.floor(Math.random() * Object.keys(clothes).length) + 1;
-  console.log(randomItem);
-  const item = await createItem(randomItem);
-
-  user.fullSlots++;
-  await user.addItem(item);
-  await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
-  await ctx.telegram.sendMessage(
-    process.env.CHAT_ID,
-    `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`
-  );
-  await resiveLog(user, `${item.itemName}`, `1`, "приз из кейса");
-  await user.save();
-  await item.save();
 };
 
 const open = async (user, ctx, box) => {

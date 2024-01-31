@@ -1,7 +1,7 @@
 const { Composer } = require("telegraf");
 const clothes = require("../itemsObjects/clothes");
 const { buyItem } = require("../itemsModule/clothesFunctions");
-const { getUser } = require("../db/functions");
+const { getUser, getUserCase } = require("../db/functions");
 const { User, Roles } = require("../db/models");
 const { generatePassword } = require("../utils/helpers");
 
@@ -104,8 +104,10 @@ adminCommands.on("text", async (ctx, next) => {
         }
 
         if (word2 == "кейс" && !isNaN(id)) {
-          user.donateCase += id;
+          const userCase = await getUserCase(user.id);
+          userCase.donate += id;
           await ctx.reply(`Успешно выдано ${id} донат кейсов`);
+          await userCase.save();
           await user.save();
         }
 

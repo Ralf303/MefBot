@@ -543,7 +543,7 @@ const getInventory = async (user, ctx) => {
 };
 
 const tryItem = async (itemInfo, ctx, id) => {
-  if (!itemInfo.canBuy) {
+  if (!itemInfo?.canBuy) {
     await ctx.reply("Эту вещь нельзя примерить");
     return;
   }
