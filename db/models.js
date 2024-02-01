@@ -93,9 +93,22 @@ const Bonus = sequelize.define("bonus", {
   time: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
+const Add = sequelize.define("add", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  time: { type: DataTypes.INTEGER, defaultValue: 0 },
+  userId: { type: DataTypes.STRING },
+  channelId: { type: DataTypes.STRING },
+  itemId: { type: DataTypes.INTEGER },
+});
+
 User.hasOne(Case);
 Case.belongsTo(User);
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
 
-module.exports = { User, Item, Logs, Roles, Bonus, Case };
+module.exports = { User, Item, Logs, Roles, Bonus, Case, Add };

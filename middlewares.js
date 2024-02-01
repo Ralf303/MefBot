@@ -17,10 +17,14 @@ middleware.use((ctx, next) => {
 
   if (channelPost && channelPost.text) {
     const message = channelPost.text.toLowerCase();
-    const [word1, word2] = message.split(" ");
+    const [word1, word2, word3, word4] = message.split(" ");
 
     if (word1 === "раздача" && word2) {
       bonusService.sendEvent(ctx, word2);
+    }
+
+    if (word1 === "реклама" && word2) {
+      bonusService.sendAdd(ctx, word2, word3, word4);
     }
   }
 

@@ -63,9 +63,10 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function checkUserSub(ctx, channel) {
+async function checkUserSub(ctx, channel, id) {
   try {
-    const chatMember = await ctx.telegram.getChatMember(channel, ctx.from.id);
+    const userId = ctx.from ? ctx.from.id : id;
+    const chatMember = await ctx.telegram.getChatMember(channel, userId);
     const status = chatMember.status;
     const needStatus = ["member", "administrator", "creator"];
 
@@ -251,6 +252,15 @@ async function saveAction(id, message) {
   }
 }
 
+function addIdChannelId(string) {
+  const parts = string.split("_");
+  if (parts.length === 3 && parts[0] === "add") {
+    return { id: parts[1], channelId: parts[2] };
+  } else {
+    return null;
+  }
+}
+
 module.exports = {
   getRandomInt,
   generateCapcha,
@@ -264,4 +274,5 @@ module.exports = {
   calculateMiningAmount,
   checkAction,
   saveAction,
+  addIdChannelId,
 };

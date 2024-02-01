@@ -2,10 +2,11 @@ const { Keyboard, Key } = require("telegram-keyboard");
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-const { User, Bonus, Item } = require("../db/models");
+const { User, Bonus, Item, Add } = require("../db/models");
 const { getRandomInt } = require("../utils/helpers");
 const clothes = require("../itemsObjects/clothes");
 const { blendImages, checkItem } = require("../itemsModule/clothesFunctions");
+const ru_text = require("../ru_text");
 
 class BonusService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -102,6 +103,44 @@ class BonusService {
     );
   }
 
+  async sendAdd(ctx, id, channelId, channelName) {
+    if (ctx.channelPost.chat.id !== this.#chatId) {
+      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "ИДИ НАХУЙ");
+      return;
+    }
+
+    if (!id) {
+      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Не указан айди");
+      return;
+    }
+    const itemInfo = clothes[id];
+
+    if (!itemInfo) {
+      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Такой вещи нет");
+      return;
+    }
+    await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
+    const keyboard = {
+      inline_keyboard: [
+        [
+          {
+            text: "❗️УЧАСТВУЮ❗️",
+            url: `${process.env.BOT_URL}?start=add_${id}_${channelId}`,
+          },
+        ],
+      ],
+    };
+
+    await ctx.telegram.sendPhoto(
+      this.#chatId,
+      { source: await blendImages([itemInfo.src]) },
+      {
+        caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на ${channelName}\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее участвуй👇`,
+        reply_markup: keyboard,
+      }
+    );
+  }
+
   async createBonus(ctx) {
     if (ctx.channelPost.chat.id !== this.#chatId) {
       await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "ИДИ НАХУЙ");
@@ -154,13 +193,7 @@ class BonusService {
 
       let prize = getRandomInt(1000, 10000);
 
-      const pupsItem = await Item.findOne({
-        where: {
-          userId: user.id,
-          itemName: "",
-          isWorn: true,
-        },
-      });
+      const pupsItem = await checkItem(user.id, "Пупс «Удача»");
 
       if (pupsItem) {
         prize += 500;
@@ -170,6 +203,27 @@ class BonusService {
       user.balance += prize;
       await user.save();
       await ctx.reply(`Бонус в размере ${prize}MF успешно получен`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async takeAdd(user, ctx, obj) {
+    try {
+      const checkBonus = await Add.findOne({ where: { userId: user.chatId } });
+
+      if (checkBonus) {
+        return ctx.reply(ru_text.add_err);
+      }
+      const now = Math.floor(Date.now() / 1000);
+      await Add.create({
+        time: now,
+        userId: user.chatId,
+        channelId: obj.channelId,
+        itemId: obj.id,
+      });
+
+      await ctx.reply(ru_text.add_start);
     } catch (error) {
       console.log(error);
     }

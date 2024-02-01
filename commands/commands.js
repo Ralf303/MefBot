@@ -5,6 +5,7 @@ const { Item } = require("../db/models.js");
 const bonusService = require("../services/bonus-service.js");
 const { Sequelize } = require("../db/db.js");
 const ru_text = require("../ru_text.js");
+const { addIdChannelId } = require("../utils/helpers.js");
 
 const command = new Composer();
 const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
@@ -23,6 +24,11 @@ command.start(async (ctx) => {
 
       if (value.includes("event_")) {
         bonusService.giveItem(user, ctx, value.slice(6));
+        return;
+      }
+
+      if (value.includes("add_")) {
+        bonusService.takeAdd(user, ctx, addIdChannelId(value));
         return;
       }
     } else {

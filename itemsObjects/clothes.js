@@ -1153,6 +1153,15 @@ const clothes = {
     class: "impossible",
     info: "Увеличивает максимальный доход с дрона майнера до 150к",
   },
+
+  127: {
+    name: "Худи BENZO",
+    src: "img/benzo_hudi.png",
+    bodyPart: "face",
+    price: 2,
+    canBuy: false,
+    class: "impossible",
+  },
 };
 
 module.exports = clothes;
