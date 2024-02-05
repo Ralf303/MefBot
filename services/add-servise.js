@@ -46,7 +46,6 @@ class AddService {
       id: id,
       channelId: channelId,
     });
-    console.log(jwtService.verifyToken(token));
     const keyboard = {
       inline_keyboard: [
         [
@@ -77,7 +76,7 @@ class AddService {
         return ctx.reply(ru_text.add_err);
       }
 
-      if (!(await checkUserSub(ctx, obj.channelId, obj.id))) {
+      if (!(await checkUserSub(ctx, obj.channelId, user.chatId))) {
         return ctx.reply(ru_text.add_no_sub);
       }
       await this.#createAddInDb(user, obj);
