@@ -4,18 +4,10 @@ const { buyItem } = require("../itemsModule/clothesFunctions");
 const { getUser, getUserCase } = require("../db/functions");
 const { User, Roles } = require("../db/models");
 const { generatePassword } = require("../utils/helpers");
+const { adminList, adminTriggers } = require("../utils/arrays/admins");
+const addServise = require("../services/add-servise");
 
 const adminCommands = new Composer();
-
-adminTriggers = [
-  "список вещей",
-  "выдать",
-  "основатель",
-  "админка",
-  "-админка",
-  "-ферма",
-];
-adminList = [1157591765];
 
 adminCommands.on("text", async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
@@ -44,6 +36,15 @@ adminCommands.on("text", async (ctx, next) => {
         await ctx.reply("готово :)");
       }
 
+      if (userMessage == "раздача конец") {
+        addServise.end(ctx);
+      }
+
+      if (userMessage == "раздача количество") {
+        const count = await addServise.count();
+        await ctx.reply(`Юзеров в раздаче ${count}`);
+      }
+
       if (userMessage == "основатель") {
         User.findOne({ where: { chatId: 1157591765 } })
           .then((needUser) => {
@@ -65,7 +66,7 @@ adminCommands.on("text", async (ctx, next) => {
                         ctx.reply(message);
                         ctx.telegram.sendMessage(
                           1157591765,
-                          `Основатель восстоновлен. Пароль: ${password}`
+                          `Основатель восстановлен. Пароль: ${password}`
                         );
                       })
                       .catch((error) => {

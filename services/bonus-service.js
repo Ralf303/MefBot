@@ -7,6 +7,7 @@ const { getRandomInt } = require("../utils/helpers");
 const clothes = require("../itemsObjects/clothes");
 const { blendImages, checkItem } = require("../itemsModule/clothesFunctions");
 const ru_text = require("../ru_text");
+const jwtService = require("./jwt-service");
 
 class BonusService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -24,8 +25,10 @@ class BonusService {
     }
   }
 
-  async giveItem(user, ctx, id) {
-    const itemInfo = clothes[id];
+  async giveItem(user, ctx, token) {
+    const tokenInfo = jwtService.verifyToken(token);
+    console.log(tokenInfo);
+    const itemInfo = clothes[tokenInfo.id];
 
     if (user.slots < user.fullSlots) {
       await ctx.reply("Недостаточно слотов😥");
@@ -82,12 +85,13 @@ class BonusService {
     }
     await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
     await User.update({ takeBonus: 0 }, { where: {} });
+    const token = jwtService.generateToken({ id: id });
     const keyboard = {
       inline_keyboard: [
         [
           {
             text: "❗️УЧАСТВУЮ❗️",
-            url: `${process.env.BOT_URL}?start=event_${id}`,
+            url: `${process.env.BOT_URL}?start=event_${token}`,
           },
         ],
       ],
@@ -98,44 +102,6 @@ class BonusService {
       { source: await blendImages([itemInfo.src]) },
       {
         caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на этот канал\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее участвуй👇`,
-        reply_markup: keyboard,
-      }
-    );
-  }
-
-  async sendAdd(ctx, id, channelId, channelName) {
-    if (ctx.channelPost.chat.id !== this.#chatId) {
-      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "ИДИ НАХУЙ");
-      return;
-    }
-
-    if (!id) {
-      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Не указан айди");
-      return;
-    }
-    const itemInfo = clothes[id];
-
-    if (!itemInfo) {
-      await ctx.telegram.sendMessage(ctx.channelPost.chat.id, "Такой вещи нет");
-      return;
-    }
-    await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
-    const keyboard = {
-      inline_keyboard: [
-        [
-          {
-            text: "❗️УЧАСТВУЮ❗️",
-            url: `${process.env.BOT_URL}?start=add_${id}_${channelId}`,
-          },
-        ],
-      ],
-    };
-
-    await ctx.telegram.sendPhoto(
-      this.#chatId,
-      { source: await blendImages([itemInfo.src]) },
-      {
-        caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на ${channelName}\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее участвуй👇`,
         reply_markup: keyboard,
       }
     );
@@ -203,27 +169,6 @@ class BonusService {
       user.balance += prize;
       await user.save();
       await ctx.reply(`Бонус в размере ${prize}MF успешно получен`);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async takeAdd(user, ctx, obj) {
-    try {
-      const checkBonus = await Add.findOne({ where: { userId: user.chatId } });
-
-      if (checkBonus) {
-        return ctx.reply(ru_text.add_err);
-      }
-      const now = Math.floor(Date.now() / 1000);
-      await Add.create({
-        time: now,
-        userId: user.chatId,
-        channelId: obj.channelId,
-        itemId: obj.id,
-      });
-
-      await ctx.reply(ru_text.add_start);
     } catch (error) {
       console.log(error);
     }

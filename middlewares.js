@@ -1,6 +1,7 @@
 const { Composer } = require("telegraf");
 const { chatCommands } = require("./commands/chatcommands.js");
 const bonusService = require("./services/bonus-service.js");
+const addServise = require("./services/add-servise.js");
 
 const middleware = new Composer();
 
@@ -24,7 +25,7 @@ middleware.use((ctx, next) => {
     }
 
     if (word1 === "реклама" && word2) {
-      bonusService.sendAdd(ctx, word2, word3, word4);
+      addServise.send(ctx, word2, word3, word4);
     }
   }
 

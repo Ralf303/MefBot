@@ -100,7 +100,6 @@ const Add = sequelize.define("add", {
     unique: true,
     autoIncrement: true,
   },
-  time: { type: DataTypes.INTEGER, defaultValue: 0 },
   userId: { type: DataTypes.STRING },
   channelId: { type: DataTypes.STRING },
   itemId: { type: DataTypes.INTEGER },

@@ -221,7 +221,7 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "ферма" || userMessage == "фарма") {
-      const checkSub = await checkUserSub(ctx, -1002015930296);
+      const checkSub = await checkUserSub(ctx, -1002015930296, user.chatId);
 
       if (!checkSub) {
         ctx.reply(ru_text.sub);
