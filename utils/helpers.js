@@ -76,7 +76,7 @@ async function checkUserSub(ctx, channel, id) {
     }
   } catch (error) {
     console.error("Произошла ошибка:", error);
-    return false; // Если возникла ошибка при получении статуса пользователя, считаем, что у него нет подписки
+    return false;
   }
 }
 
@@ -204,7 +204,7 @@ async function shopGenerator(id, ctx) {
   if (id === "5") {
     result = "💎Gem Shop💎\n\n";
     const sortedClothes = Object.keys(clothes)
-      .filter((item) => clothes[item].class === "special")
+      .filter((item) => clothes[item].class === "gem")
       .sort((a, b) => clothes[a].price - clothes[b].price);
 
     sortedClothes.forEach((item) => {

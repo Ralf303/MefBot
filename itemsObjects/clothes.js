@@ -85,7 +85,7 @@ const clothes = {
     src: "img/bandana.png",
     price: 777,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   11: {
@@ -575,7 +575,7 @@ const clothes = {
     src: "img/rick-and-morty.png",
     price: 95,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   65: {
@@ -584,7 +584,7 @@ const clothes = {
     src: "img/zxc_nyme.png",
     price: 150,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   66: {
@@ -593,7 +593,7 @@ const clothes = {
     src: "img/aska.png",
     price: 800,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   67: {
@@ -602,7 +602,7 @@ const clothes = {
     src: "img/rey.png",
     price: 800,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   68: {
@@ -611,7 +611,7 @@ const clothes = {
     src: "img/kaki_puki.png",
     price: 200,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   69: {
@@ -620,7 +620,7 @@ const clothes = {
     src: "img/misato.png",
     price: 550,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   70: {
@@ -629,7 +629,7 @@ const clothes = {
     src: "img/narko.png",
     price: 50,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   71: {
@@ -638,7 +638,7 @@ const clothes = {
     src: "img/nyme.png",
     price: 100,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   72: {
@@ -647,7 +647,7 @@ const clothes = {
     src: "img/tyne_1.png",
     price: 1500,
     canBuy: true,
-    class: "special",
+    class: "gem",
     info: "Horny Tyan меняется в зависимости от времени (UTC+3):\n\n1 — с 6:00 до 17:00\n2 — с 16:00 до 21:00\n3 — с 21:00 до 6:00",
   },
 
@@ -657,7 +657,7 @@ const clothes = {
     src: "img/lips.png",
     price: 70,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   74: {
@@ -666,7 +666,7 @@ const clothes = {
     src: "img/shoes.png",
     price: 100,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   75: {
@@ -685,7 +685,7 @@ const clothes = {
     src: "img/mazelov.png",
     price: 897,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   77: {
@@ -994,7 +994,7 @@ const clothes = {
     src: "img/estriper.png",
     price: 666,
     canBuy: true,
-    class: "special",
+    class: "gem",
   },
 
   110: {
@@ -1159,6 +1159,302 @@ const clothes = {
     src: "img/benzo_hudi.png",
     bodyPart: "face",
     price: 2,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  128: {
+    name: "Американ папа",
+    bodyPart: "head",
+    src: "img/america_hat.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  129: {
+    name: "Пивной молот",
+    bodyPart: "right",
+    src: "img/beer_hummer.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  130: {
+    name: "Бензо дилдак",
+    bodyPart: "right",
+    src: "img/benzo_dildo.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  131: {
+    name: "Братва",
+    bodyPart: "legs",
+    src: "img/gang.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  132: {
+    name: "Зелёная бандана",
+    bodyPart: "face",
+    src: "img/green_bandana.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  133: {
+    name: "Молот любви",
+    bodyPart: "left",
+    src: "img/love_hummer.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  134: {
+    name: "Попугай",
+    bodyPart: "left",
+    src: "img/samp_parrot.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  135: {
+    name: "САМП худ",
+    bodyPart: "extra",
+    src: "img/samp_hood.png",
+    price: 123,
+    canBuy: true,
+    class: "impossible",
+  },
+
+  136: {
+    name: "Скутер",
+    bodyPart: "leg1",
+    src: "img/skuter.png",
+    price: 123,
+    canBuy: true,
+    class: "impossible",
+  },
+
+  137: {
+    name: "Автомат колы",
+    bodyPart: "leg1",
+    src: "img/cola_farm.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  138: {
+    name: "Ядер кола",
+    bodyPart: "left",
+    src: "img/nuke_cola.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  139: {
+    name: "STAND BY",
+    bodyPart: "face",
+    src: "img/stand_by.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  140: {
+    name: "Линкольн",
+    bodyPart: "right",
+    src: "img/snipe.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  141: {
+    name: "ВолтБой",
+    bodyPart: "leg2",
+    src: "img/vault_boy.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  142: {
+    name: "Щит Америки",
+    bodyPart: "right",
+    src: "img/america_shield.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  143: {
+    name: "Черный костюм",
+    bodyPart: "face",
+    src: "img/black_suit.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  144: {
+    name: "Коричневый костюм",
+    bodyPart: "face",
+    src: "img/brown_suit.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  145: {
+    name: "Цензура",
+    bodyPart: "face",
+    src: "img/cenz.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  146: {
+    name: "Призрак",
+    bodyPart: "head",
+    src: "img/gost.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  147: {
+    name: "Трешер",
+    bodyPart: "face",
+    src: "img/tresher.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  148: {
+    name: "Ладно",
+    bodyPart: "leg1",
+    src: "img/ladno.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  149: {
+    name: "Опечатано",
+    bodyPart: "face",
+    src: "img/stop.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  150: {
+    name: "Синий анонимус",
+    bodyPart: "face",
+    src: "img/blue_anonimus.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  151: {
+    name: "Шляпа фермера",
+    bodyPart: "head",
+    src: "img/ferma_hat.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+  152: {
+    name: "Оптимус",
+    bodyPart: "left",
+    src: "img/optimus.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  153: {
+    name: "Скибиди туалет",
+    bodyPart: "leg1",
+    src: "img/skibidi.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  154: {
+    name: "Соник",
+    bodyPart: "extra",
+    src: "img/sonik.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  155: {
+    name: "Наггетс",
+    bodyPart: "leg2",
+    src: "img/nagets.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  156: {
+    name: "Дуэль",
+    bodyPart: "legs",
+    src: "img/duel.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  157: {
+    name: "Roblox Face",
+    bodyPart: "face",
+    src: "img/roblox_face.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  158: {
+    name: "Все...",
+    bodyPart: "extra",
+    src: "img/vse.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  159: {
+    name: "Магический шар",
+    bodyPart: "extra",
+    src: "img/ball.png",
+    price: 10000,
+    canBuy: true,
+    class: "gem",
+  },
+
+  160: {
+    name: "Роблокс шар",
+    bodyPart: "extra",
+    src: "img/roblox_ball.png",
+    price: 10000,
     canBuy: false,
     class: "impossible",
   },

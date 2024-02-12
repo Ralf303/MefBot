@@ -27,7 +27,6 @@ class BonusService {
 
   async giveItem(user, ctx, token) {
     const tokenInfo = jwtService.verifyToken(token);
-    console.log(tokenInfo);
     const itemInfo = clothes[tokenInfo.id];
 
     if (user.slots < user.fullSlots) {

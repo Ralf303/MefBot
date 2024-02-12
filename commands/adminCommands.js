@@ -228,7 +228,7 @@ adminCommands.on("text", async (ctx, next) => {
       await ctx.reply("Данная команда доступна только админам");
     }
   } catch (e) {
-    await ctx.reply("Какая то ошибка, " + e);
+    console.log(e);
   }
   return next();
 });

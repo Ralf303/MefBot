@@ -41,13 +41,13 @@ const open = async (user, ctx, box) => {
   try {
     await Case.decrement({ [box.dbName]: 1 }, { where: { userId: user.id } });
     const chance = getRandomInt(1, 5000);
-    let result = `${user.username} открыл ${box.name} и получил`;
+    let result = `${user.firstname} открыл ${box.name} и получил`;
     let winAmount = 0;
 
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
       user.balance += win;
-      result += ` ${win}MF`;
+      result += ` ${win} мефа🌿`;
       await resiveLog(user, "меф", win, "приз из кейса");
       winAmount = win;
     }
@@ -72,9 +72,8 @@ const open = async (user, ctx, box) => {
     if (chance >= 512 && chance <= 1500) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
-      result += ` ${win}MF`;
+      result += ` ${win} мефа🌿`;
       await resiveLog(user, "меф", win, "приз из кейса");
-      winAmount = win;
     }
 
     if (chance === 1501) {
@@ -92,10 +91,22 @@ const open = async (user, ctx, box) => {
       return;
     }
 
-    if (chance > 1502) {
-      result += " ничего😥";
+    if (chance >= 1502 && chance <= 1800) {
+      const win = getRandomInt(1, 25);
+      user.gems += win;
+      result += ` ${win} гемов💎`;
+      await resiveLog(user, "гемы", win, "приз из кейса");
     }
 
+    if (chance >= 1801 && chance <= 1805) {
+      user.slots += 1;
+      result += ` 1 СЛОТ В ИНВЕНТАРЬ🎒`;
+      await resiveLog(user, "слоты", 1, "приз из кейса");
+    }
+
+    if (chance > 1806) {
+      result += " ничего😥";
+    }
     await ctx.reply(result);
   } catch (error) {
     console.log(error);

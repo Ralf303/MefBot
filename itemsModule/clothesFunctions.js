@@ -29,17 +29,17 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     return;
   }
 
-  if (user.balance < itemInfo.price && status && itemInfo.class !== "special") {
+  if (user.balance < itemInfo.price && status && itemInfo.class !== "gem") {
     await ctx.reply("Недостаточно мефа😢");
     return;
-  } else if (status && itemInfo.class !== "special") {
+  } else if (status && itemInfo.class !== "gem") {
     user.balance -= itemInfo.price;
   }
 
-  if (user.gems < itemInfo.price && status && itemInfo.class === "special") {
+  if (user.gems < itemInfo.price && status && itemInfo.class === "gem") {
     await ctx.reply("Недостаточно гемов😢");
     return;
-  } else if (status && itemInfo.class === "special") {
+  } else if (status && itemInfo.class === "gem") {
     user.gems -= itemInfo.price;
   }
 

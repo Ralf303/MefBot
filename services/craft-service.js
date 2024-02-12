@@ -5,6 +5,40 @@ const craftItems = require("../itemsObjects/crafts");
 const { loseLog, resiveLog } = require("../logs/globalLogs");
 
 class CrafService {
+  async #countItemsByItemName(user, itemName) {
+    const userItems = await user.getItems();
+    const filteredItems = userItems.filter(
+      (item) => item.itemName === itemName
+    );
+    return filteredItems.length;
+  }
+
+  async #checkUserCraft(user, components) {
+    // Проверяем наличие всех необходимых компонентов у пользователя
+    for (const component of components) {
+      const itemQuantity = await this.#countItemsByItemName(
+        user,
+        component.name
+      );
+      if (itemQuantity < component.quantity) {
+        return false; // Недостаточно компонентов
+      }
+    }
+
+    // Удаляем необходимые компоненты у пользователя
+    for (const component of components) {
+      const itemsToDelete = await user.getItems({
+        where: { itemName: component.name },
+        limit: component.quantity,
+      });
+      for (const itemToDelete of itemsToDelete) {
+        await itemToDelete.destroy();
+        user.fullSlots--;
+      }
+    }
+
+    return true; // Успешно скрафтили
+  }
   async craftItem(user, id, ctx) {
     try {
       const craft = craftItems[id];
@@ -14,29 +48,16 @@ class CrafService {
         return;
       }
 
-      const components = craft.components;
-      const quantity = craft.quantity;
-
-      // Проверка наличия компонентов у пользователя
-      const userItems = await user.getItems();
-      const availableComponents = userItems.filter((item) =>
-        components.includes(item.itemName)
+      const enoughComponents = await this.#checkUserCraft(
+        user,
+        craft.components
       );
 
       // Проверка, что количество компонентов достаточно для крафта
-      if (availableComponents.length < quantity) {
+      if (!enoughComponents) {
         await ctx.reply("Недостаточно компонентов для крафта");
         return;
       }
-
-      // Удаление использованных компонентов у пользователя
-      await Promise.all(
-        availableComponents
-          .slice(0, quantity)
-          .map((component) => component.destroy())
-      );
-      user.fullSlots -= quantity;
-      await loseLog(user, `${availableComponents.slice(0, quantity)}`, `крафт`);
 
       let chance = Math.random() * 100;
 
@@ -91,26 +112,17 @@ class CrafService {
 
   async craftList(ctx) {
     let message = "❗️КРАФТИНГ❗️\n\n";
-
-    for (const id in craftItems) {
+    for (let id in craftItems) {
       const item = craftItems[id];
-
       message += `${id}) ${item.name}[${item.personalId}]\n`;
-      message += "•Возможные компоненты:\n";
-
-      for (const component of item.components) {
-        message += `• ${component}\n`;
-      }
-
-      message += `•Нужно компонентов: ${item.quantity}\n`;
-      message += `•Шанс: ${item.chance}%\n\n`;
+      message += "• Нужные компоненты:\n";
+      item.components.forEach((component) => {
+        message += `• ${component.quantity}x ${component.name}\n`;
+      });
+      message += ` • Шанс: ${item.chance}%\n\n`;
     }
-
-    message += "Для крафта используйте\n<<Крафт {id}>>\n\n";
-    message +=
-      "Для того чтобы узнать особенность вещи введите\n<<Инфа {id самой вещи}>>";
-
-    await ctx.reply(message);
+    message += "📖Крафт {id}\n📖Инфа {id вещи}";
+    ctx.reply(message);
   }
 }
 

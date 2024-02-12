@@ -63,10 +63,13 @@ function Cycles(bot) {
             const user = await User.findOne({ where: { id: drone.userId } });
             let minedAmount = calculateMiningAmount(user.balance);
 
-            if (await checkItem(user.id, "Пупс «Ремонт»")) {
-              minedAmount = Math.min(minedAmount + 50000, 150000);
-            } else if (minedAmount > 100000) {
-              minedAmount = 100000;
+            if (
+              (await checkItem(user.id, "Пупс «Ремонт»")) &&
+              minedAmount > 150000
+            ) {
+              minedAmount = 200000;
+            } else if (minedAmount > 150000) {
+              minedAmount = 150000;
             }
 
             const chance = getRandomInt(0, 100);
