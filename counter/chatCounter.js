@@ -80,36 +80,40 @@ MessageCounter.on("new_chat_members", async (ctx, next) => {
 });
 
 MessageCounter.hears(/актив день/i, async (ctx, next) => {
-  const users = await User.findAll({
-    where: {
-      dayMessageCounter: {
-        [Op.gt]: 0,
+  try {
+    const users = await User.findAll({
+      where: {
+        dayMessageCounter: {
+          [Op.gt]: 0,
+        },
       },
-    },
-    order: [["dayMessageCounter", "DESC"]],
-    limit: 15,
-  });
+      order: [["dayMessageCounter", "DESC"]],
+      limit: 15,
+    });
 
-  const message = users
-    .map(
-      (user, index) =>
-        `${index + 1}. [${user.firstname.replace(
-          regex,
-          "\\$&"
-        )}](https://t.me/${user.username}): ${user.dayMessageCounter}`
-    )
-    .join("\n");
+    const message = users
+      .map(
+        (user, index) =>
+          `${index + 1}. [${user.firstname.replace(
+            regex,
+            "\\$&"
+          )}](https://t.me/${user.username}): ${user.dayMessageCounter}`
+      )
+      .join("\n");
 
-  await ctx.reply(
-    `❗️Топ-15 активных пользователей за день❗️\n
+    await ctx.reply(
+      `❗️Топ-15 активных пользователей за день❗️\n
 ${message}`,
-    {
-      disable_notification: true,
-      parse_mode: "Markdown",
-      disable_web_page_preview: true,
-    }
-  );
-  return next();
+      {
+        disable_notification: true,
+        parse_mode: "Markdown",
+        disable_web_page_preview: true,
+      }
+    );
+    return next();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 MessageCounter.hears(/актив неделя/i, async (ctx, next) => {

@@ -156,6 +156,7 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "бот") {
+      ctx.react("👍")
       await ctx.reply("✅На месте");
     }
 
