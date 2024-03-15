@@ -50,30 +50,30 @@ const commands = "https://telegra.ph/RUKOVODSTVO-PO-BOTU-05-13";
 let capture = 120394857653;
 
 chatCommands.on("text", async (ctx, next) => {
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
-  const userMessage = ctx.message.text.toLowerCase();
-  const [word1, word2, word3, word4] = userMessage.split(" ");
-  const replyToMessage = ctx.message.reply_to_message;
-
-  if (replyToMessage && replyToMessage.from) {
-    const comment = userMessage.split("\n")[1];
-    const rpAction = rp[userMessage.split("\n")[0]];
-    if (rpAction) {
-      await createRP(
-        rpAction.value,
-        rpAction.emoji,
-        ctx,
-        replyToMessage,
-        comment
-      );
-    }
-  }
-
   try {
+    const user = await getUser(
+      ctx.from.id,
+      ctx.from.first_name,
+      ctx.from.username
+    );
+    const userMessage = ctx.message.text.toLowerCase();
+    const [word1, word2, word3, word4] = userMessage.split(" ");
+    const replyToMessage = ctx.message.reply_to_message;
+
+    if (replyToMessage && replyToMessage.from) {
+      const comment = userMessage.split("\n")[1];
+      const rpAction = rp[userMessage.split("\n")[0]];
+      if (rpAction) {
+        await createRP(
+          rpAction.value,
+          rpAction.emoji,
+          ctx,
+          replyToMessage,
+          comment
+        );
+      }
+    }
+
     if (userMessage == "проф") {
       await checkUserProfile(user, ctx);
     }
@@ -156,7 +156,7 @@ chatCommands.on("text", async (ctx, next) => {
     }
 
     if (userMessage == "бот") {
-      ctx.react("👍")
+      ctx.react("👍");
       await ctx.reply("✅На месте");
     }
 
