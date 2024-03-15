@@ -12,7 +12,6 @@ const { checkItem, createItem } = require("../itemsModule/clothesFunctions.js");
 
 const MessageCounter = new Composer();
 
-const regex = /([_*][)~(`>#+\-=|{}.!])/g;
 const allowedChats = [
   -1001680708708, -1001672482562, -1001551821031, -1002107153123,
   -1002013744790,
@@ -95,10 +94,9 @@ MessageCounter.hears(/актив день/i, async (ctx, next) => {
     const message = users
       .map(
         (user, index) =>
-          `${index + 1}. [${user.firstname.replace(
-            regex,
-            "\\$&"
-          )}](https://t.me/${user.username}): ${user.dayMessageCounter}`
+          `${index + 1}. <a href="tg://user?id=${user.chatId}">${
+            user.firstname
+          }</a>: ${user.dayMessageCounter}`
       )
       .join("\n");
 
@@ -107,7 +105,7 @@ MessageCounter.hears(/актив день/i, async (ctx, next) => {
 ${message}`,
       {
         disable_notification: true,
-        parse_mode: "Markdown",
+        parse_mode: "HTML",
         disable_web_page_preview: true,
       }
     );
@@ -131,10 +129,9 @@ MessageCounter.hears(/актив неделя/i, async (ctx, next) => {
   const message = users
     .map(
       (user, index) =>
-        `${index + 1}. [${user.firstname.replace(
-          regex,
-          "\\$&"
-        )}](https://t.me/${user.username}): ${user.weekMessageCounter}`
+        `${index + 1}. <a href="tg://user?id=${user.chatId}">${
+          user.firstname
+        }</a>: ${user.weekMessageCounter}`
     )
     .join("\n");
 
@@ -143,7 +140,7 @@ MessageCounter.hears(/актив неделя/i, async (ctx, next) => {
 ${message}`,
     {
       disable_notification: true,
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       disable_web_page_preview: true,
     }
   );
@@ -164,10 +161,9 @@ MessageCounter.hears(/актив месяц/i, async (ctx, next) => {
   const message = users
     .map(
       (user, index) =>
-        `${index + 1}. [${user.firstname.replace(
-          regex,
-          "\\$&"
-        )}](https://t.me/${user.username}): ${user.monthMessageCounter}`
+        `${index + 1}. <a href="tg://user?id=${user.chatId}">${
+          user.firstname
+        }</a>: ${user.monthMessageCounter}`
     )
     .join("\n");
 
@@ -176,7 +172,7 @@ MessageCounter.hears(/актив месяц/i, async (ctx, next) => {
 ${message}`,
     {
       disable_notification: true,
-      parse_mode: "Markdown",
+      parse_mode: "HTML",
       disable_web_page_preview: true,
     }
   );
