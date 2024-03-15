@@ -188,7 +188,8 @@ chatCommands.on("text", async (ctx, next) => {
         await user.addItem(item);
         await item.save();
         await ctx.reply(
-          `‼️ВНИМАНИЕ‼️\n\n@${ctx.from.username} ввел 100 капчей и получает редкий предмет "калькулятор[${item.id}]"`
+          `‼️ВНИМАНИЕ‼️\n\n❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> ввел 100 капчей и получает редкий предмет "калькулятор[${item.id}]"`,
+          { parse_mode: "HTML" }
         );
       }
 

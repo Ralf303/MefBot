@@ -81,7 +81,8 @@ function Cycles(bot) {
               await user.addItem(item);
               await bot.telegram.sendMessage(
                 process.env.CHAT_ID,
-                `❗️@${user.username} испытал удачу и получил ${item.itemName}❗️`
+                `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу и получил ${item.itemName}❗️`,
+                { parse_mode: "HTML" }
               );
               await item.save();
             }

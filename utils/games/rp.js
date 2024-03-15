@@ -1,17 +1,11 @@
 async function createRP(rp, emoji, ctx, replyToMessage, comment) {
   try {
-    const firstName = ctx.message.from.first_name.replaceAll(
-      /[\\`*_{}\[\]()#+\-.!()]/g,
-      "\\$&"
-    );
-    const replyFirstName = replyToMessage.from.first_name.replaceAll(
-      /[\\`*_{}\[\]()#+\-.!()]/g,
-      "\\$&"
-    );
+    const firstName = ctx.message.from.first_name;
+    const replyFirstName = replyToMessage.from.first_name;
 
     let replyMessage =
       `${emoji} <a href="tg://user?id=${ctx.message.from.id}">${firstName}</a> ` +
-      `${rp.replaceAll(/[\\*_{}\[\]()#+\-.!()]/g, "\\$&")} ` +
+      `${rp} ` +
       `<a href="tg://user?id=${replyToMessage.from.id}">${replyFirstName}</a>`;
 
     if (comment) {

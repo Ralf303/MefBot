@@ -50,7 +50,8 @@ const giveCoins = async (ctx) => {
     await sender.save();
     await receiver.save();
     await ctx.reply(
-      `Вы успешно отсыпали ${amount} грамм мефа ${message.from.first_name}`
+      `Вы успешно отсыпали ${amount} грамм мефа <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      { parse_mode: "HTML" }
     );
 
     await loseLog(sender, "меф", "передача другому юзеру");
@@ -110,7 +111,8 @@ const giveItem = async (sender, id, ctx) => {
     receiver.fullSlots++;
     item.userId = receiver.id;
     await ctx.reply(
-      `Вы успешно передали ${item.itemName}[${item.id}] @${receiver.username}`
+      `Вы успешно передали ${item.itemName}[${item.id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      { parse_mode: "HTML" }
     );
 
     await sender.save();

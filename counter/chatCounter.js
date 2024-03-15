@@ -15,6 +15,7 @@ const MessageCounter = new Composer();
 const regex = /([_*][)~(`>#+\-=|{}.!])/g;
 const allowedChats = [
   -1001680708708, -1001672482562, -1001551821031, -1002107153123,
+  -1002013744790,
 ];
 
 MessageCounter.on("new_chat_members", async (ctx, next) => {
