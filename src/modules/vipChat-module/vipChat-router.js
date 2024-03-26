@@ -20,11 +20,15 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
     if (userMessage == "купить випчат") {
       if (chat.vip) return await ctx.reply("Випчат уже куплен🤑");
       await ctx.reply(
-        "💎 Вы собираетесь приобрести випчат.\n🕓 Период: 1 месяц\n🌿 Цена: 1 миллион мефа",
+        ru_text.buy_vip_chat,
         Keyboard.inline([
           [Key.callback("Точно купить", "vipChat" + ctx.from.id)],
         ])
       );
+    }
+
+    if (userMessage == "випчат") {
+      await ctx.reply(ru_text.about_vip_chat);
     }
 
     if (userMessage == "+кейсы" && isOwner) {
