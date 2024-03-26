@@ -1,43 +1,24 @@
 const { Composer } = require("telegraf");
-const { chatCommands } = require("./commands/chatcommands.js");
-const bonusService = require("./services/bonus-service.js");
-const addServise = require("./services/add-servise.js");
 
 const middleware = new Composer();
 
-middleware.use((ctx, next) => {
-  const { channelPost } = ctx;
+middleware.use(require("./src/actions/actionOnBuy.js"));
+middleware.use(require("./src/actions/shopActions.js"));
+middleware.use(require("./src/modules/game-module/dice-actions.js"));
+middleware.use(require("./src/modules/vipChat-module/vipChat-actions.js"));
+middleware.use(require("./src/modules/commands-module/commands-router.js"));
+middleware.use(require("./src/modules/vipChat-module/vipChat-router.js"));
+middleware.use(require("./src/modules/main-module/main-router.js"));
+middleware.use(require("./src/modules/active-module/active-router.js"));
+middleware.use(require("./src/modules/case-module/case-router.js"));
+middleware.use(require("./src/modules/craft-module/craft-router.js"));
+middleware.use(require("./src/modules/mef-module/mef-router.js"));
+middleware.use(require("./src/modules/gems-module/gems-router.js"));
+middleware.use(require("./src/modules/items-module/items-router.js"));
+middleware.use(require("./src/modules/admin-module/admin-router.js"));
+middleware.use(require("./src/modules/logs-module/logs-router.js"));
+middleware.use(require("./src/modules/channel-module/channel-router.js"));
+middleware.use(require("./src/modules/game-module/game-router.js"));
+middleware.use(require("./src/modules/capcha-module/capcha-router.js"));
 
-  if (
-    channelPost &&
-    channelPost.text &&
-    channelPost.text.toLowerCase() == "бонус"
-  ) {
-    bonusService.createBonus(ctx);
-  }
-
-  if (channelPost && channelPost.text) {
-    const message = channelPost.text.toLowerCase();
-    const [word1, word2, word3, word4] = message.split(" ");
-
-    if (word1 === "раздача" && word2) {
-      bonusService.sendEvent(ctx, word2);
-    }
-
-    if (word1 === "реклама" && word2) {
-      addServise.send(ctx, word2, word3, word4);
-    }
-  }
-
-  next();
-});
-middleware.use(require("./counter/chatCounter.js"));
-middleware.use(require("./actions/actionOnBuy.js"));
-middleware.use(require("./commands/commands.js"));
-middleware.use(require("./actions/shopActions.js"));
-middleware.use(require("./commands/privatCommands.js"));
-middleware.use(require("./commands/spamCommands.js"));
-middleware.use(require("./commands/adminCommands.js"));
-middleware.use(require("./logs/securityLogs.js"));
-middleware.use(chatCommands);
 module.exports = middleware;

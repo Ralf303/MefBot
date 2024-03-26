@@ -1,6 +1,6 @@
-const sequelize = require("../db/db.js");
-const { connectToDb } = require("../db/functions.js");
-const logMessage = require("../utils/logMessage.js");
+const sequelize = require("../src/db/config.js");
+const { connectToDb } = require("../src/db/functions.js");
+const logMessage = require("../src/utils/logMessage.js");
 
 // Функция для сброса таблиц
 async function resetTables() {

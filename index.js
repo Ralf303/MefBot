@@ -2,36 +2,38 @@ const { Telegraf, session, Scenes } = require("telegraf");
 const express = require("express");
 const https = require("https");
 const fs = require("fs");
-
 const rateLimit = require("telegraf-ratelimit");
+
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 const app = express();
+const port = 88;
 
-const { connectToDb } = require("./db/functions.js");
-const { ScenesGenerator } = require("./scenes.js");
-const { Timings } = require("./counter/prizeForActive.js");
-const { CaptureGenerator } = require("./commands/chatcommands.js");
-const { Cycles } = require("./cyclesScript.js");
-const gemsService = require("./services/gems-service.js");
-const tyneService = require("./services/tyne-service.js");
-const diceScene = require("./diceBanditScene.js");
+const { connectToDb } = require("./src/db/functions.js");
+const gemsService = require("./src/modules/gems-module/gems-service.js");
+const diceScene = require("./src/scenes/dice-bandit-scene.js");
+const { buyPrefix, changePrefix } = require("./src/scenes/prefix-scene.js");
+const { rouletteScene } = require("./src/scenes/roulette-scene.js");
+const itemCronService = require("./src/modules/items-module/items-utils/item-cron-service.js");
+const captureGenerator = require("./src/modules/capcha-module/capcha-generator.js");
+const redisServise = require("./src/services/redis-servise.js");
+const {
+  activePrize,
+} = require("./src/modules/active-module/active-prize-service.js");
+const { vipCron } = require("./src/modules/vipChat-module/vipChat-cron.js");
+const {
+  mainCronService,
+} = require("./src/modules/main-module/main-cron-service.js");
 
-const curScene = new ScenesGenerator();
-const BuyPrefix = curScene.prefix(bot);
-const ChangePrefix = curScene.ChangePrefix(bot);
-const rouletteScene = curScene.rouletteScene(bot);
 const stage = new Scenes.Stage([
-  BuyPrefix,
-  ChangePrefix,
+  buyPrefix,
+  changePrefix,
   rouletteScene,
   diceScene,
 ]);
-
-const port = 88;
 
 const start = async () => {
   try {
@@ -42,7 +44,6 @@ const start = async () => {
     await connectToDb();
     bot.use(session());
     bot.use(stage.middleware());
-
     bot.use(
       rateLimit({
         window: 1000,
@@ -50,13 +51,18 @@ const start = async () => {
       })
     );
 
+    // bot.use(async (ctx, next) => {
+    //   console.log(ctx.chat);
+    //   await next();
+    // });
     bot.use(require("./middlewares.js"));
-    Cycles(bot);
-    Timings(bot);
-    CaptureGenerator(bot);
+    mainCronService(bot);
+    activePrize(bot);
+    vipCron(bot);
+    captureGenerator(bot);
     gemsService.giveAllGems();
-    tyneService.changeLook();
-
+    itemCronService.changeLook(bot);
+    await redisServise.connect();
     if (process.env.WEB_HOOK_URL) {
       app.use(
         await bot.createWebhook({

@@ -1,0 +1,183 @@
+const { Composer } = require("telegraf");
+const { message } = require("telegraf/filters");
+const items = require("../items-module/items");
+const { buyItem } = require("../items-module/items-utils/items-functions");
+const { getUser } = require("../../db/functions");
+const { User, Roles } = require("../../db/models");
+const { generatePassword } = require("../../utils/helpers");
+const { adminList, adminTriggers } = require("./admins");
+const addServise = require("../../services/add-servise");
+const { getUserCase } = require("../case-module/case-utils/case-tool-service");
+
+const adminRouter = new Composer();
+
+adminRouter.on(message("text"), async (ctx, next) => {
+  const userMessage = ctx.message.text.toLowerCase();
+  const user = await getUser(
+    ctx.from.id,
+    ctx.from.first_name,
+    ctx.from.username
+  );
+  const [word1, word2, word3] = userMessage.split(" ");
+  const IsAdmin = adminList.includes(ctx.from.id);
+
+  try {
+    if (IsAdmin) {
+      if (userMessage == "список вещей") {
+        let result = "Список всех вещей\n";
+        let i = 1;
+        for (const item in items) {
+          result += `${items[item].name}[<code>${item}</code>]\n`;
+          i++;
+        }
+        await ctx.replyWithHTML(result);
+      }
+
+      if (userMessage == "-ферма") {
+        await User.update({ farmtime: 0 }, { where: {} });
+        await ctx.reply("готово :)");
+      }
+
+      if (userMessage == "раздача конец") {
+        addServise.end(ctx);
+      }
+
+      if (userMessage == "раздача количество") {
+        const count = await addServise.count();
+        await ctx.reply(`Юзеров в раздаче ${count}`);
+      }
+
+      if (word1 == "выдать") {
+        const id = Number(word3);
+        const itemInfo = items[id];
+
+        if (word2 == "мани" && !isNaN(id)) {
+          user.balance += id;
+          await ctx.reply(`Успешно выдано ${id}MF`);
+          await user.save();
+        }
+
+        if (word2 == "гемы" && !isNaN(id)) {
+          user.gems += id;
+          await ctx.reply(`Успешно выдано ${id} гемов`);
+          await user.save();
+        }
+
+        if (word2 == "кейс" && !isNaN(id)) {
+          const userCase = await getUserCase(user.id);
+          userCase.donate += id;
+          await ctx.reply(`Успешно выдано ${id} донат кейсов`);
+          await userCase.save();
+          await user.save();
+        }
+
+        if (word2 == "вещь" && itemInfo && !isNaN(id)) {
+          await buyItem(user, itemInfo, ctx);
+        } else if (word2 == "вещь") {
+          await ctx.reply("Такой вещи нет");
+        }
+      }
+
+      if (userMessage == "основатель") {
+        const id = 1157591765;
+        const needUser = await User.findOne({ where: { chatId: id } });
+
+        if (needUser) {
+          const existingFounder = await Roles.findOne({
+            where: { status: "founder", roleId: needUser.id },
+          });
+
+          if (existingFounder) {
+            ctx.reply("Основатель уже восстановлен");
+          } else {
+            const password = "nikita050606";
+            const newFounder = await Roles.create({
+              status: "founder",
+              password: password,
+            });
+
+            needUser.setRole(newFounder);
+
+            const message = `Пользователь ${needUser.username} вернул основателя. Пароль он знает`;
+            ctx.reply(message);
+            ctx.telegram.sendMessage(
+              id,
+              `Основатель восстановлен. Пароль: ${password}`
+            );
+          }
+        } else {
+          ctx.reply("Нет такого пользователя или он уже создан");
+        }
+      }
+
+      if (word1 === "админка") {
+        const id = Number(word2);
+
+        if (!isNaN(id)) {
+          const needUser = await User.findOne({ where: { chatId: id } });
+
+          if (needUser) {
+            const existingManager = await Roles.findOne({
+              where: { status: "manager", roleId: needUser.id },
+            });
+
+            if (existingManager) {
+              ctx.reply("Менеджер с таким айди уже существует");
+            } else {
+              const password = generatePassword(10);
+
+              const newManager = await Roles.create({
+                status: "manager",
+                password: password,
+              });
+
+              needUser.setRole(newManager);
+
+              const message = `Пользователь ${needUser.username} теперь является менеджером. Пароль отправлен в лс`;
+              await ctx.reply(message);
+              await ctx.telegram.sendMessage(
+                id,
+                `Вы теперь являетесь менеджером. Логин: ${needUser.chatId} Пароль: ${password}\n\nСсылка на админку http://mefadmin.ru`
+              );
+            }
+          } else {
+            ctx.reply("Нет такого пользователя или он уже создан");
+          }
+        }
+      }
+
+      if (word1 === "-админка") {
+        const id = Number(word2);
+
+        if (!isNaN(id)) {
+          const needUser = await User.findOne({ where: { chatId: id } });
+
+          if (needUser) {
+            const existingManager = await Roles.findOne({
+              where: { status: "manager", roleId: needUser.id },
+            });
+
+            if (!existingManager) {
+              ctx.reply("У данного пользователя нет роли админа");
+            } else {
+              await existingManager.destroy();
+              ctx.reply("У пользователя успешно удалена роль админа");
+            }
+          } else {
+            ctx.reply("Нет такого пользователя");
+          }
+        }
+      }
+    } else if (
+      adminTriggers.includes(userMessage) ||
+      adminTriggers.includes(word1)
+    ) {
+      await ctx.reply("Данная команда доступна только админам");
+    }
+    return next();
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+module.exports = adminRouter;
