@@ -27,7 +27,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
       chat = await getChat(ctx.chat.id);
     }
 
-    const isSpam = chat?.allowGames === true || ctx.chat.type === "private";
+    const isSpam = chat?.allowCase === true || ctx.chat.type === "private";
 
     if (userMessage == "мои мефкейсы") {
       let result = "Ваши мефкейсы:\n";
