@@ -1,8 +1,10 @@
 const { Telegraf, session, Scenes } = require("telegraf");
 const express = require("express");
 const https = require("https");
+const http = require("http");
 const fs = require("fs");
 const rateLimit = require("telegraf-ratelimit");
+const cors = require("cors");
 
 require("dotenv").config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
@@ -10,6 +12,8 @@ require("dotenv").config({
 const token = process.env.BOT_TOKEN;
 const bot = new Telegraf(token);
 const app = express();
+app.use(cors());
+app.use(express.json());
 const port = 88;
 
 const { connectToDb } = require("./src/db/functions.js");
@@ -27,6 +31,7 @@ const { vipCron } = require("./src/modules/vipChat-module/vipChat-cron.js");
 const {
   mainCronService,
 } = require("./src/modules/main-module/main-cron-service.js");
+const usersItemRouter = require("./src/API/getUserPablo.js");
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -63,6 +68,7 @@ const start = async () => {
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);
     await redisServise.connect();
+    app.use(usersItemRouter);
     if (process.env.WEB_HOOK_URL) {
       app.use(
         await bot.createWebhook({
@@ -79,6 +85,9 @@ const start = async () => {
       });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на веб хуке");
     } else {
+      http.createServer(app).listen(5000, () => {
+        console.log("Сервер работает", 5000);
+      });
       bot.launch({ dropPendingUpdates: true });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на пулинге");
     }
