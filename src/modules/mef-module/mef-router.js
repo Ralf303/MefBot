@@ -2,7 +2,11 @@ const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 const { Keyboard, Key } = require("telegram-keyboard");
 
-const { checkUserSub, checkUserProfile } = require("../../utils/helpers");
+const {
+  checkUserSub,
+  checkUserProfile,
+  separateNumber,
+} = require("../../utils/helpers");
 const { getUser } = require("../../db/functions.js");
 const { giveCoins } = require("./mef-service.js");
 const ru_text = require("../../../ru_text.js");
@@ -56,7 +60,12 @@ mefRouter.on(message("text"), async (ctx, next) => {
       userMessage == "меф" ||
       userMessage == "б"
     ) {
-      await ctx.reply("Ваш меф: " + user.balance + "\nВаши гемы: " + user.gems);
+      await ctx.reply(
+        "Меф: " +
+          separateNumber(user.balance) +
+          "\nГемы: " +
+          separateNumber(user.gems)
+      );
     }
 
     if (word1 == "отсыпать") {

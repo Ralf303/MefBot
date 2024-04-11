@@ -171,7 +171,7 @@ class BonusService {
       user.takeBonus++;
       user.balance += prize;
       await user.save();
-      await ctx.reply(`Бонус в размере ${prize}MF успешно получен`);
+      await ctx.reply(`Бонус в размере ${prize} мефа успешно получен`);
     } catch (error) {
       console.log(error);
     }

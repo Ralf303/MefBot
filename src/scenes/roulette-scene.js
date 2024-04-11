@@ -103,7 +103,7 @@ rouletteScene.on("callback_query", async (ctx) => {
       const winNumber = Math.floor(Math.random() * 36 + 1); // генерация случайного числа от 1 до 36
       const winColor = getWinColor(winNumber);
       const winAmount = getWinAmount(amount, bet, winNumber);
-      const message = `Выпавшее число: ${winNumber} (${winColor}),\nВаша ставка: ${amount} на (${bet}). ${
+      const message = `Выпавшее число: ${winNumber} (${winColor}),\nТвоя ставка: ${amount} на (${bet}). ${
         winAmount > 0
           ? `\n🥳 Поздравляем, вы выиграли ${winAmount}!\n\nБаланс: ${
               user.balance - amount + winAmount

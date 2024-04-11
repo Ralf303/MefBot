@@ -16,7 +16,7 @@ compose.action("timeapp", async (ctx) => {
     await loseLog(user, `меф`, "покупка в магазине");
     user.timelvl += 1;
     await ctx.reply(
-      "Поздравляем с успешной покупкой!\nТеперь ваш уровень времени " +
+      "Поздравляем с успешной покупкой!\nТеперь твой уровень времени " +
         user.timelvl
     );
     user.save();
@@ -39,7 +39,7 @@ compose.action("mefapp", async (ctx) => {
     await loseLog(user, `меф`, "покупка в магазине");
     user.meflvl += 1;
     await ctx.reply(
-      "Поздравляем с успешной покупкой!\nТеперь ваш уровень сбора " +
+      "Поздравляем с успешной покупкой!\nТеперь твой уровень сбора " +
         user.meflvl
     );
     user.save();

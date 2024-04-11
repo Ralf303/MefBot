@@ -20,6 +20,10 @@ function generateCapcha() {
   return res;
 }
 
+function separateNumber(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 function calculateMiningAmount(balance) {
   return Math.floor(balance * 0.1);
 }
@@ -79,19 +83,19 @@ async function checkUserProfile(user, ctx) {
 
   if (!message) {
     await ctx.replyWithHTML(
-      "Ваш ник: " +
+      "Ник: " +
         user.firstname +
         "\nId: <code>" +
         user.chatId +
-        "</code>\nВаш меф: " +
-        user.balance +
-        "\nВаши гемы: " +
+        "</code>\nМеф: " +
+        separateNumber(user.balance) +
+        "\nГемы: " +
         user.gems +
         "\nКапчей введено: " +
         user.captureCounter +
-        "\nВаш уровень сбора: " +
+        "\nУровень сбора: " +
         user.meflvl +
-        "\nВаш уровень времени: " +
+        "\nУровень времени: " +
         user.timelvl +
         "\nСлотов всего: " +
         user.slots +
@@ -120,8 +124,8 @@ async function checkUserProfile(user, ctx) {
           player.firstname +
           "\nId: <code>" +
           player.chatId +
-          "</code>\nГрамм мефа: " +
-          player.balance +
+          "</code>\nМеф: " +
+          separateNumber(player.balance) +
           "\nГемы: " +
           player.gems +
           "\nКапчей введено: " +
@@ -151,7 +155,11 @@ async function shopGenerator(id, ctx) {
 
     for (const item in items) {
       if (items[item].class === "low") {
-        result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price}MF\n`;
+        result += `• ${
+          items[item].name
+        }[<code>${item}</code>] Цена: ${separateNumber(
+          items[item].price
+        )} мефа\n`;
       }
     }
   }
@@ -161,7 +169,11 @@ async function shopGenerator(id, ctx) {
 
     for (const item in items) {
       if (items[item].class === "middle") {
-        result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price}MF\n`;
+        result += `• ${
+          items[item].name
+        }[<code>${item}</code>] Цена: ${separateNumber(
+          items[item].price
+        )} мефа\n`;
       }
     }
   }
@@ -171,7 +183,11 @@ async function shopGenerator(id, ctx) {
 
     for (const item in items) {
       if (items[item].class === "elite") {
-        result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price}MF\n`;
+        result += `• ${
+          items[item].name
+        }[<code>${item}</code>] Цена: ${separateNumber(
+          items[item].price
+        )} мефа\n`;
       }
     }
   }
@@ -181,7 +197,9 @@ async function shopGenerator(id, ctx) {
 
     for (const item in items) {
       if (items[item].class === "donate") {
-        result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price}\n`;
+        result += `• ${
+          items[item].name
+        }[<code>${item}</code>] Цена: ${separateNumber(items[item].price)}\n`;
       }
     }
 
@@ -253,4 +271,5 @@ module.exports = {
   calculateMiningAmount,
   checkAction,
   saveAction,
+  separateNumber,
 };

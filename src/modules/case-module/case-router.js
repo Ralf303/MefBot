@@ -30,7 +30,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
     const isSpam = chat?.allowCase === true || ctx.chat.type === "private";
 
     if (userMessage == "мои мефкейсы") {
-      let result = "Ваши мефкейсы:\n";
+      let result = "Твои мефкейсы:\n";
       let i = 1;
       for (const item in cases) {
         result += `${i}) ${cases[item].name} - ${
@@ -110,7 +110,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
         if (cases[item].class) {
           price += ` гемов`;
         } else {
-          price += ` MF`;
+          price += ` мефа`;
         }
         result += `${i}) ${cases[item].name} Цена: ${price}\n`;
         i++;

@@ -142,7 +142,7 @@ const removeItem = async (user, id, ctx) => {
 const getInventory = async (user, ctx) => {
   const items = await user.getItems();
   if (items.length === 0) {
-    await ctx.reply("Ваш инвентарь пуст.");
+    await ctx.reply("Твой инвентарь пуст.");
     return;
   }
   const itemNames = items.map(
@@ -158,7 +158,7 @@ const getInventory = async (user, ctx) => {
     rows.push(row);
   }
   await ctx.replyWithHTML(
-    `Ваш инвентарь:\n${rows.join(
+    `Твой инвентарь:\n${rows.join(
       "\n"
     )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id`
   );

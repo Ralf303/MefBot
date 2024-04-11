@@ -59,7 +59,7 @@ itemsRouter.on(message("text"), async (ctx, next) => {
         await tryItem(itemInfo, ctx, id);
       } else {
         await ctx.reply(
-          "Не правильное использование команды\n\nПопробуйте\n<<Примерить {Id вещи}>>"
+          "Не правильное использование команды\n\nПопробуй\n<<Примерить {Id вещи}>>"
         );
       }
     } else if (word1 == "примерить") {
