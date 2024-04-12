@@ -530,7 +530,7 @@ const items = {
     price: 50,
     canBuy: false,
     class: "impossible",
-    info: "ЭД-Э является носителем информации многих умов, и знает как увеличить шанс успешного крафта на 25%, когда надет на пабло",
+    info: "ЭД-Э является носителем информации многих умов, и знает как увеличить шанс успешного крафта на 15%, когда надет на пабло",
   },
 
   60: {
@@ -908,7 +908,7 @@ const items = {
     price: 50000,
     canBuy: false,
     class: "impossible",
-    info: "С этой штукой вам подозрительно будет везти",
+    info: "С этой штукой тебе будет подозрительно везти",
   },
 
   101: {
@@ -1457,6 +1457,26 @@ const items = {
     price: 10000,
     canBuy: false,
     class: "impossible",
+  },
+
+  161: {
+    name: "Йес-мэн",
+    bodyPart: "leg1",
+    src: "img/yes_man.png",
+    price: 10000,
+    canBuy: false,
+    class: "impossible",
+    info: "Йес-мэн позволяет открывать до 3х кейсов одновременно!",
+  },
+
+  162: {
+    name: "Кот Мисато",
+    bodyPart: "leg1",
+    src: "img/cot_misato.png",
+    price: 1000000,
+    canBuy: false,
+    class: "impossible",
+    info: "Откуда он у тебя, немедленно удали его!",
   },
 };
 

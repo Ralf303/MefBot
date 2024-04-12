@@ -51,11 +51,8 @@ const getWornItems = async (user, ctx) => {
 
     const rows = [];
 
-    for (let i = 0; i < wornItems.length; i += 2) {
+    for (let i = 0; i < wornItems.length; i++) {
       let row = wornItems[i];
-      if (i + 1 < wornItems.length) {
-        row += `, ${wornItems[i + 1]}`;
-      }
       rows.push(row);
     }
 

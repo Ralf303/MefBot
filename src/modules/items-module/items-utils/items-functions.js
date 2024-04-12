@@ -140,28 +140,43 @@ const removeItem = async (user, id, ctx) => {
 };
 
 const getInventory = async (user, ctx) => {
-  const items = await user.getItems();
-  if (items.length === 0) {
-    await ctx.reply("Твой инвентарь пуст.");
+  try {
+    const items = await user.getItems();
+    if (items.length === 0) {
+      await ctx.reply("Твой инвентарь пуст.");
+      return;
+    }
+    const itemNames = items.map(
+      (item) => `${item.itemName}[<code>${item.id}</code>]`
+    );
+    const rows = [];
+    for (let i = 0; i < itemNames.length; i++) {
+      let row = itemNames[i];
+      rows.push(row);
+    }
+    const message = `Твой инвентарь:\n${rows.join(
+      "\n"
+    )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
+
+    if (items.length > 30) {
+      await ctx.replyWithHTML(
+        'Твой инвентарь уже открыт в <a href="https://t.me/PablMefBot">ЛС бота</a>',
+        {
+          reply_to_message_id: ctx.message.message_id,
+          disable_web_page_preview: true,
+        }
+      );
+      await ctx.telegram.sendMessage(user.chatId, message, {
+        parse_mode: "HTML",
+      });
+    } else {
+      await ctx.replyWithHTML(message);
+    }
+  } catch (e) {
+    console.log(e);
+    await ctx.replyWithHTML(message);
     return;
   }
-  const itemNames = items.map(
-    (item) => `${item.itemName}[<code>${item.id}</code>]`
-  );
-  const rows = [];
-  for (let i = 0; i < itemNames.length; i += 2) {
-    let row = itemNames[i];
-
-    if (i + 1 < itemNames.length) {
-      row += `, ${itemNames[i + 1]}`;
-    }
-    rows.push(row);
-  }
-  await ctx.replyWithHTML(
-    `Твой инвентарь:\n${rows.join(
-      "\n"
-    )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id`
-  );
 };
 
 module.exports = {

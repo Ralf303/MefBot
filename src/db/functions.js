@@ -1,3 +1,7 @@
+const {
+  getUserCase,
+} = require("../modules/case-module/case-utils/case-tool-service.js");
+const redisServise = require("../services/redis-servise.js");
 const sequelize = require("./config.js");
 const { User, Case, Chat } = require("./models");
 
@@ -79,10 +83,32 @@ const connectToDb = async () => {
   }
 };
 
+const syncUserCaseToDb = async (userId) => {
+  try {
+    const userCaseRedis = await redisServise.get(userId + "cases");
+
+    if (userCaseRedis) {
+      const userCase = JSON.parse(userCaseRedis);
+
+      const userCaseDb = await getUserCase(userId);
+
+      for (let caseName in userCase) {
+        userCaseDb[caseName] = userCase[caseName];
+      }
+
+      await userCaseDb.save();
+
+      await redisServise.delete(userId + "cases");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   connectToDb,
   getUser,
   getChat,
   getVipChats,
   updateChatTime,
+  syncUserCaseToDb,
 };

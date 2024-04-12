@@ -2,28 +2,26 @@ const { User } = require("../../../db/models");
 const cases = require("../cases");
 const { giveResoursesLog, loseLog } = require("../../logs-module/globalLogs");
 const { getUserCase } = require("./case-tool-service");
+const { syncUserCaseToDb, getUser } = require("../../../db/functions");
 
 const giveCase = async (sender, id, count, ctx) => {
   try {
     const message = ctx.message.reply_to_message;
-    const intCount = parseInt(count);
+    const intCount = Number(count);
     if (!message) {
       return;
     }
 
     const receiverChatId = message.from.id;
-
-    // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
       await ctx.reply("Зачем боту кейсы🧐");
       return;
     }
 
-    const receiver = await User.findOne({
-      where: { chatId: receiverChatId },
-    });
-
+    const receiver = await getUser(receiverChatId);
     const receiverCase = await getUserCase(receiver.id);
+    await syncUserCaseToDb(sender.id);
+    await syncUserCaseToDb(receiver.id);
     const senderCase = await getUserCase(sender.id);
     const needCase = cases[id];
 
@@ -47,8 +45,8 @@ const giveCase = async (sender, id, count, ctx) => {
     senderCase[needCase.dbName] -= intCount;
     receiverCase[needCase.dbName] += intCount;
 
-    await ctx.reply(
-      `Вы успешно передали ${intCount} ${needCase.name}[${id}] @${receiver.username}`
+    await ctx.replyWithHTML(
+      `Вы успешно передали ${intCount} ${needCase.name}[${id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`
     );
 
     await senderCase.save();

@@ -36,14 +36,14 @@ capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
       }
       user.captureCounter += 1;
 
-      if (user.captureCounter === 100) {
+      if (user.captureCounter === 500) {
         const item = await createItem(57);
 
         user.fullSlots++;
         await user.addItem(item);
         await item.save();
         await ctx.reply(
-          `‼️ВНИМАНИЕ‼️\n\n❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> ввел 100 капчей и получает редкий предмет "калькулятор[${item.id}]"`,
+          `‼️ВНИМАНИЕ‼️\n\n❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> ввел 500 капчей и получает редкий предмет "калькулятор[${item.id}]"`,
           { parse_mode: "HTML" }
         );
       }

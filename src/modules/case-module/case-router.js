@@ -2,8 +2,8 @@ const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 
 const cases = require("./cases");
-const { getUser, getChat } = require("../../db/functions");
-const { getCaseInfo } = require("./case-utils/case-tool-service");
+const { getUser, getChat, syncUserCaseToDb } = require("../../db/functions");
+const { getCaseInfo, getUserCase } = require("./case-utils/case-tool-service");
 const {
   buyCase,
   openCase,
@@ -30,25 +30,28 @@ caseRouter.on(message("text"), async (ctx, next) => {
     const isSpam = chat?.allowCase === true || ctx.chat.type === "private";
 
     if (userMessage == "мои мефкейсы") {
+      await syncUserCaseToDb(user.id);
+      const userCase = await getUserCase(user.id);
       let result = "Твои мефкейсы:\n";
       let i = 1;
       for (const item in cases) {
         result += `${i}) ${cases[item].name} - ${
-          user.case[cases[item].dbName]
+          userCase[cases[item].dbName]
         } шт.\n`;
         i++;
       }
       await ctx.reply(
         result +
           "\n💰Донат кейс - " +
-          user.case.donate +
+          userCase.donate +
           "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать мефкейс id\n📖Передать мефкейс донат"
       );
     }
 
     if (word1 == "передать") {
       const id = Number(word3);
-      const count = isNaN(Number(word4)) ? 1 : word4;
+      const count =
+        isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
       if (word2 == "мефкейс" && !isNaN(id)) {
         await giveCase(user, id, count, ctx);
@@ -69,7 +72,8 @@ caseRouter.on(message("text"), async (ctx, next) => {
 
     if (word1 == "купить") {
       const id = Number(word3);
-      const count = isNaN(Number(word4)) ? 1 : word4;
+      const count =
+        isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
       if (word2 == "мефкейс" && !isNaN(id)) {
         await buyCase(user, id, count, ctx);
@@ -84,6 +88,8 @@ caseRouter.on(message("text"), async (ctx, next) => {
 
     if (word1 == "открыть" && isSpam) {
       const id = Number(word2);
+      const count =
+        isNaN(Number(word3)) || Number(word3) < 1 ? 1 : Number(word3);
 
       if (word2 === "донат") {
         await openDonateCase(user, ctx);
@@ -91,11 +97,11 @@ caseRouter.on(message("text"), async (ctx, next) => {
       }
 
       if (!isNaN(id)) {
-        await openCase(user, id, ctx);
+        await openCase(user, id, ctx, count);
         return;
       } else if (word1 == "открыть") {
         await ctx.reply(
-          "Не правильное использование команды\n\nПопробуйте\n<<Открыть Id>>"
+          "Не правильное использование команды\n\nПопробуй\nОткрыть id [кол-во]"
         );
       }
     } else if (word1 == "открыть") {
@@ -115,7 +121,9 @@ caseRouter.on(message("text"), async (ctx, next) => {
         result += `${i}) ${cases[item].name} Цена: ${price}\n`;
         i++;
       }
-      await ctx.reply(result + "\n📖Купить мефкейс id\n📖Инфа мефкейс id");
+      await ctx.reply(
+        result + "\n📖Купить мефкейс id [кол-во]\n📖Инфа мефкейс id"
+      );
     } else if (userMessage == "мефкейсы") {
       await ctx.reply(ru_text.no_case_in_chat);
     }

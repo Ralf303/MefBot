@@ -43,6 +43,17 @@ const craftItems = {
     ],
     chance: 30,
   },
+
+  6: {
+    name: "Йес-мэн",
+    personalId: 161,
+    components: [
+      { name: "Роблокс шар", quantity: 1 },
+      { name: "Силовая броня", quantity: 1 },
+      { name: "Автомат колы", quantity: 1 },
+    ],
+    chance: 77,
+  },
 };
 
 module.exports = craftItems;

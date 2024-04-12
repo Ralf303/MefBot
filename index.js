@@ -32,6 +32,7 @@ const {
   mainCronService,
 } = require("./src/modules/main-module/main-cron-service.js");
 const usersItemRouter = require("./src/API/getUserPablo.js");
+const { cronService } = require("./src/services/cron-service.js");
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -64,6 +65,7 @@ const start = async () => {
     mainCronService(bot);
     activePrize(bot);
     vipCron(bot);
+    cronService(bot);
     captureGenerator(bot);
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);

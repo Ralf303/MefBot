@@ -19,7 +19,7 @@ mainRouter.on(message("text"), async (ctx, next) => {
 
     return next();
   } catch (e) {
-    await ctx.reply("Какая то ошибка, " + e);
+    return;
   }
 });
 

@@ -1,3 +1,4 @@
+const { getUser } = require("../../db/functions");
 const { User } = require("../../db/models");
 const { giveResoursesLog, loseLog } = require("../logs-module/globalLogs");
 
@@ -23,10 +24,8 @@ const giveCoins = async (ctx) => {
   }
 
   try {
-    const sender = await User.findOne({ where: { chatId } });
-    let receiver = await User.findOne({
-      where: { chatId: receiverChatId },
-    });
+    const sender = await getUser(chatId);
+    let receiver = await getUser(receiverChatId);
 
     if (sender.balance < amount) {
       await ctx.reply("Недостаточно мефа🥲");
