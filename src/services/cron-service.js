@@ -9,7 +9,7 @@ require("dotenv").config({
 
 function cronService(bot) {
   new CronJob(
-    "* * 5 * * *",
+    "1 1 5 * * *",
     async function () {
       const users = await User.findAll();
       for (let user of users) {
