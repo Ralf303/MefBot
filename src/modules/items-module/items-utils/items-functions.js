@@ -1,8 +1,10 @@
 const { Item, User } = require("../../../db/models.js");
 const items = require("../items.js");
 const { loseLog, resiveLog } = require("../../logs-module/globalLogs");
-const { getRandomInt } = require("../../../utils/helpers");
+const { getRandomInt, separateNumber } = require("../../../utils/helpers");
 const { checkItem } = require("./item-tool-service.js");
+const { getUser } = require("../../../db/functions.js");
+const { Keyboard, Key } = require("telegram-keyboard");
 
 const buyItem = async (user, itemInfo, ctx, status) => {
   if (user.slots < user.fullSlots) {
@@ -179,9 +181,71 @@ const getInventory = async (user, ctx) => {
   }
 };
 
+const sellItem = async (user, id, price, replyMessage, ctx) => {
+  try {
+    if (price < 100) {
+      return `Минимальная цена продажи 100 мефа🌿`;
+    }
+
+    const item = await Item.findOne({
+      where: {
+        id: id,
+        userId: user.id,
+      },
+    });
+
+    if (!item) {
+      return `У вас нет такой вещи😥`;
+    }
+
+    if (replyMessage.isBot) {
+      return `Нельзя продавать вещи ботам😥`;
+    }
+
+    const receiver = await getUser(replyMessage.id);
+
+    if (receiver.id === user.id) {
+      return `Нельзя продавать самому себе😥`;
+    }
+
+    if (receiver.fullSlots >= receiver.slots) {
+      return `У юзера недостаточно слотов😥`;
+    }
+
+    if (receiver.balance < price) {
+      return `У юзера недостаточно мефа😥`;
+    }
+
+    await ctx.telegram.sendMessage(
+      receiver.chatId,
+      `${user.firstname} хочет продать вам ${item.itemName}[${
+        item.id
+      }] за ${separateNumber(price)} мефа`,
+      Keyboard.inline([
+        [
+          Key.callback(
+            "Принять",
+            `sell ${item.id} ${user.chatId} ${receiver.chatId} ${price}`
+          ),
+        ],
+        [Key.callback("Отмена", "cancel")],
+      ]),
+      { parse_mode: "HTML" }
+    );
+
+    return `Предложение о покупке ${item.itemName}[${
+      item.id
+    }] за ${separateNumber(price)} мефа было отправлено `;
+  } catch (error) {
+    console.log(error);
+    return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;
+  }
+};
+
 module.exports = {
   buyItem,
   deleteItem,
   getInventory,
   removeItem,
+  sellItem,
 };

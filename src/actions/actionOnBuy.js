@@ -2,7 +2,6 @@ const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions");
 const { loseLog } = require("../modules/logs-module/globalLogs");
 const compose = new Composer();
-const regex = /([_*[\]()~`>#+\-=|{}.!])/g;
 
 compose.action("timeapp", async (ctx) => {
   const user = await getUser(

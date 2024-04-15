@@ -9,19 +9,16 @@ const wearItem = async (user, id, ctx) => {
       },
     });
 
-    // проверяем, что указанный предмет существует
     if (!item) {
       await ctx.reply("Такой вещи у вас нет😥");
       return;
     }
 
-    // проверяем, что предмет еще не надет
     if (item.isWorn) {
       await ctx.reply("Эта вещь уже надета😎");
       return;
     }
 
-    // проверяем, что указанный слот еще свободен
     const bodyPart = item.bodyPart;
     const wornItem = await Item.findOne({
       where: {
@@ -32,13 +29,11 @@ const wearItem = async (user, id, ctx) => {
     });
 
     if (wornItem) {
-      // если на указанном слоте уже есть другая надетая вещь, снимаем ее
       wornItem.isWorn = false;
       await wornItem.save();
     }
 
     if (bodyPart === "legs") {
-      // если надеваем вещь с bodyPart = 'legs', снимаем предыдущие items на leg1 и leg2
       const wornLegItem1 = await Item.findOne({
         where: {
           userId: user.id,
@@ -97,7 +92,6 @@ const wearItem = async (user, id, ctx) => {
     }
 
     if (bodyPart === "leg1" || bodyPart === "leg2") {
-      // если надеваем вещь с bodyPart = 'leg1' или 'leg2', снимаем вещь с bodyPart = 'legs'
       const wornLegsItem = await Item.findOne({
         where: {
           userId: user.id,
@@ -296,7 +290,6 @@ const wearItem = async (user, id, ctx) => {
       }
     }
 
-    // надеваем указанный предмет
     item.isWorn = true;
     await item.save();
 

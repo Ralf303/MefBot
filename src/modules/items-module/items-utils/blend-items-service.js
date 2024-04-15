@@ -33,7 +33,6 @@ const getWornItems = async (user, ctx) => {
       }
     });
 
-    // формируем массив с названиями вещей и их идентификаторами
     const wornItems = items.map(
       (item) => `${item.itemName}[<code>${item.id}</code>]`
     );

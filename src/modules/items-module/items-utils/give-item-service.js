@@ -50,14 +50,14 @@ const giveItem = async (sender, id, ctx) => {
     sender.fullSlots--;
     receiver.fullSlots++;
     item.userId = receiver.id;
-    await ctx.reply(
-      `Вы успешно передали ${item.itemName}[${item.id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
-      { parse_mode: "HTML" }
-    );
 
     await sender.save();
     await receiver.save();
     await item.save();
+    await ctx.reply(
+      `Вы успешно передали ${item.itemName}[${item.id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      { parse_mode: "HTML" }
+    );
     await loseLog(
       sender,
       `${item.itemName}[${item.id}]`,

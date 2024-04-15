@@ -9,6 +9,7 @@ const {
   deleteItem,
   removeItem,
   buyItem,
+  sellItem,
 } = require(".//items-utils/items-functions.js");
 const ru_text = require("../../../ru_text.js");
 const { wearItem } = require("./items-utils/wear-item-service.js");
@@ -28,8 +29,9 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       ctx.from.username
     );
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3] = userMessage.split(" ");
+    const [word1, word2, word3, word4] = userMessage.split(" ");
     const isPrivate = ctx.chat.type === "private";
+    const replyToMessage = ctx.message?.reply_to_message?.from;
 
     if (userMessage == "пупсы") {
       try {
@@ -132,6 +134,15 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       const id = Number(word2);
       if (!isNaN(id)) {
         getItemInfo(id, ctx);
+      }
+    }
+
+    if (word1 == "продать" && word2 == "вещь" && replyToMessage) {
+      const id = Number(word3);
+      const price = Number(word4);
+      if (!isNaN(id) && !isNaN(price)) {
+        const result = await sellItem(user, id, price, replyToMessage, ctx);
+        await ctx.replyWithHTML(result);
       }
     }
 

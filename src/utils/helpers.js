@@ -230,10 +230,6 @@ async function shopGenerator(id, ctx) {
   return;
 }
 
-async function notify(ctx, channel) {
-  await ctx.reply("Бот бесплатный и без доната поэтому подпишись @" + channel);
-}
-
 async function checkAction(id, ctx) {
   try {
     const queryId = ctx?.update?.callback_query?.message?.message_id;
@@ -263,7 +259,6 @@ module.exports = {
   generateCapcha,
   sleep,
   formatTime,
-  notify,
   checkUserSub,
   checkUserProfile,
   shopGenerator,
