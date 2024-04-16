@@ -182,36 +182,36 @@ adminRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-adminRouter.command("logs", async (ctx) => {
-  await ctx.reply("минутку...");
+// adminRouter.command("logs", async (ctx) => {
+//   await ctx.reply("минутку...");
 
-  const allLogs = await Logs.findAll();
-  const logs = allLogs.map((log) => {
-    return {
-      Дата: log.date,
-      Действие: log.action,
-      баланс_1_юзера: log.userOne,
-      баланс_2_юзера: log.userTwo,
-    };
-  });
+//   const allLogs = await Logs.findAll();
+//   const logs = allLogs.map((log) => {
+//     return {
+//       Дата: log.date,
+//       Действие: log.action,
+//       баланс_1_юзера: log.userOne,
+//       баланс_2_юзера: log.userTwo,
+//     };
+//   });
 
-  const workbook = pkg.utils.book_new();
-  const ws = pkg.utils.json_to_sheet(logs);
-  pkg.utils.book_append_sheet(workbook, ws, "logs");
-  const fileName = `logs_${Date.now()}.xlsx`;
-  const filePath = path.join(process.cwd(), fileName);
-  pkg.writeFile(workbook, filePath);
-  const fileBuffer = fs.readFileSync(filePath);
+//   const workbook = pkg.utils.book_new();
+//   const ws = pkg.utils.json_to_sheet(logs);
+//   pkg.utils.book_append_sheet(workbook, ws, "logs");
+//   const fileName = `logs_${Date.now()}.xlsx`;
+//   const filePath = path.join(process.cwd(), fileName);
+//   pkg.writeFile(workbook, filePath);
+//   const fileBuffer = fs.readFileSync(filePath);
 
-  await ctx.replyWithDocument(
-    {
-      source: fileBuffer,
-      filename: fileName,
-    },
-    { caption: "Готово :)" }
-  );
+//   await ctx.replyWithDocument(
+//     {
+//       source: fileBuffer,
+//       filename: fileName,
+//     },
+//     { caption: "Готово :)" }
+//   );
 
-  fs.unlinkSync(filePath);
-});
+//   fs.unlinkSync(filePath);
+// });
 
 module.exports = adminRouter;

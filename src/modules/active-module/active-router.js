@@ -109,9 +109,9 @@ activeRouter.hears(/актив день/i, async (ctx, next) => {
     const message = activeUsers
       .map(
         (user, index) =>
-          `${index + 1}. <a href="tg://user?id=${user.user.chatId}">${
-            user.user.firstname
-          }</a>: ${user.day}`
+          `${index + 1}. <a href="tg://openmessage?user_id=${
+            user.user.chatId
+          }">${user.user.firstname}</a>: ${user.day}`
       )
       .join("\n");
 
@@ -150,9 +150,9 @@ activeRouter.hears(/актив неделя/i, async (ctx, next) => {
     const message = activeUsers
       .map(
         (user, index) =>
-          `${index + 1}. <a href="tg://user?id=${user.user.chatId}">${
-            user.user.firstname
-          }</a>: ${user.week}`
+          `${index + 1}. <a href="tg://openmessage?user_id=${
+            user.user.chatId
+          }">${user.user.firstname}</a>: ${user.week}`
       )
       .join("\n");
     await ctx.reply(
@@ -194,9 +194,9 @@ activeRouter.hears(/актив месяц/i, async (ctx, next) => {
     const message = activeUsers
       .map(
         (user, index) =>
-          `${index + 1}. <a href="tg://user?id=${user.user.chatId}">${
-            user.user.firstname
-          }</a>: ${user.month}`
+          `${index + 1}. <a href="tg://openmessage?user_id=${
+            user.user.chatId
+          }">${user.user.firstname}</a>: ${user.month}`
       )
       .join("\n");
 

@@ -42,15 +42,10 @@ const openDonateCase = async (user, ctx) => {
   }
 };
 
-const open = async (user, ctx, box) => {
+const open = async (user, ctx, box, luck) => {
   try {
-    const pupsItem = await checkItem(user.id, "Пупс «Удача»");
     let chance = getRandomInt(1, 5000);
-
-    if (!pupsItem) {
-      chance -= 1000;
-    }
-
+    chance -= luck;
     let result = ``;
 
     if (chance <= 499) {
@@ -69,7 +64,10 @@ const open = async (user, ctx, box) => {
       await user.addItem(item);
       await ctx.telegram.sendMessage(
         process.env.CHAT_ID,
-        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`
+        `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a>  испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`,
+        {
+          parse_mode: "HTML",
+        }
       );
       await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
@@ -91,7 +89,10 @@ const open = async (user, ctx, box) => {
       await user.addItem(item);
       await ctx.telegram.sendMessage(
         process.env.CHAT_ID,
-        `❗️@${user.username} испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`
+        `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`,
+        {
+          parse_mode: "HTML",
+        }
       );
       await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
@@ -227,8 +228,14 @@ const openCase = async (user, id, ctx, count = 1) => {
     userCase[caseName] -= count;
     await redisServise.set(user.id + "cases", JSON.stringify(userCase));
     let results = [];
+    let luck = 0;
+    const pupsItem = await checkItem(user.id, "Пупс «Удача»");
+
+    if (pupsItem) {
+      luck += 1000;
+    }
     for (let i = 0; i < count; i++) {
-      const result = await open(user, ctx, needCase);
+      const result = await open(user, ctx, needCase, luck);
       results.push("• " + result);
     }
     await loseLog(user, user[caseName], "открытие");
