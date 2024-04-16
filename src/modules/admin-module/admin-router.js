@@ -1,14 +1,16 @@
+const pkg = require("xlsx");
+const fs = require("fs");
+const path = require("path");
 const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 const items = require("../items-module/items");
 const { buyItem } = require("../items-module/items-utils/items-functions");
 const { getUser } = require("../../db/functions");
-const { User, Roles } = require("../../db/models");
+const { User, Roles, Logs } = require("../../db/models");
 const { generatePassword } = require("../../utils/helpers");
 const { adminList, adminTriggers } = require("./admins");
 const addServise = require("../../services/add-servise");
 const { getUserCase } = require("../case-module/case-utils/case-tool-service");
-
 const adminRouter = new Composer();
 
 adminRouter.on(message("text"), async (ctx, next) => {
@@ -178,6 +180,38 @@ adminRouter.on(message("text"), async (ctx, next) => {
   } catch (e) {
     console.log(e);
   }
+});
+
+adminRouter.command("logs", async (ctx) => {
+  await ctx.reply("минутку...");
+
+  const allLogs = await Logs.findAll();
+  const logs = allLogs.map((log) => {
+    return {
+      Дата: log.date,
+      Действие: log.action,
+      баланс_1_юзера: log.userOne,
+      баланс_2_юзера: log.userTwo,
+    };
+  });
+
+  const workbook = pkg.utils.book_new();
+  const ws = pkg.utils.json_to_sheet(logs);
+  pkg.utils.book_append_sheet(workbook, ws, "logs");
+  const fileName = `logs_${Date.now()}.xlsx`;
+  const filePath = path.join(process.cwd(), fileName);
+  pkg.writeFile(workbook, filePath);
+  const fileBuffer = fs.readFileSync(filePath);
+
+  await ctx.replyWithDocument(
+    {
+      source: fileBuffer,
+      filename: fileName,
+    },
+    { caption: "Готово :)" }
+  );
+
+  fs.unlinkSync(filePath);
 });
 
 module.exports = adminRouter;

@@ -66,7 +66,7 @@ const Logs = sequelize.define("logs", {
   date: { type: DataTypes.STRING },
   action: { type: DataTypes.STRING },
   userOne: { type: DataTypes.STRING },
-  userTwo: { type: DataTypes.STRING, defaultValue: "0" },
+  userTwo: { type: DataTypes.STRING, defaultValue: "НЕТ" },
 });
 
 const Roles = sequelize.define("roles", {
