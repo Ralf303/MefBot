@@ -1,6 +1,7 @@
 const Jimp = require("jimp");
 const { Item } = require("../../../db/models");
 const { getRandomInt } = require("../../../utils/helpers");
+const redisServise = require("../../../services/redis-servise");
 
 async function blendImages(imagePaths) {
   const bg = await Jimp.read("img/bg.jpg");
@@ -18,6 +19,10 @@ async function blendImages(imagePaths) {
 
 const getWornItems = async (user, ctx) => {
   try {
+    const redisKey = `pablo_${user.id}`;
+    const srcKey = `src_${user.id}`;
+    let buffer = await redisServise.get(redisKey);
+    let srcInRedis = await redisServise.get(srcKey);
     const items = await Item.findAll({
       where: {
         userId: user.id,
@@ -25,18 +30,32 @@ const getWornItems = async (user, ctx) => {
       },
     });
 
-    items.forEach(async (item) => {
-      if (item.itemName === "BEARBRICKS") {
-        const number = getRandomInt(1, 32);
-        item.src = `img/bear_${number}.png`;
-        await item.save();
+    const src = items.map((item) => `${item.src}`);
+
+    if (!buffer || srcInRedis !== JSON.stringify(src)) {
+      items.forEach(async (item) => {
+        if (item.itemName === "BEARBRICKS") {
+          const number = getRandomInt(1, 32);
+          item.src = `img/bear_${number}.png`;
+          await item.save();
+        }
+      });
+
+      if (items.every((item) => item.itemName !== "BEARBRICKS")) {
+        buffer = await blendImages(src);
+        await redisServise.set(redisKey, buffer.toString("base64"));
+        await redisServise.set(srcKey, JSON.stringify(src));
+      } else {
+        buffer = await blendImages(src);
       }
-    });
+    } else {
+      buffer = Buffer.from(buffer, "base64");
+    }
 
     const wornItems = items.map(
       (item) => `${item.itemName}[<code>${item.id}</code>]`
     );
-    const src = items.map((item) => `${item.src}`);
+
     if (wornItems.length === 0) {
       await ctx.replyWithPhoto(
         { source: "img/bg.jpg" },
@@ -57,7 +76,7 @@ const getWornItems = async (user, ctx) => {
 
     // возвращаем список надетых вещей
     await ctx.replyWithPhoto(
-      { source: await blendImages(src) },
+      { source: buffer },
       {
         parse_mode: "HTML",
         caption: `На вас надето:\n${rows.join("\n")}`,

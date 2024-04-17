@@ -17,7 +17,9 @@ class RedisService {
   }
 
   async set(key, value) {
-    await this.client.set(key, value, "EX", 86400);
+    await this.client.set(key, value, {
+      EX: 86400,
+    });
   }
 
   async get(key) {
