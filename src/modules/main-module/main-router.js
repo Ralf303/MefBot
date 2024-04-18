@@ -9,7 +9,6 @@ const { separateNumber } = require("../../utils/helpers");
 mainRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-
     if (userMessage == "бот") {
       await ctx.react("👍");
       await ctx.reply("✅На месте");
@@ -17,6 +16,13 @@ mainRouter.on(message("text"), async (ctx, next) => {
 
     if (userMessage == "команды") {
       await ctx.reply(ru_text.commands);
+    }
+
+    if (userMessage == "ссылки") {
+      await ctx.reply(
+        `Полезные ссылки\n\n\n1. <a href="https://t.me/mefpablo">Меф с Пабло</a>\n\n2. <a href="https://t.me/mefanarhia">Меф с Пабло || Анархия</a>\n\n3. <a href="https://t.me/themafiaipablo">Меф с Пабло || Мафия</a>`,
+        { parse_mode: "HTML", disable_web_page_preview: true }
+      );
     }
 
     if (userMessage === "топ меф" || userMessage === "форбс") {

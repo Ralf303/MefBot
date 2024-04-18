@@ -79,7 +79,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   }
 };
 
-const deleteItem = async (user, id, ctx) => {
+const deleteItem = async (user, id) => {
   const item = await Item.findOne({
     where: {
       id: id,
@@ -88,8 +88,7 @@ const deleteItem = async (user, id, ctx) => {
   });
 
   if (!item) {
-    await ctx.reply(`У вас нет такой вещи😥`);
-    return;
+    return `У вас нет такой вещи😥`;
   }
   const havePups = await checkItem(user.id, "Пупс «Бартер»");
   let cashBack;
@@ -99,14 +98,12 @@ const deleteItem = async (user, id, ctx) => {
     cashBack = item.price / 2;
   }
 
-  await ctx.reply(
-    `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`
-  );
   await loseLog(user, `${item.itemName}[${item.id}]`, `Удаление`);
   user.balance += cashBack;
   user.fullSlots--;
   await item.destroy();
   await user.save();
+  return `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`;
 };
 
 const removeItem = async (user, id, ctx) => {

@@ -3,6 +3,7 @@ const { Composer } = require("telegraf");
 const middleware = new Composer();
 
 middleware.use(require("./src/modules/items-module/items-actions.js"));
+middleware.use(require("./src/modules/case-module/case-action.js"));
 middleware.use(require("./src/actions/actionOnBuy.js"));
 middleware.use(require("./src/actions/shopActions.js"));
 middleware.use(require("./src/modules/game-module/dice-actions.js"));

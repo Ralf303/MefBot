@@ -6,6 +6,7 @@ const bonusService = require("../../services/bonus-service.js");
 const { Sequelize } = require("../../db/config.js");
 const ru_text = require("../../../ru_text.js");
 const addServise = require("../../services/add-servise.js");
+const mainButton = require("../../utils/keyboard.js");
 
 const commandRouter = new Composer();
 
@@ -31,11 +32,20 @@ commandRouter.start(async (ctx) => {
         return;
       }
     } else {
-      await ctx.reply(
-        "Привет " +
-          ctx.from.first_name +
-          "!\n\nЯ, МефБот, создан для помощи в чате @mefpablo\nБолее подробно => /help"
-      );
+      if (ctx.chat.type === "private") {
+        await ctx.replyWithHTML(
+          "Привет " +
+            ctx.from.first_name +
+            "!\n\nЯ, МефБот, создан для помощи в чате @mefpablo\nБолее подробно => /help",
+          mainButton
+        );
+      } else {
+        await ctx.replyWithHTML(
+          "Привет " +
+            ctx.from.first_name +
+            "!\n\nЯ, МефБот, создан для помощи в чате @mefpablo\nБолее подробно => /help"
+        );
+      }
     }
   } catch (error) {
     console.log(error);
@@ -44,7 +54,11 @@ commandRouter.start(async (ctx) => {
 
 commandRouter.command("commands", async (ctx) => {
   try {
-    await ctx.reply(ru_text.commands);
+    if (ctx.chat.type === "private") {
+      await ctx.replyWithHTML(ru_text.commands, mainButton);
+    } else {
+      await ctx.replyWithHTML(ru_text.commands);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -52,7 +66,11 @@ commandRouter.command("commands", async (ctx) => {
 
 commandRouter.command("help", async (ctx) => {
   try {
-    await ctx.replyWithHTML(ru_text.help);
+    if (ctx.chat.type === "private") {
+      await ctx.replyWithHTML(ru_text.help, mainButton);
+    } else {
+      await ctx.replyWithHTML(ru_text.help);
+    }
   } catch (error) {
     console.log(error);
   }

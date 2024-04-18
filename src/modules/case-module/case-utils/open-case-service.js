@@ -10,6 +10,7 @@ const {
 } = require("../../items-module/items-utils/item-tool-service");
 const redisServise = require("../../../services/redis-servise");
 const { syncUserCaseToDb } = require("../../../db/functions");
+const { Keyboard, Key } = require("telegram-keyboard");
 
 const openDonateCase = async (user, ctx) => {
   try {
@@ -30,23 +31,26 @@ const openDonateCase = async (user, ctx) => {
     user.fullSlots++;
     await user.addItem(item);
     await ctx.reply(`❗️@${result} ${item.itemName}❗️`);
-    await ctx.telegram.sendMessage(
-      process.env.CHAT_ID,
-      `❗️@${user.username} испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`
-    );
     await resiveLog(user, `${item.itemName}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
+    await ctx.telegram.sendMessage(
+      process.env.CHAT_ID,
+      `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`,
+      {
+        parse_mode: "HTML",
+      }
+    );
   } catch (error) {
     console.log(error);
   }
 };
 
 const open = async (user, ctx, box, luck) => {
+  let result = ``;
   try {
-    let chance = getRandomInt(1, 5000);
+    let chance = getRandomInt(1500, 1501);
     chance -= luck;
-    let result = ``;
 
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
@@ -56,23 +60,21 @@ const open = async (user, ctx, box, luck) => {
     }
 
     if (chance >= 500 && chance <= 510) {
-      const randomItem = getRandomInt(0, box.itemsId.length);
-
+      const randomItem = getRandomInt(0, box.itemsId.length - 1);
       const item = await createItem(box.itemsId[randomItem]);
 
       user.fullSlots++;
       await user.addItem(item);
-      await ctx.telegram.sendMessage(
-        process.env.CHAT_ID,
-        `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a>  испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`,
-        {
-          parse_mode: "HTML",
-        }
-      );
       await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
       await user.save();
-      return `❗️${item.itemName}❗️`;
+      result = `❗️${item.itemName}❗️`;
+      await ctx.telegram.sendMessage(
+        user.chatId,
+        `❗️Ты испытал удачу при открытии ${box.name} и выбил ${item.itemName}❗️`,
+        Keyboard.inline([[`Удалить вещь ${item.id}`]])
+      );
+      return result;
     }
 
     if (chance >= 512 && chance <= 1500) {
@@ -87,17 +89,16 @@ const open = async (user, ctx, box, luck) => {
 
       user.fullSlots++;
       await user.addItem(item);
-      await ctx.telegram.sendMessage(
-        process.env.CHAT_ID,
-        `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу при открытии  ${box.name} и выбил ${item.itemName}❗️`,
-        {
-          parse_mode: "HTML",
-        }
-      );
       await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
       await user.save();
-      return `❗️${item.itemName}❗️`;
+      result = `❗️${item.itemName}❗️`;
+      await ctx.telegram.sendMessage(
+        user.chatId,
+        `❗️Ты испытал удачу при открытии ${box.name} и выбил ${item.itemName}❗️`,
+        Keyboard.inline([["Удалить вещь"]])
+      );
+      return result;
     }
 
     if (chance >= 1502 && chance <= 1800) {
@@ -121,6 +122,7 @@ const open = async (user, ctx, box, luck) => {
     return result;
   } catch (error) {
     console.log(error);
+    return result;
   }
 };
 

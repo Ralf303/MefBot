@@ -84,7 +84,9 @@ itemsRouter.on(message("text"), async (ctx, next) => {
     if (word1 == "удалить") {
       const id = Number(word3);
       if (!isNaN(id) && word2 == "вещь") {
-        await deleteItem(user, id, ctx);
+        const result = await deleteItem(user, id);
+        await ctx.replyWithHTML(result);
+        return;
       }
     }
 
