@@ -1,10 +1,13 @@
 const { createClient } = require("redis");
-
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 class RedisService {
   constructor() {
     this.client = createClient({
       host: "127.0.0.1",
       port: 6379,
+      password: process.env.REDIS_PASSWORD,
     });
   }
 
