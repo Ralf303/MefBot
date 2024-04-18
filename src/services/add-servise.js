@@ -11,6 +11,9 @@ const { adminList } = require("../modules/admin-module/admins");
 const {
   blendImages,
 } = require("../modules/items-module/items-utils/blend-items-service");
+const {
+  createItem,
+} = require("../modules/items-module/items-utils/item-tool-service");
 
 class AddService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -107,6 +110,7 @@ class AddService {
             const minedAmount = getRandomInt(1000, 10000);
             user.balance += minedAmount;
             await bonus.destroy();
+            await bonus.save();
             await item.save();
             await user.save();
             const message = `❗️Спасибо за участие в разадче❗️\n\nВы получили:\n${minedAmount} мефа🤑\n${item.itemName}[${item.id}]`;

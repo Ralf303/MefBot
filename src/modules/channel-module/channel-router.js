@@ -2,6 +2,7 @@ const { Composer } = require("telegraf");
 const { channelPost } = require("telegraf/filters");
 const bonusService = require("../../services/bonus-service");
 const { adminChannels } = require("../admin-module/admins");
+const addServise = require("../../services/add-servise");
 
 const channelRouter = new Composer();
 
