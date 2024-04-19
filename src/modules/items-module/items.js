@@ -1470,13 +1470,12 @@ const items = {
   },
 
   162: {
-    name: "Кот Мисато",
-    bodyPart: "leg1",
-    src: "img/cot_misato.png",
-    price: 1000000,
+    name: "Кроссовки Евангелион",
+    bodyPart: "legs",
+    src: "img/evangelion.png",
+    price: 100000,
     canBuy: false,
     class: "impossible",
-    info: "Откуда он у тебя, немедленно удали его!",
   },
 };
 
