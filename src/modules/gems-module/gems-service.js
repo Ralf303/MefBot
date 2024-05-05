@@ -28,10 +28,8 @@ class GemService {
     }
 
     try {
-      const sender = await User.findOne({ where: { chatId } });
-      let receiver = await User.findOne({
-        where: { chatId: receiverChatId },
-      });
+      const sender = await getUser(chatId);
+      const receiver = await getUser(receiverChatId);
 
       if (sender.gems < amount) {
         await ctx.reply("Недостаточно гемов🥲");
@@ -103,7 +101,7 @@ class GemService {
       const hasPups = await checkItem(user.id, "Пупс «Наука»");
 
       if (hasPups) {
-        const mef = amount * getRandomInt(1, 50);
+        const mef = amount * getRandomInt(1, 500);
 
         user.gems -= amount;
         user.balance += mef;

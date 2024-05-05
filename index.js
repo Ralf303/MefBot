@@ -33,6 +33,7 @@ const {
 } = require("./src/modules/main-module/main-cron-service.js");
 const usersItemRouter = require("./src/API/getUserPablo.js");
 const { cronService } = require("./src/services/cron-service.js");
+const keysService = require("./src/modules/keys-module/keys-service.js");
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -40,10 +41,6 @@ const stage = new Scenes.Stage([
   rouletteScene,
   diceScene,
 ]);
-const options = {
-  key: fs.readFileSync(process.env.SECRET_KEY),
-  cert: fs.readFileSync(process.env.SERTIFICATE),
-};
 
 const start = async () => {
   try {
@@ -71,11 +68,16 @@ const start = async () => {
     vipCron(bot);
     cronService(bot);
     captureGenerator(bot);
+    keysService.giveAllKeys();
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);
     await redisServise.connect();
     app.use(usersItemRouter);
     if (process.env.WEB_HOOK_URL) {
+      const options = {
+        key: fs.readFileSync(process.env.SECRET_KEY),
+        cert: fs.readFileSync(process.env.SERTIFICATE),
+      };
       app.use(
         await bot.createWebhook({
           domain: process.env.WEB_HOOK_URL,
@@ -91,7 +93,7 @@ const start = async () => {
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на веб хуке");
     } else {
       http.createServer(app).listen(5000, () => {
-        console.log("Сервер работает на порту", port);
+        console.log("Сервер работает на порту", 5000);
       });
       bot.launch({ dropPendingUpdates: true });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на пулинге");

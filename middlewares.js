@@ -16,6 +16,7 @@ middleware.use(require("./src/modules/case-module/case-router.js"));
 middleware.use(require("./src/modules/craft-module/craft-router.js"));
 middleware.use(require("./src/modules/mef-module/mef-router.js"));
 middleware.use(require("./src/modules/gems-module/gems-router.js"));
+middleware.use(require("./src/modules/keys-module/keys-router.js"));
 middleware.use(require("./src/modules/items-module/items-router.js"));
 middleware.use(require("./src/modules/admin-module/admin-router.js"));
 middleware.use(require("./src/modules/logs-module/logs-router.js"));

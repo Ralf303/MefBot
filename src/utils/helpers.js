@@ -91,6 +91,8 @@ async function checkUserProfile(user, ctx) {
         separateNumber(user.balance) +
         "\nГемы: " +
         user.gems +
+        "\nКлючи: " +
+        user.chests +
         "\nКапчей введено: " +
         user.captureCounter +
         "\nУровень сбора: " +
@@ -128,6 +130,8 @@ async function checkUserProfile(user, ctx) {
           separateNumber(player.balance) +
           "\nГемы: " +
           player.gems +
+          "\nКлючи: " +
+          user.chests +
           "\nКапчей введено: " +
           player.captureCounter +
           "\nУровень сбора: " +

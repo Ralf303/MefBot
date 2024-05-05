@@ -12,7 +12,7 @@ const activeService = require("./active-service.js");
 
 function activePrize(bot) {
   new CronJob(
-    "40 0 0 * * *",
+    "40 3 0 * * *",
     async function () {
       const chats = await getVipChats();
 
@@ -71,7 +71,7 @@ function activePrize(bot) {
   );
 
   new CronJob(
-    "20 0 0 * * 1",
+    "20 2 0 * * 1",
     async function () {
       const chats = await getVipChats();
 

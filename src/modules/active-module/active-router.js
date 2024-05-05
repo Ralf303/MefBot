@@ -18,14 +18,8 @@ const ru_text = require("../../../ru_text.js");
 
 const activeRouter = new Composer();
 
-const allowedChats = [
-  -1001551821031, -1001672482562, -1001739697939, -1002013744790,
-  -1001992856433, -1002066912458,
-];
-
 activeRouter.on(message("new_chat_members"), async (ctx, next) => {
   try {
-    const chatId = ctx.message.chat.id;
     const fromUserInfo = ctx.message.from;
     const invitedUserInfo = ctx.message.new_chat_members;
 
@@ -40,7 +34,7 @@ activeRouter.on(message("new_chat_members"), async (ctx, next) => {
         where: { chatId: invitedUserInfo[i].id },
       });
 
-      if (!invitedUser) {
+      if (!invitedUser && !invitedUserInfo[i].is_bot) {
         invitedUser = await User.create({
           chatId: invitedUserInfo[i].id,
           firstname: invitedUserInfo[i].first_name,
