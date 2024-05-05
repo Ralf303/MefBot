@@ -40,6 +40,10 @@ const stage = new Scenes.Stage([
   rouletteScene,
   diceScene,
 ]);
+const options = {
+  key: fs.readFileSync(process.env.SECRET_KEY),
+  cert: fs.readFileSync(process.env.SERTIFICATE),
+};
 
 const start = async () => {
   try {
@@ -78,17 +82,13 @@ const start = async () => {
           drop_pending_updates: true,
         })
       );
-      const options = {
-        key: fs.readFileSync(process.env.SECRET_KEY),
-        cert: fs.readFileSync(process.env.SERTIFICATE),
-      };
       https.createServer(options, app).listen(port, () => {
         console.log("Бот работает на порту", port);
       });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на веб хуке");
     } else {
-      http.createServer(app).listen(5000, () => {
-        console.log("Сервер работает", 5000);
+      https.createServer(options, app).listen(5000, () => {
+        console.log("Сервер работает на порту", port);
       });
       bot.launch({ dropPendingUpdates: true });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на пулинге");
