@@ -85,9 +85,12 @@ const start = async () => {
       https.createServer(options, app).listen(port, () => {
         console.log("Бот работает на порту", port);
       });
+      https.createServer(options, app).listen(5000, () => {
+        console.log("Сервер работает на порту", port);
+      });
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на веб хуке");
     } else {
-      https.createServer(options, app).listen(5000, () => {
+      http.createServer(app).listen(5000, () => {
         console.log("Сервер работает на порту", port);
       });
       bot.launch({ dropPendingUpdates: true });
