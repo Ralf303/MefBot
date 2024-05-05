@@ -10,14 +10,18 @@ function mainCronService(bot) {
   new CronJob(
     "0 0 0 * * *",
     async function () {
-      const vipChats = await getVipChats();
-      for (const chat of vipChats) {
-        try {
-          bot.telegram.sendMessage(chat.chatId, "Всем спокойной ночи 😴");
-          await sleep(100);
-        } catch (error) {
-          continue;
+      try {
+        const vipChats = await getVipChats();
+        for (const chat of vipChats) {
+          try {
+            bot.telegram.sendMessage(chat.chatId, "Всем спокойной ночи 😴");
+            await sleep(100);
+          } catch (error) {
+            continue;
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
     },
     null,
@@ -28,13 +32,18 @@ function mainCronService(bot) {
   new CronJob(
     "0 0 8 * * *",
     async function () {
-      const vipChats = await getVipChats();
-      for (const chat of vipChats) {
-        try {
-          bot.telegram.sendMessage(chat.chatId, "Всем доброе утро ☀️");
-        } catch (error) {
-          console.log(error);
+      try {
+        const vipChats = await getVipChats();
+        for (const chat of vipChats) {
+          try {
+            bot.telegram.sendMessage(chat.chatId, "Всем доброе утро ☀️");
+            await sleep(100);
+          } catch (error) {
+            continue;
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
     },
     null,

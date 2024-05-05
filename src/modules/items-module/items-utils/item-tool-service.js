@@ -12,10 +12,9 @@ const getItemInfo = async (id, ctx) => {
   const info = needItem.info;
 
   if (!info) {
-    await ctx.reply("У данной вещи нет особености😥");
+    await ctx.reply(`❗️${needItem.name}❗️\n\nУ данной вещи нет особености😥`);
     return;
   }
-
   await ctx.reply(`❗️${needItem.name}❗️\n\n${info}`);
 };
 const checkId = async (id, ctx) => {

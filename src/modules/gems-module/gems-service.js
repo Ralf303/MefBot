@@ -101,7 +101,7 @@ class GemService {
       const hasPups = await checkItem(user.id, "Пупс «Наука»");
 
       if (hasPups) {
-        const mef = amount * getRandomInt(1, 500);
+        const mef = amount * getRandomInt(100, 500);
 
         user.gems -= amount;
         user.balance += mef;

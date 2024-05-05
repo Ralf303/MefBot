@@ -23,34 +23,38 @@ function activePrize(bot) {
           let message = `Топ 3 активных пользователей за сегодня:\n\n`;
 
           for (const active of topUsers) {
-            let index = topUsers.indexOf(active);
-            const user = await getUser(active.user.chatId);
-            const chance = getRandomInt(0, 500);
-            let prize = (active.day *= 2);
+            try {
+              const index = topUsers.indexOf(active);
+              const user = await getUser(active.user.chatId);
+              const chance = getRandomInt(0, 500);
+              let prize = (active.day *= 2);
 
-            if (chance === 2) {
-              const item = await createItem(104);
-              user.fullSlots++;
-              await user.addItem(item);
-              await bot.telegram.sendMessage(
-                user.chatId,
-                "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
-              );
-              await item.save();
+              if (chance === 2) {
+                const item = await createItem(104);
+                user.fullSlots++;
+                await user.addItem(item);
+                await bot.telegram.sendMessage(
+                  user.chatId,
+                  "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
+                );
+                await item.save();
+              }
+
+              if (
+                (await checkItem(user.id, "Пупс «Красноречие»")) &&
+                active.day != 0
+              ) {
+                prize += 1000;
+              }
+
+              message += `${index + 1}) <a href="tg://user?id=${
+                active.user.chatId
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              user.balance += prize;
+              await user.save();
+            } catch (error) {
+              continue;
             }
-
-            if (
-              (await checkItem(user.id, "Пупс «Красноречие»")) &&
-              active.day != 0
-            ) {
-              prize += 1000;
-            }
-
-            message += `${index + 1}) <a href="tg://user?id=${
-              active.user.chatId
-            }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-            user.balance += prize;
-            await user.save();
           }
 
           await activeService.resetDayValues(chatId);
@@ -61,7 +65,7 @@ function activePrize(bot) {
           });
           await sleep(100);
         } catch (error) {
-          console.log(error);
+          continue;
         }
       }
     },
@@ -82,34 +86,38 @@ function activePrize(bot) {
           let message = `Топ 3 активных пользователей за эту неделю:\n\n`;
 
           for (const active of topUsers) {
-            let index = topUsers.indexOf(active);
-            const user = await getUser(active.user.chatId);
-            const chance = getRandomInt(0, 500);
-            let prize = (active.day *= 2);
+            try {
+              const index = topUsers.indexOf(active);
+              const user = await getUser(active.user.chatId);
+              const chance = getRandomInt(0, 500);
+              let prize = (active.day *= 2);
 
-            if (chance === 2) {
-              const item = await createItem(104);
-              user.fullSlots++;
-              await user.addItem(item);
-              await bot.telegram.sendMessage(
-                user.chatId,
-                "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
-              );
-              await item.save();
+              if (chance === 2) {
+                const item = await createItem(104);
+                user.fullSlots++;
+                await user.addItem(item);
+                await bot.telegram.sendMessage(
+                  user.chatId,
+                  "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
+                );
+                await item.save();
+              }
+
+              if (
+                (await checkItem(user.id, "Пупс «Красноречие»")) &&
+                active.day != 0
+              ) {
+                prize += 1000;
+              }
+
+              message += `${index + 1}) <a href="tg://user?id=${
+                active.user.chatId
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              user.balance += prize;
+              await user.save();
+            } catch (error) {
+              continue;
             }
-
-            if (
-              (await checkItem(user.id, "Пупс «Красноречие»")) &&
-              active.day != 0
-            ) {
-              prize += 1000;
-            }
-
-            message += `${index + 1}) <a href="tg://user?id=${
-              active.user.chatId
-            }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-            user.balance += prize;
-            await user.save();
           }
 
           await activeService.resetWeekValues(chatId);
@@ -140,34 +148,38 @@ function activePrize(bot) {
           let message = `Топ 3 активных пользователей за этот месяц:\n\n`;
 
           for (const active of topUsers) {
-            let index = topUsers.indexOf(active);
-            const user = await getUser(active.user.chatId);
-            const chance = getRandomInt(0, 500);
-            let prize = (active.day *= 2);
+            try {
+              const index = topUsers.indexOf(active);
+              const user = await getUser(active.user.chatId);
+              const chance = getRandomInt(0, 500);
+              let prize = (active.day *= 2);
 
-            if (chance === 2) {
-              const item = await createItem(104);
-              user.fullSlots++;
-              await user.addItem(item);
-              await bot.telegram.sendMessage(
-                user.chatId,
-                "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
-              );
-              await item.save();
+              if (chance === 2) {
+                const item = await createItem(104);
+                user.fullSlots++;
+                await user.addItem(item);
+                await bot.telegram.sendMessage(
+                  user.chatId,
+                  "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
+                );
+                await item.save();
+              }
+
+              if (
+                (await checkItem(user.id, "Пупс «Красноречие»")) &&
+                active.day != 0
+              ) {
+                prize += 1000;
+              }
+
+              message += `${index + 1}) <a href="tg://user?id=${
+                active.user.chatId
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              user.balance += prize;
+              await user.save();
+            } catch (error) {
+              continue;
             }
-
-            if (
-              (await checkItem(user.id, "Пупс «Красноречие»")) &&
-              active.day != 0
-            ) {
-              prize += 1000;
-            }
-
-            message += `${index + 1}) <a href="tg://user?id=${
-              active.user.chatId
-            }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-            user.balance += prize;
-            await user.save();
           }
 
           await activeService.resetMonthValues(chatId);
