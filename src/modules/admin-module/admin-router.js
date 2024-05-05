@@ -66,7 +66,7 @@ adminRouter.on(message("text"), async (ctx, next) => {
         }
 
         if (word2 == "ключи" && !isNaN(id)) {
-          user.keys += id;
+          user.chests += id;
           await ctx.reply(`Успешно выдано ${id} ключей`);
           await user.save();
         }

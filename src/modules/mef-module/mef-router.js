@@ -66,7 +66,7 @@ mefRouter.on(message("text"), async (ctx, next) => {
           "\nГемы: " +
           separateNumber(user.gems) +
           "\nКлючи: " +
-          separateNumber(user.keys)
+          separateNumber(user.chests)
       );
     }
 
