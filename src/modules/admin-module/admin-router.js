@@ -65,6 +65,12 @@ adminRouter.on(message("text"), async (ctx, next) => {
           await user.save();
         }
 
+        if (word2 == "ключи" && !isNaN(id)) {
+          user.keys += id;
+          await ctx.reply(`Успешно выдано ${id} ключей`);
+          await user.save();
+        }
+
         if (word2 == "кейс" && !isNaN(id)) {
           const userCase = await getUserCase(user.id);
           userCase.donate += id;

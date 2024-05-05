@@ -4,11 +4,18 @@ require("dotenv").config({
 });
 class RedisService {
   constructor() {
-    this.client = createClient({
-      host: "127.0.0.1",
-      port: 6379,
-      password: process.env.REDIS_PASSWORD,
-    });
+    if (process.env.REDIS_PASSWORD) {
+      this.client = createClient({
+        host: "127.0.0.1",
+        port: 6379,
+        password: process.env.REDIS_PASSWORD,
+      });
+    } else {
+      this.client = createClient({
+        host: "127.0.0.1",
+        port: 6379,
+      });
+    }
   }
 
   async connect() {
