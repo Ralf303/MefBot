@@ -55,7 +55,7 @@ class KeyService {
 
   async giveAllKeys() {
     new CronJob(
-      "1 30 21 * * *",
+      "1 0 5 * * *",
       async function addKeys() {
         try {
           await User.update(
