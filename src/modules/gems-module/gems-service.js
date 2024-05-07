@@ -4,6 +4,7 @@ const { User, Item } = require("../../db/models");
 const { loseLog, giveResoursesLog } = require("../logs-module/globalLogs");
 const { getRandomInt } = require("../../utils/helpers");
 const { checkItem } = require("../items-module/items-utils/item-tool-service");
+const { getUser } = require("../../db/functions.js");
 
 class GemService {
   async giveGems(ctx) {

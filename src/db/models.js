@@ -11,7 +11,7 @@ const User = sequelize.define("user", {
   chatId: { type: DataTypes.STRING, unique: true },
   username: { type: DataTypes.STRING },
   firstname: { type: DataTypes.STRING },
-  captureCounter: { type: DataTypes.INTEGER, defaultValue: 0 },
+  captureCounter: { type: DataTypes.BIGINT, defaultValue: 0 },
   balance: { type: DataTypes.INTEGER, defaultValue: 0 },
   meflvl: { type: DataTypes.INTEGER, defaultValue: 1 },
   timelvl: { type: DataTypes.INTEGER, defaultValue: 1 },
