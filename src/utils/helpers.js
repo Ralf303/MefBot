@@ -131,7 +131,7 @@ async function checkUserProfile(user, ctx) {
           "\nГемы: " +
           player.gems +
           "\nКлючи: " +
-          user.chests +
+          player.chests +
           "\nКапчей введено: " +
           player.captureCounter +
           "\nУровень сбора: " +
