@@ -47,11 +47,11 @@ function activePrize(bot) {
                 prize += 1000;
               }
 
+              user.balance += prize;
+              await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
               }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-              user.balance += prize;
-              await user.save();
             } catch (error) {
               continue;
             }
@@ -63,7 +63,7 @@ function activePrize(bot) {
             disable_web_page_preview: true,
             disable_notification: true,
           });
-          await sleep(100);
+          await sleep(500);
         } catch (error) {
           continue;
         }
@@ -90,7 +90,7 @@ function activePrize(bot) {
               const index = topUsers.indexOf(active);
               const user = await getUser(active.user.chatId);
               const chance = getRandomInt(0, 500);
-              let prize = (active.day *= 2);
+              let prize = (active.week *= 2);
 
               if (chance === 2) {
                 const item = await createItem(104);
@@ -105,16 +105,16 @@ function activePrize(bot) {
 
               if (
                 (await checkItem(user.id, "Пупс «Красноречие»")) &&
-                active.day != 0
+                active.week != 0
               ) {
                 prize += 1000;
               }
 
+              user.balance += prize;
+              await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
               }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-              user.balance += prize;
-              await user.save();
             } catch (error) {
               continue;
             }
@@ -126,7 +126,7 @@ function activePrize(bot) {
             disable_web_page_preview: true,
             disable_notification: true,
           });
-          await sleep(100);
+          await sleep(500);
         } catch (error) {
           continue;
         }
@@ -152,7 +152,7 @@ function activePrize(bot) {
               const index = topUsers.indexOf(active);
               const user = await getUser(active.user.chatId);
               const chance = getRandomInt(0, 500);
-              let prize = (active.day *= 2);
+              let prize = (active.month *= 2);
 
               if (chance === 2) {
                 const item = await createItem(104);
@@ -167,16 +167,16 @@ function activePrize(bot) {
 
               if (
                 (await checkItem(user.id, "Пупс «Красноречие»")) &&
-                active.day != 0
+                active.month != 0
               ) {
                 prize += 1000;
               }
 
+              user.balance += prize;
+              await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
               }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
-              user.balance += prize;
-              await user.save();
             } catch (error) {
               continue;
             }
@@ -188,7 +188,7 @@ function activePrize(bot) {
             disable_web_page_preview: true,
             disable_notification: true,
           });
-          await sleep(100);
+          await sleep(500);
         } catch (error) {
           continue;
         }
