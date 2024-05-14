@@ -14,7 +14,10 @@ function mainCronService(bot) {
         const vipChats = await getVipChats();
         for (const chat of vipChats) {
           try {
-            bot.telegram.sendMessage(chat.chatId, "Всем спокойной ночи 😴");
+            await bot.telegram.sendMessage(
+              chat.chatId,
+              "Всем спокойной ночи 😴"
+            );
             await sleep(100);
           } catch (error) {
             continue;
@@ -36,7 +39,7 @@ function mainCronService(bot) {
         const vipChats = await getVipChats();
         for (const chat of vipChats) {
           try {
-            bot.telegram.sendMessage(chat.chatId, "Всем доброе утро ☀️");
+            await bot.telegram.sendMessage(chat.chatId, "Всем доброе утро ☀️");
             await sleep(100);
           } catch (error) {
             continue;
