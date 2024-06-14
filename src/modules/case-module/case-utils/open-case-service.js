@@ -16,7 +16,7 @@ const openDonateCase = async (user, ctx) => {
   try {
     const userCase = await getUserCase(user.id);
     if (userCase.donate === 0) {
-      await ctx.reply(`Недостаточно мефкейсов😥`);
+      await ctx.reply(`Недостаточно старкейсов😥`);
       return;
     }
 
@@ -55,8 +55,8 @@ const open = async (user, ctx, box, luck) => {
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
       user.balance += win;
-      result += `${win} мефа🌿`;
-      await resiveLog(user, "меф", win, "приз из кейса");
+      result += `${win} старок🌿`;
+      await resiveLog(user, "стар", win, "приз из кейса");
     }
 
     if (chance >= 500 && chance <= 510) {
@@ -80,8 +80,8 @@ const open = async (user, ctx, box, luck) => {
     if (chance >= 512 && chance <= 1500) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
-      result += `${win} мефа🌿`;
-      await resiveLog(user, "меф", win, "приз из кейса");
+      result += `${win} старок🌿`;
+      await resiveLog(user, "стар", win, "приз из кейса");
     }
 
     if (chance === 1501) {
@@ -146,13 +146,13 @@ const buyCase = async (user, id, count, ctx) => {
     }
 
     if (user.balance < price && needCase.class !== "gem") {
-      await ctx.reply(`У вас недостаточно мефа😥`);
+      await ctx.reply(`У вас недостаточно старок😥`);
       return;
     } else if (needCase.class !== "gem") {
       user.balance -= price;
       await loseLog(
         user,
-        "меф",
+        "стар",
         `покупка ${needCase.name} в количестве ${count}`
       );
 
@@ -190,7 +190,7 @@ const buyCase = async (user, id, count, ctx) => {
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
   } else {
-    await ctx.reply(`Такого мефкейса нет😥`);
+    await ctx.reply(`Такого старкейса нет😥`);
   }
 };
 
@@ -202,7 +202,7 @@ const openCase = async (user, id, ctx, count = 1) => {
   try {
     const needCase = cases[id];
     if (!needCase) {
-      await ctx.reply("Такого мефкейса нет😥");
+      await ctx.reply("Такого старкейса нет😥");
       return;
     }
 
@@ -217,7 +217,7 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     if (userCase[caseName] < count) {
-      return await ctx.reply("Недостаточно мефкейсов😥");
+      return await ctx.reply("Недостаточно старкейсов😥");
     }
 
     const isYesMane = await checkItem(user.id, "Йес-мэн");
@@ -242,7 +242,7 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
     await loseLog(user, user[caseName], "открытие");
     await ctx.reply(
-      `Ты открыл ${count} мефкейса и получил(а):\n\n${results.join("\n")}`
+      `Ты открыл ${count} старкейса и получил(а):\n\n${results.join("\n")}`
     );
   } catch (error) {
     console.log(error);

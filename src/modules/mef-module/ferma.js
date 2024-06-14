@@ -40,9 +40,9 @@ async function userFerma(ctx, user) {
       randmef += 555;
     }
 
-    await ctx.reply("✅Меф собран " + randmef);
+    await ctx.reply("✅Стар собран " + randmef);
     user.balance += randmef;
-    await resiveLog(user, "меф", randmef, "сбор фермы");
+    await resiveLog(user, "стар", randmef, "сбор фермы");
   } else {
     let remainingTime;
 
@@ -57,7 +57,7 @@ async function userFerma(ctx, user) {
     }
 
     const formattedTime = formatTime(remainingTime);
-    await ctx.reply(`❌Собрать меф можно через ${formattedTime}`);
+    await ctx.reply(`❌Собрать стар можно через ${formattedTime}`);
   }
 }
 

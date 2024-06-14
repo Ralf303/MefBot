@@ -340,7 +340,7 @@ class ItemService {
 
               user.balance += minedAmount;
               await user.save();
-              const message = `Я намайнил ${minedAmount} мефа🤑`;
+              const message = `Я намайнил ${minedAmount} старок🤑`;
               await bot.telegram.sendMessage(user.chatId, message);
               await sleep(200);
             } catch (error) {

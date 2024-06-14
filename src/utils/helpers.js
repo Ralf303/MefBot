@@ -87,7 +87,7 @@ async function checkUserProfile(user, ctx) {
         user.firstname +
         "\nId: <code>" +
         user.chatId +
-        "</code>\nМеф: " +
+        "</code>\nСтар: " +
         separateNumber(user.balance) +
         "\nГемы: " +
         user.gems +
@@ -126,7 +126,7 @@ async function checkUserProfile(user, ctx) {
           player.firstname +
           "\nId: <code>" +
           player.chatId +
-          "</code>\nМеф: " +
+          "</code>\nСтар: " +
           separateNumber(player.balance) +
           "\nГемы: " +
           player.gems +
@@ -163,7 +163,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
@@ -177,7 +177,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
@@ -191,7 +191,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
@@ -208,11 +208,11 @@ async function shopGenerator(id, ctx) {
     }
 
     result +=
-      "• Донат кейс Цена: 25\n• 1000 мефа Цена: 1\n\n❗️Все цены в ру рублях❗️\n";
+      "• Донат кейс Цена: 25\n• 1000 старок Цена: 1\n\n❗️Все цены в ру рублях❗️\n";
     await ctx.replyWithHTML(
       result +
         "\nДля покупки связывайтесь с @ralf303" +
-        "\n\n📖Инфа id\n📖Инфа мефкейс донат"
+        "\n\n📖Инфа id\n📖Инфа старкейс донат"
     );
     return;
   }

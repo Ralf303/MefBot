@@ -50,7 +50,7 @@ async function bandit(word2, user, ctx) {
       await gamesLog(user, "бандит", winAmount, previousBalance);
       await user.save();
     } else if (stake > user.balance) {
-      await ctx.reply("Недостаточно мефа😢");
+      await ctx.reply("Недостаточно старок😢");
     } else if (!needChat) {
       await ctx.reply(ru_text.no_games_in_chat);
     } else {

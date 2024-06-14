@@ -56,12 +56,12 @@ mefRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (
-      userMessage == "мой меф" ||
-      userMessage == "меф" ||
+      userMessage == "мой стар" ||
+      userMessage == "стар" ||
       userMessage == "б"
     ) {
       await ctx.reply(
-        "Меф: " +
+        "Стар: " +
           separateNumber(user.balance) +
           "\nГемы: " +
           separateNumber(user.gems) +

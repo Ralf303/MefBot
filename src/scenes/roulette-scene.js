@@ -33,7 +33,7 @@ rouletteScene.hears(/^(\d+)$/, async (ctx) => {
     const amount = Number(ctx.match[1]);
 
     if (balance < amount) {
-      await ctx.reply("Недостаточно мефа😢");
+      await ctx.reply("Недостаточно старок😢");
       return;
     }
 
@@ -92,7 +92,9 @@ rouletteScene.on("callback_query", async (ctx) => {
     await checkAction(user.id, ctx);
 
     if (user.balance < amount) {
-      await ctx.reply("У вас кончился меф😢\nДля начала игры наберите рулетка");
+      await ctx.reply(
+        "У вас кончился стар😢\nДля начала игры наберите рулетка"
+      );
       ctx.scene.leave();
       return;
     }

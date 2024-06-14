@@ -19,7 +19,7 @@ const giveCoins = async (ctx) => {
 
   // проверяем, что отправитель не является ботом
   if (message.from.is_bot) {
-    await ctx.reply("Зачем боту меф🧐");
+    await ctx.reply("Зачем боту стар🧐");
     return;
   }
 
@@ -28,7 +28,7 @@ const giveCoins = async (ctx) => {
     let receiver = await getUser(receiverChatId);
 
     if (sender.balance < amount) {
-      await ctx.reply("Недостаточно мефа🥲");
+      await ctx.reply("Недостаточно старок🥲");
       return;
     }
 
@@ -38,7 +38,7 @@ const giveCoins = async (ctx) => {
     }
 
     if (amount < 100) {
-      await ctx.reply("Минимальная сумма передачи 100 грамм");
+      await ctx.reply("Минимальная сумма передачи 100 штук");
       return;
     }
 
@@ -47,12 +47,12 @@ const giveCoins = async (ctx) => {
     await sender.save();
     await receiver.save();
     await ctx.reply(
-      `Вы успешно отсыпали ${amount} грамм мефа <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      `Вы успешно отсыпали ${amount} штук старок <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
       { parse_mode: "HTML" }
     );
 
-    await loseLog(sender, "меф", "передача другому юзеру");
-    await giveResoursesLog(sender, receiver, "меф", amount);
+    await loseLog(sender, "стар", "передача другому юзеру");
+    await giveResoursesLog(sender, receiver, "стар", amount);
   } catch (error) {
     console.log(error);
     await ctx.reply("Ошибка при выполнении операции.");

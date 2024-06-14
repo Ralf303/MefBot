@@ -18,7 +18,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   }
 
   if (user.balance < itemInfo.price && status && itemInfo.class !== "gem") {
-    await ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно старок😢");
     return;
   } else if (status && itemInfo.class !== "gem") {
     user.balance -= itemInfo.price;
@@ -43,7 +43,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   await user.addItem(item);
   await user.save();
   await item.save();
-  await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
+  await loseLog(user, "стар", `покупка ${item.itemName}[${item.id}]`);
   await ctx.replyWithHTML(
     `Вы купили: ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
   );
@@ -181,7 +181,7 @@ const getInventory = async (user, ctx) => {
 const sellItem = async (user, id, price, replyMessage, ctx) => {
   try {
     if (price < 100) {
-      return `Минимальная цена продажи 100 мефа🌿`;
+      return `Минимальная цена продажи 100 старок🌿`;
     }
 
     const item = await Item.findOne({
@@ -210,14 +210,14 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
     }
 
     if (receiver.balance < price) {
-      return `У юзера недостаточно мефа😥`;
+      return `У юзера недостаточно старок😥`;
     }
 
     await ctx.telegram.sendMessage(
       receiver.chatId,
       `${user.firstname} хочет продать вам ${item.itemName}[${
         item.id
-      }] за ${separateNumber(price)} мефа`,
+      }] за ${separateNumber(price)} старок`,
       Keyboard.inline([
         [
           Key.callback(
@@ -232,7 +232,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
 
     return `Предложение о покупке ${item.itemName}[${
       item.id
-    }] за ${separateNumber(price)} мефа было отправлено `;
+    }] за ${separateNumber(price)} старок было отправлено `;
   } catch (error) {
     console.log(error);
     return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;

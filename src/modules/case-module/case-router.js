@@ -29,10 +29,10 @@ caseRouter.on(message("text"), async (ctx, next) => {
 
     const isSpam = chat?.allowCase === true || ctx.chat.type === "private";
 
-    if (userMessage == "мои мефкейсы") {
+    if (userMessage == "мои старкейсы") {
       await syncUserCaseToDb(user.id);
       const userCase = await getUserCase(user.id);
-      let result = "Твои мефкейсы:\n";
+      let result = "Твои старкейсы:\n";
       let i = 1;
       for (const item in cases) {
         result += `${i}) ${cases[item].name} - ${
@@ -44,7 +44,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
         result +
           "\n💰Донат кейс - " +
           userCase.donate +
-          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать мефкейс id\n📖Передать мефкейс донат"
+          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать старкейс id\n📖Передать старкейс донат"
       );
     }
 
@@ -53,18 +53,18 @@ caseRouter.on(message("text"), async (ctx, next) => {
       const count =
         isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
-      if (word2 == "мефкейс" && !isNaN(id)) {
+      if (word2 == "старкейс" && !isNaN(id)) {
         await giveCase(user, id, count, ctx);
         return;
       }
 
-      if (word2 == "мефкейс" && word3 === "донат") {
+      if (word2 == "старкейс" && word3 === "донат") {
         await giveDonateCase(user, word3, count, ctx);
         return;
       }
     }
 
-    if (userMessage == "инфа мефкейс донат") {
+    if (userMessage == "инфа старкейс донат") {
       await ctx.reply(
         "❗️Донат кейс❗️\n\nВыпадает любая случайная вещь, от обычных до донатных"
       );
@@ -75,13 +75,13 @@ caseRouter.on(message("text"), async (ctx, next) => {
       const count =
         isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
-      if (word2 == "мефкейс" && !isNaN(id)) {
+      if (word2 == "старкейс" && !isNaN(id)) {
         await buyCase(user, id, count, ctx);
       }
     }
 
     if (word1 == "инфо" || word1 == "инфа") {
-      if (word2 == "мефкейс" && !isNaN(Number(word3))) {
+      if (word2 == "старкейс" && !isNaN(Number(word3))) {
         getCaseInfo(Number(word3), ctx);
       }
     }
@@ -108,7 +108,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
       await ctx.reply(ru_text.no_case_in_chat);
     }
 
-    if (userMessage == "мефкейсы" && isSpam) {
+    if (userMessage == "старкейсы" && isSpam) {
       let result = "Доступные кейсы:\n";
       let i = 1;
       for (const item in cases) {
@@ -116,15 +116,15 @@ caseRouter.on(message("text"), async (ctx, next) => {
         if (cases[item].class) {
           price += ` гемов`;
         } else {
-          price += ` мефа`;
+          price += ` старок`;
         }
         result += `${i}) ${cases[item].name} Цена: ${price}\n`;
         i++;
       }
       await ctx.reply(
-        result + "\n📖Купить мефкейс id [кол-во]\n📖Инфа мефкейс id"
+        result + "\n📖Купить старкейс id [кол-во]\n📖Инфа старкейс id"
       );
-    } else if (userMessage == "мефкейсы") {
+    } else if (userMessage == "старкейсы") {
       await ctx.reply(ru_text.no_case_in_chat);
     }
 

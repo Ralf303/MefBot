@@ -25,11 +25,11 @@ shopActions.action("farmApp", async (ctx) => {
     );
     await ctx.deleteMessage();
     await ctx.reply(
-      "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nвой уровень сбора: " +
+      "❗️УЛУЧШЕНИЯ ДЛЯ ФЕРМЫ❗️\n\nТвой уровень сбора: " +
         user.meflvl +
-        "\nвой уровень времени: " +
+        "\nТвой уровень времени: " +
         user.timelvl +
-        "\nвой меф: " +
+        "\nТвой стар: " +
         user.balance,
       Keyboard.inline([
         ["Улучшить сбор", "Улучшить время"],

@@ -29,7 +29,7 @@ itemsActions.action(/^sell/, async (ctx) => {
     }
 
     if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно мефа😥`);
+      return await ctx.reply(`У тебя недостаточно старок😥`);
     }
 
     receiver.balance -= Number(price);
@@ -48,16 +48,16 @@ itemsActions.action(/^sell/, async (ctx) => {
       1,
       "покупка у другого юзера"
     );
-    await loseLog(sender, `меф`, "продажа другому юзеру");
-    await resiveLog(receiver, `меф`, price, "покупка у другого юзера");
+    await loseLog(sender, `стар`, "продажа другому юзеру");
+    await resiveLog(receiver, `стар`, price, "покупка у другого юзера");
     await ctx.reply(
-      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} мефа`
+      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} старок`
     );
     await ctx.telegram.sendMessage(
       sender.chatId,
       `Вы успешно продали ${item.itemName}[${item.id}] за ${separateNumber(
         price
-      )} мефа`,
+      )} старок`,
       { parse_mode: "HTML" }
     );
   } catch (error) {
