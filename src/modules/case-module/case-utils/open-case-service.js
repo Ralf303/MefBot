@@ -104,8 +104,7 @@ const open = async (user, ctx, box, luck) => {
       );
       return result;
     } else if (chance === 1501 && user.slots === 200) {
-      const win = getRandomInt(250, 1000);
-      user.balance += win;
+      user.balance += 25000;
       result += `${win} старок🌿`;
       await resiveLog(user, "стар", win, "приз из кейса");
     }
