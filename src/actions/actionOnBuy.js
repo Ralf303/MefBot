@@ -58,6 +58,10 @@ compose.action("slotapp", async (ctx) => {
 
   await ctx.deleteMessage();
 
+  if (user.slots === 200) {
+    return await ctx.reply("Больше не поместится, ты достиг максимума💪");
+  }
+
   if (user.balance >= 5000) {
     user.balance -= 5000;
     await loseLog(user, `стар`, "покупка в магазине");

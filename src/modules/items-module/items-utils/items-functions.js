@@ -140,6 +140,7 @@ const removeItem = async (user, id, ctx) => {
 
 const getInventory = async (user, ctx) => {
   try {
+    let buttons = Keyboard.inline([Key.callback("🔽Закрыть🔽", "dell")]);
     const items = await user.getItems();
     if (items.length === 0) {
       await ctx.reply("Твой инвентарь пуст.");
@@ -148,10 +149,17 @@ const getInventory = async (user, ctx) => {
     const itemNames = items.map(
       (item) => `${item.itemName}[<code>${item.id}</code>]`
     );
-    const rows = [];
+    let rows = [];
     for (let i = 0; i < itemNames.length; i++) {
       let row = itemNames[i];
       rows.push(row);
+    }
+    if (rows.join("\n").length > 4000) {
+      rows = rows.slice(0, 150);
+      buttons = Keyboard.inline([
+        [Key.callback("Дальше", "next")],
+        [Key.callback("🔽Закрыть🔽", "dell")],
+      ]);
     }
     const message = `Твой инвентарь:\n${rows.join(
       "\n"
@@ -165,8 +173,10 @@ const getInventory = async (user, ctx) => {
           disable_web_page_preview: true,
         }
       );
+
       await ctx.telegram.sendMessage(user.chatId, message, {
         parse_mode: "HTML",
+        reply_markup: buttons.reply_markup,
       });
     } else {
       await ctx.replyWithHTML(message);
