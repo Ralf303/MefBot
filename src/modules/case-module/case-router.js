@@ -15,11 +15,6 @@ const caseRouter = new Composer();
 
 caseRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2, word3, word4] = userMessage.split(" ");
     let chat;
@@ -30,8 +25,8 @@ caseRouter.on(message("text"), async (ctx, next) => {
     const isSpam = chat?.allowCase === true || ctx.chat.type === "private";
 
     if (userMessage == "мои старкейсы") {
-      await syncUserCaseToDb(user.id);
-      const userCase = await getUserCase(user.id);
+      await syncUserCaseToDb(ctx.state.user.id);
+      const userCase = await getUserCase(ctx.state.user.id);
       let result = "Твои старкейсы:\n";
       let i = 1;
       for (const item in cases) {
@@ -54,13 +49,11 @@ caseRouter.on(message("text"), async (ctx, next) => {
         isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
       if (word2 == "старкейс" && !isNaN(id)) {
-        await giveCase(user, id, count, ctx);
-        return;
+        await giveCase(ctx.state.user, id, count, ctx);
       }
 
       if (word2 == "старкейс" && word3 === "донат") {
-        await giveDonateCase(user, word3, count, ctx);
-        return;
+        await giveDonateCase(ctx.state.user, word3, count, ctx);
       }
     }
 
@@ -76,7 +69,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
         isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
       if (word2 == "старкейс" && !isNaN(id)) {
-        await buyCase(user, id, count, ctx);
+        await buyCase(ctx.state.user, id, count, ctx);
       }
     }
 
@@ -92,13 +85,11 @@ caseRouter.on(message("text"), async (ctx, next) => {
         isNaN(Number(word3)) || Number(word3) < 1 ? 1 : Number(word3);
 
       if (word2 === "донат") {
-        await openDonateCase(user, ctx);
-        return;
+        await openDonateCase(ctx.state.user, ctx);
       }
 
       if (!isNaN(id)) {
-        await openCase(user, id, ctx, count);
-        return;
+        await openCase(ctx.state.user, id, ctx, count);
       } else if (word1 == "открыть") {
         await ctx.reply(
           "Не правильное использование команды\n\nПопробуй\nОткрыть id [кол-во]"
@@ -128,7 +119,6 @@ caseRouter.on(message("text"), async (ctx, next) => {
       await ctx.reply(ru_text.no_case_in_chat);
     }
 
-    await user.save();
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);

@@ -8,18 +8,13 @@ const craftRouter = new Composer();
 
 craftRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2] = userMessage.split(" ");
 
     if (word1 == "крафт") {
       const id = Number(word2);
       if (!isNaN(id)) {
-        await craftService.craftItem(user, id, ctx);
+        await craftService.craftItem(ctx.state.user, id, ctx);
       }
     }
 

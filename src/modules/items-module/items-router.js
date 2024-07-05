@@ -23,11 +23,6 @@ const itemsRouter = new Composer();
 
 itemsRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2, word3, word4] = userMessage.split(" ");
     const isPrivate = ctx.chat.type === "private";
@@ -73,27 +68,25 @@ itemsRouter.on(message("text"), async (ctx, next) => {
 
       if (!isNaN(id) && word2 == "айди") {
         await checkId(id, ctx);
-        return;
       }
     }
 
     if (userMessage == "инвентарь") {
-      await getInventory(user, ctx);
+      await getInventory(ctx.state.user, ctx);
     }
 
     if (word1 == "удалить") {
       const id = Number(word3);
       if (!isNaN(id) && word2 == "вещь") {
-        const result = await deleteItem(user, id);
+        const result = await deleteItem(ctx.state.user, id);
         await ctx.replyWithHTML(result);
-        return;
       }
     }
 
     if (word1 == "снять") {
       const id = Number(word2);
       if (!isNaN(id)) {
-        await removeItem(user, id, ctx);
+        await removeItem(ctx.state.user, id, ctx);
       }
     }
 
@@ -101,20 +94,19 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       const id = Number(word3);
 
       if (word2 == "вещь" && !isNaN(id)) {
-        await giveItem(user, id, ctx);
-        return;
+        await giveItem(ctx.state.user, id, ctx);
       }
     }
 
     if (word1 == "надеть") {
       const id = Number(word2);
       if (!isNaN(id)) {
-        await wearItem(user, id, ctx);
+        await wearItem(ctx.state.user, id, ctx);
       }
     }
 
     if (userMessage == "мой пабло") {
-      await getWornItems(user, ctx);
+      await getWornItems(ctx.state.user, ctx);
     }
 
     if (word1 == "донат") {
@@ -126,7 +118,7 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       const itemInfo = items[id];
 
       if (word2 == "вещь" && itemInfo && !isNaN(id)) {
-        await buyItem(user, itemInfo, ctx, true);
+        await buyItem(ctx.state.user, itemInfo, ctx, true);
       } else if (word2 == "вещь") {
         await ctx.reply("Такой вещи нет");
       }
@@ -135,7 +127,7 @@ itemsRouter.on(message("text"), async (ctx, next) => {
     if (word1 == "инфо" || word1 == "инфа") {
       const id = Number(word2);
       if (!isNaN(id)) {
-        getItemInfo(id, ctx);
+        await getItemInfo(id, ctx);
       }
     }
 
@@ -143,12 +135,17 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       const id = Number(word3);
       const price = Number(word4);
       if (!isNaN(id) && !isNaN(price)) {
-        const result = await sellItem(user, id, price, replyToMessage, ctx);
+        const result = await sellItem(
+          ctx.state.user,
+          id,
+          price,
+          replyToMessage,
+          ctx
+        );
         await ctx.replyWithHTML(result);
       }
     }
 
-    await user.save();
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);

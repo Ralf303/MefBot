@@ -15,11 +15,6 @@ const adminRouter = new Composer();
 
 adminRouter.on(message("text"), async (ctx, next) => {
   const userMessage = ctx.message.text.toLowerCase();
-  const user = await getUser(
-    ctx.from.id,
-    ctx.from.first_name,
-    ctx.from.username
-  );
   const [word1, word2, word3] = userMessage.split(" ");
   const IsAdmin = adminList.includes(ctx.from.id);
 
@@ -54,33 +49,29 @@ adminRouter.on(message("text"), async (ctx, next) => {
         const itemInfo = items[id];
 
         if (word2 == "мани" && !isNaN(id)) {
-          user.balance += id;
+          ctx.state.user.balance += id;
           await ctx.reply(`Успешно выдано ${id}MF`);
-          await user.save();
         }
 
         if (word2 == "гемы" && !isNaN(id)) {
-          user.gems += id;
+          ctx.state.user.gems += id;
           await ctx.reply(`Успешно выдано ${id} гемов`);
-          await user.save();
         }
 
         if (word2 == "ключи" && !isNaN(id)) {
-          user.chests += id;
+          ctx.state.user.chests += id;
           await ctx.reply(`Успешно выдано ${id} ключей`);
-          await user.save();
         }
 
         if (word2 == "кейс" && !isNaN(id)) {
-          const userCase = await getUserCase(user.id);
+          const userCase = await getUserCase(ctx.state.user.id);
           userCase.donate += id;
           await ctx.reply(`Успешно выдано ${id} донат кейсов`);
           await userCase.save();
-          await user.save();
         }
 
         if (word2 == "вещь" && itemInfo && !isNaN(id)) {
-          await buyItem(user, itemInfo, ctx);
+          await buyItem(ctx.state.user, itemInfo, ctx);
         } else if (word2 == "вещь") {
           await ctx.reply("Такой вещи нет");
         }

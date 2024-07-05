@@ -1,3 +1,6 @@
+require("dotenv").config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 const { Keyboard, Key } = require("telegram-keyboard");
@@ -7,7 +10,6 @@ const {
   checkUserProfile,
   separateNumber,
 } = require("../../utils/helpers");
-const { getUser } = require("../../db/functions.js");
 const { giveCoins } = require("./mef-service.js");
 const ru_text = require("../../../ru_text.js");
 const { userFerma } = require("./ferma.js");
@@ -16,16 +18,11 @@ const mefRouter = new Composer();
 
 mefRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1] = userMessage.split(" ");
 
     if (userMessage == "проф") {
-      await checkUserProfile(user, ctx);
+      await checkUserProfile(ctx.state.user, ctx);
     }
 
     if (userMessage == "магазин") {
@@ -62,11 +59,11 @@ mefRouter.on(message("text"), async (ctx, next) => {
     ) {
       await ctx.reply(
         "Стар: " +
-          separateNumber(user.balance) +
+          separateNumber(ctx.state.user.balance) +
           "\nГемы: " +
-          separateNumber(user.gems) +
+          separateNumber(ctx.state.user.gems) +
           "\nКлючи: " +
-          separateNumber(user.chests)
+          separateNumber(ctx.state.user.chests)
       );
     }
 
@@ -75,16 +72,19 @@ mefRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (userMessage == "ферма" || userMessage == "фарма") {
-      const checkSub = await checkUserSub(ctx, -1002015930296, user.chatId);
+      const checkSub = await checkUserSub(
+        ctx,
+        Number(process.env.CHANNEL_ID),
+        ctx.state.user.chatId
+      );
 
       if (!checkSub) {
-        ctx.reply(ru_text.sub);
+        await ctx.reply(ru_text.sub);
       } else {
-        await userFerma(ctx, user);
+        await userFerma(ctx, ctx.state.user);
       }
     }
 
-    await user.save();
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);

@@ -21,40 +21,33 @@ capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
     if (isCapchaInRedis == ctx.chat.id) {
       await redisServise.delete(capcha);
 
-      const user = await getUser(
-        ctx.from.id,
-        ctx.from.first_name,
-        ctx.from.username
-      );
-
       let randommef = getRandomInt(500, 1000);
 
-      const hasCalculator = await checkItem(user.id, "Калькулятор");
+      const hasCalculator = await checkItem(ctx.state.user.id, "Калькулятор");
 
       if (hasCalculator) {
         randommef *= 3;
       }
-      user.captureCounter += 1;
+      ctx.state.user.captureCounter += 1;
 
-      if (user.captureCounter === 500) {
+      if (ctx.state.user.captureCounter === 500) {
         const item = await createItem(57);
 
-        user.fullSlots++;
-        await user.addItem(item);
+        ctx.state.user.fullSlots++;
+        await ctx.state.user.addItem(item);
         await item.save();
         await ctx.reply(
-          `‼️ВНИМАНИЕ‼️\n\n❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> ввел 500 капчей и получает редкий предмет "калькулятор[${item.id}]"`,
+          `‼️ВНИМАНИЕ‼️\n\n❗️<a href="tg://user?id=${ctx.state.user.chatId}">${ctx.state.user.firstname}</a> ввел 500 капчей и получает редкий предмет "калькулятор[${item.id}]"`,
           { parse_mode: "HTML" }
         );
       }
 
-      await resiveLog(user, "стар", `${randommef}`, "ввод капчи");
-      user.balance += randommef;
+      await resiveLog(ctx.state.user, "стар", `${randommef}`, "ввод капчи");
+      ctx.state.user.balance += randommef;
+
       await ctx.reply("Верно, ты получил " + randommef + " старок", {
         reply_to_message_id: ctx.message.message_id,
       });
-
-      await user.save();
     }
     return next();
   } catch (e) {

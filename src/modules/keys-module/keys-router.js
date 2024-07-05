@@ -7,11 +7,6 @@ const keysRouter = new Composer();
 
 keysRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2, word3] = userMessage.split(" ");
 
@@ -20,10 +15,9 @@ keysRouter.on(message("text"), async (ctx, next) => {
 
       if (word2 == "ключи" && !isNaN(id)) {
         await keysService.giveKeys(ctx);
-        return;
       }
     }
-    await user.save();
+
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);

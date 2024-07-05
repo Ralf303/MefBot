@@ -11,11 +11,6 @@ const gameRouter = new Composer();
 
 gameRouter.on(message("text"), async (ctx, next) => {
   try {
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2, word3] = userMessage.split(" ");
     const isPrivate = ctx.chat.type === "private";
@@ -48,17 +43,16 @@ gameRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (word1 == "куб") {
-      await dice(word3, word2, user, ctx);
+      await dice(word3, word2, ctx.state.user, ctx);
     }
 
     if (word1 == "бандит") {
-      await bandit(word2, user, ctx);
+      await bandit(word2, ctx.state.user, ctx);
     }
 
-    await user.save();
     return next();
   } catch (e) {
-    await ctx.reply("Какая то ошибка, " + e);
+    return await ctx.reply("Какая то ошибка, " + e);
   }
 });
 

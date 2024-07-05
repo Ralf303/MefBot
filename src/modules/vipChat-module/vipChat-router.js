@@ -8,9 +8,12 @@ const { Keyboard, Key } = require("telegram-keyboard");
 
 vipChatRouter.on(message("text"), async (ctx, next) => {
   try {
+    const userMessage = ctx.message.text.toLowerCase();
+    if (userMessage == "випчат") {
+      await ctx.reply(ru_text.about_vip_chat);
+    }
     if (ctx.chat.type === "private") return next();
     const chat = await getChat(ctx.chat.id);
-    const userMessage = ctx.message.text.toLowerCase();
     const userStatus = await ctx.telegram.getChatMember(
       ctx.chat.id,
       ctx.from.id
@@ -25,10 +28,6 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
           [Key.callback("Точно купить", "vipChat" + ctx.from.id)],
         ])
       );
-    }
-
-    if (userMessage == "випчат") {
-      await ctx.reply(ru_text.about_vip_chat);
     }
 
     if (userMessage == "+кейсы" && isOwner) {

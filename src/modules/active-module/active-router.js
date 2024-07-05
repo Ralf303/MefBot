@@ -220,12 +220,7 @@ activeRouter.on("message", async (ctx, next) => {
     });
 
     if (chat[0].vip) {
-      const user = await getUser(
-        ctx.from.id,
-        ctx.from.first_name,
-        ctx.from.username
-      );
-      await activeService.updateUserActivity(user.id, chat[0].chatId);
+      await activeService.updateUserActivity(ctx.state.user.id, chat[0].chatId);
     }
 
     return next();

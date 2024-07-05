@@ -33,14 +33,14 @@ commandRouter.start(async (ctx) => {
       }
     } else {
       if (ctx.chat.type === "private") {
-        await ctx.replyWithHTML(
+        return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
             "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help",
           mainButton
         );
       } else {
-        await ctx.replyWithHTML(
+        return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
             "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help"
@@ -55,9 +55,9 @@ commandRouter.start(async (ctx) => {
 commandRouter.command("commands", async (ctx) => {
   try {
     if (ctx.chat.type === "private") {
-      await ctx.replyWithHTML(ru_text.commands, mainButton);
+      return await ctx.replyWithHTML(ru_text.commands, mainButton);
     } else {
-      await ctx.replyWithHTML(ru_text.commands);
+      return await ctx.replyWithHTML(ru_text.commands);
     }
   } catch (error) {
     console.log(error);
@@ -67,9 +67,9 @@ commandRouter.command("commands", async (ctx) => {
 commandRouter.command("help", async (ctx) => {
   try {
     if (ctx.chat.type === "private") {
-      await ctx.replyWithHTML(ru_text.help, mainButton);
+      return await ctx.replyWithHTML(ru_text.help, mainButton);
     } else {
-      await ctx.replyWithHTML(ru_text.help);
+      return await ctx.replyWithHTML(ru_text.help);
     }
   } catch (error) {
     console.log(error);
@@ -79,7 +79,7 @@ commandRouter.command("help", async (ctx) => {
 commandRouter.command("shop", async (ctx) => {
   try {
     if (ctx.chat.type === "private") {
-      await ctx.reply(
+      return await ctx.reply(
         "Выберите что хотите купить:",
         Keyboard.inline([
           ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
@@ -87,7 +87,7 @@ commandRouter.command("shop", async (ctx) => {
         ])
       );
     } else {
-      await ctx.reply("Данная команда доступна только в лс");
+      return await ctx.reply("Данная команда доступна только в лс");
     }
   } catch (error) {
     console.log(error);
@@ -123,7 +123,7 @@ commandRouter.command("change", async (ctx) => {
       await item.save();
     });
 
-    ctx.reply("Шайлушай изменен");
+    return await ctx.reply("Шайлушай изменен");
   } catch (error) {
     console.log(error);
   }
@@ -152,9 +152,9 @@ commandRouter.command("time", async (ctx) => {
       const hours = (date.getHours() < 10 ? "0" : "") + date.getHours();
       const minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 
-      ctx.reply(`${item.itemName} показали: ${hours}:${minutes} по МСК`);
+      await ctx.reply(`${item.itemName} показали: ${hours}:${minutes} по МСК`);
     } else {
-      ctx.reply("У вас нет часов😢");
+      return await ctx.reply("У вас нет часов😢");
     }
   } catch (error) {
     console.log(error);
