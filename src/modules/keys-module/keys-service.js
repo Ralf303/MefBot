@@ -45,7 +45,7 @@ class KeyService {
       await sender.save();
       await receiver.save();
       await ctx.reply(
-        `Вы успешно передали ${amount} ключей ${message.from.first_name}`
+        `Ты успешно передал(а) ${amount} ключей ${message.from.first_name}`
       );
     } catch (error) {
       console.log(error);

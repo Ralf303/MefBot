@@ -62,7 +62,7 @@ async function dice(word3, word2, user, ctx) {
     await gamesLog(user, "кубик", winAmount, previousBalance);
     await user.save();
   } else if (stake > user.balance) {
-    await ctx.reply("Не достаточно старок😢");
+    await ctx.reply("Не достаточно мефа😢");
   } else if (stake < 500) {
     await ctx.reply("Ставка должна быть больше 500");
   } else {

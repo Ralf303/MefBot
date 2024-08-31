@@ -3,7 +3,7 @@ const { sleep } = require("../../../utils/helpers.js");
 
 async function dice_bandit(stake, user, ctx) {
   if (stake > user.balance) {
-    return `🎰Не достаточно старок😢\nСтавка — ${ctx.session.stake}\nБаланс — ${user.balance}`;
+    return `🎰Не достаточно мефа😢\nСтавка — ${ctx.session.stake}\nБаланс — ${user.balance}`;
   }
 
   let winAmount = 0;
@@ -57,7 +57,7 @@ async function checkAndMultiplyStake(ctx, user) {
     ctx.session.stake *= 2;
     return `🎰Ставка умножена✅\nНовая ставка — ${ctx.session.stake}\nБаланс — ${user.balance}`;
   } else {
-    return `🎰Не достаточно старок😢\nСтавка — ${ctx.session.stake}\nБаланс — ${user.balance}`;
+    return `🎰Не достаточно мефа😢\nСтавка — ${ctx.session.stake}\nБаланс — ${user.balance}`;
   }
 }
 

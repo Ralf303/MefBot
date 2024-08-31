@@ -40,6 +40,12 @@ class RedisService {
   async delete(key) {
     this.client.del(key);
   }
+
+  async setInvite(key, value) {
+    await this.client.set(`invite:${key}`, value, {
+      EX: 900,
+    });
+  }
 }
 
 module.exports = new RedisService();

@@ -1,10 +1,11 @@
 const { resiveLog } = require("../../modules/logs-module/globalLogs.js");
 const { formatTime, getRandomInt } = require("../../utils/helpers.js");
+const { getFamilyByUserId } = require("../fam-module/fam-service.js");
 const {
   checkItem,
 } = require("../items-module/items-utils/item-tool-service.js");
 
-async function userFerma(ctx, user) {
+async function userFerma(user) {
   const now = Math.floor(Date.now() / 1000);
   const lastTime = user.farmtime;
   const diff = now - lastTime;
@@ -17,6 +18,7 @@ async function userFerma(ctx, user) {
   ) {
     user.farmtime = now;
     let randmef;
+    let message;
 
     if (user.meflvl === 1) {
       randmef = getRandomInt(50, 100);
@@ -28,21 +30,43 @@ async function userFerma(ctx, user) {
       randmef = getRandomInt(300, 500);
     }
 
-    const hasSuperGrabli = await checkItem(user.id, "Супер Грабли");
-
-    if (hasSuperGrabli) {
-      randmef *= 5;
-    }
-
     const hasPups = await checkItem(user.id, "Пупс «Удача»");
 
     if (hasPups) {
       randmef += 555;
     }
 
-    await ctx.reply("✅Стар собран " + randmef);
+    const hasSuperGrabli = await checkItem(user.id, "Супер Грабли");
+
+    if (hasSuperGrabli) {
+      randmef *= 5;
+    }
+
+    const fam = await getFamilyByUserId(user.chatId);
+
+    if (fam) {
+      const percent = Math.floor((randmef * fam.percent) / 100);
+      randmef -= percent;
+
+      if (fam.check) {
+        fam.reputation += 2;
+      } else {
+        fam.reputation += 1;
+      }
+
+      randmef += fam.Baf.farm * 100;
+
+      fam.mef += percent;
+      await fam.save();
+      message = `✅ Меф собран ${randmef}\n\nВ банк семьи начислено: ${percent}`;
+    } else {
+      message = `✅ Меф собран ${randmef}`;
+    }
+
     user.balance += randmef;
-    await resiveLog(user, "стар", randmef, "сбор фермы");
+    await user.save();
+    await resiveLog(user, "меф", randmef, "сбор фермы");
+    return message;
   } else {
     let remainingTime;
 
@@ -57,7 +81,7 @@ async function userFerma(ctx, user) {
     }
 
     const formattedTime = formatTime(remainingTime);
-    await ctx.reply(`❌Собрать стар можно через ${formattedTime}`);
+    return `❌ Собрать меф можно через ${formattedTime}`;
   }
 }
 

@@ -36,14 +36,14 @@ commandRouter.start(async (ctx) => {
         return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
-            "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help",
+            "!\n\nЯ, мефбот, игровой чатбот\nБолее подробно => /help",
           mainButton
         );
       } else {
         return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
-            "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help"
+            "!\n\nЯ, мефбот, игровой чатбот\nБолее подробно => /help"
         );
       }
     }
@@ -80,7 +80,7 @@ commandRouter.command("shop", async (ctx) => {
   try {
     if (ctx.chat.type === "private") {
       return await ctx.reply(
-        "Выберите что хотите купить:",
+        "Выбери что хочешь купить:",
         Keyboard.inline([
           ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
           [Key.callback("Закрыть", "dell")],

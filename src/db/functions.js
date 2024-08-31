@@ -3,7 +3,7 @@ const {
 } = require("../modules/case-module/case-utils/case-tool-service.js");
 const redisServise = require("../services/redis-servise.js");
 const sequelize = require("./config.js");
-const { User, Case, Chat } = require("./models");
+const { User, Case, Chat, Family, Bafs } = require("./models");
 
 const getUser = async (chatId, firstName, username) => {
   try {
@@ -34,6 +34,24 @@ const getUser = async (chatId, firstName, username) => {
         await Case.create({ userId: user.id, status: "active" });
       }
     }
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const checkUserById = async (chatId) => {
+  try {
+    const user = await User.findOne({ where: { chatId: chatId } });
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const checkUserByUsername = async (username) => {
+  try {
+    const user = await User.findOne({ where: { username: username } });
     return user;
   } catch (error) {
     console.log(error);
@@ -111,4 +129,6 @@ module.exports = {
   getVipChats,
   updateChatTime,
   syncUserCaseToDb,
+  checkUserById,
+  checkUserByUsername,
 };

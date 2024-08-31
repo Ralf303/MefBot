@@ -500,7 +500,7 @@ const items = {
     price: 300,
     canBuy: false,
     class: "donate",
-    info: "Умножает сбор старок в пять раз когда надеты на пабло",
+    info: "Умножает сбор мефа в пять раз когда надеты на пабло.",
   },
 
   57: {
@@ -510,7 +510,7 @@ const items = {
     price: 50,
     canBuy: false,
     class: "impossible",
-    info: "Умножает награду за капчу в 3 раза когда надет на пабло",
+    info: "Умножает награду за капчу в 3 раза когда надет на пабло.",
   },
 
   58: {
@@ -520,7 +520,7 @@ const items = {
     price: 50,
     canBuy: false,
     class: "impossible",
-    info: "Майнит 10% от твоего общего количества старок раз в сутки, когда надет на пабло\n\nМаксимальная сумма майнинга 100к",
+    info: "Майнит 10% от твоего общего количества мефа раз в сутки, когда надет на пабло\n\nМаксимальная сумма майнинга 150к",
   },
 
   59: {
@@ -530,7 +530,7 @@ const items = {
     price: 50,
     canBuy: false,
     class: "impossible",
-    info: "ЭД-Э является носителем информации многих умов, и знает как увеличить шанс успешного крафта на 15%, когда надет на пабло",
+    info: "ЭД-Э является носителем информации многих умов, и знает как увеличить шанс успешного крафта на 10%, когда надет на пабло.",
   },
 
   60: {
@@ -704,7 +704,7 @@ const items = {
     price: 123,
     canBuy: false,
     class: "impossible",
-    info: "Каждый раз, при просмотре Пабло, медведь меняется",
+    info: "Каждый раз, медведь меняется",
   },
 
   79: {
@@ -908,7 +908,7 @@ const items = {
     price: 50000,
     canBuy: false,
     class: "impossible",
-    info: "С этой штукой тебе будет подозрительно везти",
+    info: "С этой штукой тебе будет подозрительно везти)",
   },
 
   101: {
@@ -1032,7 +1032,7 @@ const items = {
     price: 50000,
     canBuy: false,
     class: "impossible",
-    info: "Используй команду синтез для конвертации гемов в стар",
+    info: "Используй команду синтез для конвертации гемов в меф.",
   },
 
   114: {
@@ -1141,7 +1141,7 @@ const items = {
     price: 50000,
     canBuy: false,
     class: "impossible",
-    info: "При продаже вещей вы получаете полную ее стоимость, а не 50%",
+    info: "При продаже вещей вы получаете полную ее стоимость, а не 50%!",
   },
 
   126: {
@@ -1151,7 +1151,7 @@ const items = {
     price: 50000,
     canBuy: false,
     class: "impossible",
-    info: "Увеличивает максимальный доход с дрона майнера до 150к",
+    info: "Увеличивает максимальный доход с дрона майнера до 200к!",
   },
 
   127: {
@@ -1466,7 +1466,7 @@ const items = {
     price: 10000,
     canBuy: false,
     class: "impossible",
-    info: "Йес-мэн позволяет открывать до 3х кейсов одновременно!",
+    info: "Йес-мэн +2 кейса за одно открытие.",
   },
 
   162: {
@@ -1474,6 +1474,127 @@ const items = {
     bodyPart: "legs",
     src: "img/evangelion.png",
     price: 100000,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  163: {
+    name: "Хомяк",
+    bodyPart: "leg1",
+    src: "img/homa_1.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+    info: "Каждый раз, хомяк меняется.",
+  },
+
+  164: {
+    name: "Balance Bag",
+    bodyPart: "right",
+    src: "img/moneyBag_1.png",
+    price: 25000,
+    canBuy: true,
+    class: "fam",
+    info: "Чемодан меняется в зависимости от баланса.",
+  },
+
+  165: {
+    name: "Мистер помощник",
+    bodyPart: "leg2",
+    src: "img/mr_helper.png",
+    canBuy: false,
+    price: 10000,
+    class: "impossible",
+    info: "Автоматически собирает ферму!",
+  },
+
+  166: {
+    name: "Гладос",
+    bodyPart: "extra",
+    src: "img/glados.png",
+    price: 7500,
+    canBuy: true,
+    class: "fam",
+  },
+
+  167: {
+    name: "Адибоксы",
+    bodyPart: "legs",
+    src: "img/adibox.png",
+    price: 1500,
+    canBuy: true,
+    class: "fam",
+  },
+
+  168: {
+    name: "Шляпа Стена",
+    bodyPart: "head",
+    src: "img/stan_hat.png",
+    price: 760,
+    canBuy: true,
+    class: "fam",
+  },
+
+  169: {
+    name: "Святой каки пуки",
+    bodyPart: "leg2",
+    src: "img/svetoy_kaki.png",
+    price: 3475,
+    canBuy: true,
+    class: "fam",
+  },
+
+  170: {
+    name: "Сет: Клоун",
+    bodyPart: "set",
+    src: "img/set_clown.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  171: {
+    name: "Пабло певец",
+    bodyPart: "leg2",
+    src: "img/singer.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  172: {
+    name: "Базз режисер",
+    bodyPart: "leg1",
+    src: "img/baz.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  173: {
+    name: "roflanEbalo",
+    bodyPart: "face",
+    src: "img/roflan.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+  },
+
+  174: {
+    name: "Билл Шифр",
+    bodyPart: "extra",
+    src: "img/bill_d.png",
+    price: 123,
+    canBuy: false,
+    class: "impossible",
+    info: "После 21:00 по мск переходит в гневную стадию...",
+  },
+
+  175: {
+    name: "Микро пабло",
+    bodyPart: "leg1",
+    src: "img/kaktus.png",
+    price: 123,
     canBuy: false,
     class: "impossible",
   },

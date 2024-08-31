@@ -293,7 +293,7 @@ const wearItem = async (user, id, ctx) => {
     item.isWorn = true;
     await item.save();
 
-    await ctx.reply(`Вы надели ${item.itemName}[${id}]`);
+    await ctx.reply(`Ты надел(а) ${item.itemName}[${id}](+${item.lvl})`);
   } catch (error) {
     console.log(error);
     await ctx.reply("Что-то пошло не так");

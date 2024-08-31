@@ -4,6 +4,7 @@ require("dotenv").config({
 });
 const { getUser, getVipChats } = require("../../db/functions.js");
 const { sleep, getRandomInt } = require("../../utils/helpers.js");
+const { getFamilyByUserId } = require("../fam-module/fam-service.js");
 const {
   checkItem,
   createItem,
@@ -47,11 +48,22 @@ function activePrize(bot) {
                 prize += 1000;
               }
 
+              const fam = await getFamilyByUserId(user.chatId);
+
+              if (fam) {
+                if (fam.check) {
+                  fam.reputation += 200;
+                } else {
+                  fam.reputation += 100;
+                }
+                prize += fam.Baf.active * 250;
+                await fam.save();
+              }
               user.balance += prize;
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
             } catch (error) {
               continue;
             }
@@ -110,11 +122,23 @@ function activePrize(bot) {
                 prize += 1000;
               }
 
+              const fam = await getFamilyByUserId(user.chatId);
+
+              if (fam) {
+                if (fam.check) {
+                  fam.reputation += 600;
+                } else {
+                  fam.reputation += 300;
+                }
+                prize += fam.Baf.active * 250;
+                await fam.save();
+              }
+
               user.balance += prize;
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
             } catch (error) {
               continue;
             }
@@ -172,11 +196,23 @@ function activePrize(bot) {
                 prize += 1000;
               }
 
+              const fam = await getFamilyByUserId(user.chatId);
+
+              if (fam) {
+                if (fam.check) {
+                  fam.reputation += 1000;
+                } else {
+                  fam.reputation += 500;
+                }
+                prize += fam.Baf.active * 250;
+                await fam.save();
+              }
+
               user.balance += prize;
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
             } catch (error) {
               continue;
             }

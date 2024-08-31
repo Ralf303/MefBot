@@ -29,7 +29,7 @@ mefRouter.on(message("text"), async (ctx, next) => {
       try {
         await ctx.telegram.sendMessage(
           ctx.from.id,
-          "Выберите что хотите купить:",
+          "Выбери что хочешь купить:",
           Keyboard.inline([
             ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
             [Key.callback("Закрыть", "dell")],
@@ -53,17 +53,17 @@ mefRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (
-      userMessage == "мой стар" ||
-      userMessage == "стар" ||
+      userMessage == "мой меф" ||
+      userMessage == "меф" ||
       userMessage == "б"
     ) {
       await ctx.reply(
-        "Стар: " +
+        "Меф: " +
           separateNumber(ctx.state.user.balance) +
           "\nГемы: " +
           separateNumber(ctx.state.user.gems) +
-          "\nКлючи: " +
-          separateNumber(ctx.state.user.chests)
+          "\nСемейные монеты: " +
+          separateNumber(ctx.state.user.famMoney)
       );
     }
 
@@ -81,7 +81,9 @@ mefRouter.on(message("text"), async (ctx, next) => {
       if (!checkSub) {
         await ctx.reply(ru_text.sub);
       } else {
-        await userFerma(ctx, ctx.state.user);
+        const message = await userFerma(ctx.state.user);
+
+        await ctx.reply(message);
       }
     }
 

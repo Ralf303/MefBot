@@ -11,6 +11,7 @@ const {
   createItem,
 } = require("../items-module/items-utils/item-tool-service.js");
 const redisServise = require("../../services/redis-servise.js");
+const { getFamilyByUserId } = require("../fam-module/fam-service.js");
 
 const capchaRouter = new Composer();
 
@@ -42,12 +43,25 @@ capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
         );
       }
 
-      await resiveLog(ctx.state.user, "стар", `${randommef}`, "ввод капчи");
+      const fam = await getFamilyByUserId(ctx.from.id);
+
+      if (fam) {
+        if (fam.check) {
+          fam.reputation += 60;
+        } else {
+          fam.reputation += 30;
+        }
+        randommef += fam.Baf.capcha * 200;
+        await fam.save();
+      }
+
       ctx.state.user.balance += randommef;
 
-      await ctx.reply("Верно, ты получил " + randommef + " старок", {
+      await ctx.reply("Верно, ты получил " + randommef + " мефа", {
         reply_to_message_id: ctx.message.message_id,
       });
+
+      await resiveLog(ctx.state.user, "меф", `${randommef}`, "ввод капчи");
     }
     return next();
   } catch (e) {

@@ -30,7 +30,7 @@ itemsActions.action(/^sell/, async (ctx) => {
     }
 
     if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно старок😥`);
+      return await ctx.reply(`У тебя недостаточно мефа😥`);
     }
 
     receiver.balance -= Number(price);
@@ -49,16 +49,16 @@ itemsActions.action(/^sell/, async (ctx) => {
       1,
       "покупка у другого юзера"
     );
-    await loseLog(sender, `стар`, "продажа другому юзеру");
-    await resiveLog(receiver, `стар`, price, "покупка у другого юзера");
+    await loseLog(sender, `меф`, "продажа другому юзеру");
+    await resiveLog(receiver, `меф`, price, "покупка у другого юзера");
     await ctx.reply(
-      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} старок`
+      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} мефа`
     );
     await ctx.telegram.sendMessage(
       sender.chatId,
-      `Вы успешно продали ${item.itemName}[${item.id}] за ${separateNumber(
+      `Ты успешно продал(а) ${item.itemName}[${item.id}] за ${separateNumber(
         price
-      )} старок`,
+      )} мефа`,
       { parse_mode: "HTML" }
     );
   } catch (error) {
@@ -86,7 +86,7 @@ itemsActions.action("next", async (ctx) => {
     );
     const items = await user.getItems();
     const itemNames = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>]`
+      (item) => `${item.itemName}[<code>${item.id}</code>](${+item.lvl})`
     );
     let rows = [];
     for (let i = 0; i < itemNames.length; i++) {
@@ -95,7 +95,7 @@ itemsActions.action("next", async (ctx) => {
     }
     if (rows.join("\n").length > 4000) {
       rows = rows.slice(150);
-      buttons = Keyboard.inline([
+      button = Keyboard.inline([
         [Key.callback("Дальше", "next")],
         [Key.callback("🔽Закрыть🔽", "dell")],
       ]);

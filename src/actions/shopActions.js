@@ -6,7 +6,7 @@ const ru_text = require("../../ru_text.js");
 
 const shopActions = new Composer();
 
-shopActions.action(["1", "2", "3", "4", "5"], async (ctx) => {
+shopActions.action(["1", "2", "3", "4", "5", "6"], async (ctx) => {
   try {
     await ctx.deleteMessage();
     const { data } = ctx.callbackQuery;
@@ -29,7 +29,7 @@ shopActions.action("farmApp", async (ctx) => {
         user.meflvl +
         "\nТвой уровень времени: " +
         user.timelvl +
-        "\nТвой стар: " +
+        "\nТвой меф: " +
         user.balance,
       Keyboard.inline([
         ["Улучшить сбор", "Улучшить время"],
@@ -121,7 +121,8 @@ shopActions.action("Вещи", async (ctx) => {
           Key.callback("🎩Clemente House🎩", 3),
           Key.callback("💎Gem Shop💎", 5),
         ],
-        [Key.callback("🔙Назад", "menu"), Key.callback("Закрыть", "dell")],
+        [Key.callback("👥Fam Shop👥", 6)],
+        [(Key.callback("🔙Назад", "menu"), Key.callback("Закрыть", "dell"))],
       ])
     );
   } catch (error) {
@@ -133,7 +134,7 @@ shopActions.action("menu", async (ctx) => {
   try {
     await ctx.deleteMessage();
     await ctx.reply(
-      "Выберите что хотите купить:",
+      "Выбери что хочешь купить:",
       Keyboard.inline([
         ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
         [Key.callback("Закрыть", "dell")],

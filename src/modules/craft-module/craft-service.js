@@ -3,6 +3,7 @@ const items = require("../items-module/items");
 const craftItems = require("./crafts");
 const { resiveLog } = require("../logs-module/globalLogs");
 const { checkItem } = require("../items-module/items-utils/item-tool-service");
+const { getFamilyByUserId } = require("../fam-module/fam-service");
 
 class CrafService {
   async #countItemsByItemName(user, itemName) {
@@ -14,18 +15,16 @@ class CrafService {
   }
 
   async #checkUserCraft(user, components) {
-    // Проверяем наличие всех необходимых компонентов у пользователя
     for (const component of components) {
       const itemQuantity = await this.#countItemsByItemName(
         user,
         component.name
       );
       if (itemQuantity < component.quantity) {
-        return false; // Недостаточно компонентов
+        return false;
       }
     }
 
-    // Удаляем необходимые компоненты у пользователя
     for (const component of components) {
       const itemsToDelete = await user.getItems({
         where: { itemName: component.name },
@@ -38,14 +37,14 @@ class CrafService {
       }
     }
 
-    return true; // Успешно скрафтили
+    return true;
   }
   async craftItem(user, id, ctx) {
     try {
       const craft = craftItems[id];
 
       if (!craft) {
-        await ctx.reply("Такого крафта нет😥");
+        await ctx.reply("Такого крафта нет 😥");
         return;
       }
 
@@ -54,7 +53,6 @@ class CrafService {
         craft.components
       );
 
-      // Проверка, что количество компонентов достаточно для крафта
       if (!enoughComponents) {
         await ctx.reply("Недостаточно компонентов для крафта");
         return;
@@ -62,20 +60,25 @@ class CrafService {
 
       let chance = Math.random() * 100;
 
-      // Проверка, если у пользователя есть и надет ли "Дрон 'ЭД-Э'"
       const droneItem = await checkItem(user.id, 'Дрон "ЭД-Э"');
 
       if (droneItem) {
-        chance -= 25;
+        chance -= 10;
       }
 
       const pupsItem = await checkItem(user.id, "Пупс «Удача»");
       if (pupsItem) {
-        chance -= 5;
+        chance -= 1;
+      }
+
+      const fam = await getFamilyByUserId(user.chatId);
+
+      if (fam) {
+        chance -= fam.Baf.craft;
+        chance -= fam.Baf.luck;
       }
 
       if (chance <= craft.chance) {
-        // Создание и сохранение предмета
         const newItem = await Item.create({
           src: items[craft.personalId].src,
           itemName: items[craft.personalId].name,
@@ -86,27 +89,36 @@ class CrafService {
         user.fullSlots++;
         await user.addItem(newItem);
 
+        const fam = await getFamilyByUserId(user.chatId);
+
+        if (fam) {
+          if (fam.check) {
+            fam.reputation += 1600;
+          } else {
+            fam.reputation += 800;
+          }
+
+          await fam.save();
+        }
+
+        await user.save();
+        await newItem.save();
+
+        await ctx.reply(
+          `Успешно скрафтено! Получено: ${newItem.itemName}[${newItem.id}]`
+        );
         await resiveLog(
           user,
           `${newItem.itemName}[${newItem.id}]`,
           "1",
           "Успешный крафт"
         );
-        await user.save();
-        await newItem.save();
-
-        // Отправка ответа успешного крафта
-        await ctx.reply(
-          `Успешно скрафтено! Получено: ${newItem.itemName}[${newItem.id}]`
-        );
       } else {
-        // Отправка ответа неудачного крафта
         await ctx.reply("Крафт не удался. Компоненты потеряны.");
       }
     } catch (error) {
       console.error(error);
 
-      // Отправка ответа об ошибке крафта
       await ctx.reply("Произошла ошибка при крафте.");
     }
   }

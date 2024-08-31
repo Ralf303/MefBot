@@ -15,6 +15,7 @@ const {
 } = require("../items-module/items-utils/item-tool-service.js");
 const activeService = require("./active-service.js");
 const ru_text = require("../../../ru_text.js");
+const { getFamilyByUserId } = require("../fam-module/fam-service.js");
 
 const activeRouter = new Composer();
 
@@ -61,6 +62,20 @@ activeRouter.on(message("new_chat_members"), async (ctx, next) => {
 
         if (hasPups) {
           sum += 1000;
+        }
+
+        const fam = await getFamilyByUserId(fromUser.chatId);
+
+        if (fam) {
+          if (fam.check) {
+            fam.reputation += 100;
+          } else {
+            fam.reputation += 50;
+          }
+
+          sum += fam.Baf.invite * 500;
+
+          await fam.save();
         }
 
         fromUser.balance += sum;

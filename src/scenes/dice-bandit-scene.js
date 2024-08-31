@@ -26,7 +26,7 @@ diceScene.hears(/^([1-9]\d*)$/, async (ctx) => {
     const stake = Number(ctx.match[1]);
 
     if (user.balance < stake) {
-      await ctx.reply("Недостаточно старок😢");
+      await ctx.reply("Недостаточно мефа😢");
       return;
     }
 

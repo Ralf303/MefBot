@@ -15,15 +15,15 @@ vipChatActions.action(/vipChat(\d+)/, async (ctx) => {
   const user = await getUser(userId);
 
   if (user.balance < 1000000) {
-    return await ctx.reply("Недостаточно старок для покупки випчата😢");
+    return await ctx.reply("Недостаточно мефа для покупки випчата😢");
   }
 
   user.balance -= 1000000;
   chat.vip = true;
-  chat.vipTime = 30;
+  chat.vipTime += 30;
   await user.save();
   await chat.save();
-  await ctx.reply("Готово! Теперь беседа является випчатом на 1 месяц🤑");
+  await ctx.reply("Готово! Випчат успешно продлен на 30 дней🤑");
 });
 
 module.exports = vipChatActions;

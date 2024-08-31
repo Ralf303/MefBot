@@ -5,23 +5,26 @@ const middleware = new Composer();
 
 middleware.use(async (ctx, next) => {
   try {
+    if (ctx.chat.type === "channel") return next();
     ctx.state.user = await getUser(
       ctx.from.id,
       ctx.from.first_name,
       ctx.from.username
     );
-    console.time("НАЧАЛИ");
     return next();
   } catch (error) {
     console.log(error);
   }
 });
 middleware.use(require("./src/modules/items-module/items-actions.js"));
+middleware.use(require("./src/modules/fam-module/fam-actions.js"));
 middleware.use(require("./src/modules/case-module/case-action.js"));
 middleware.use(require("./src/actions/actionOnBuy.js"));
 middleware.use(require("./src/actions/shopActions.js"));
 middleware.use(require("./src/modules/game-module/dice-actions.js"));
 middleware.use(require("./src/modules/vipChat-module/vipChat-actions.js"));
+middleware.use(require("./src/modules/fam-module/fam-router.js"));
+middleware.use(require("./src/modules/stone-module/stone-router.js"));
 middleware.use(require("./src/modules/commands-module/commands-router.js"));
 middleware.use(require("./src/modules/vipChat-module/vipChat-router.js"));
 middleware.use(require("./src/modules/main-module/main-router.js"));
@@ -39,11 +42,11 @@ middleware.use(require("./src/modules/game-module/game-router.js"));
 middleware.use(require("./src/modules/capcha-module/capcha-router.js"));
 middleware.use(async (ctx) => {
   try {
+    if (ctx.chat.type === "channel") return;
     await ctx.state.user.save();
-
-    console.timeEnd("НАЧАЛИ");
   } catch (error) {
     console.log(error);
   }
 });
+
 module.exports = middleware;

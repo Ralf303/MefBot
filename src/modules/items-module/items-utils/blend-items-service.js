@@ -39,9 +39,42 @@ const getWornItems = async (user, ctx) => {
           item.src = `img/bear_${number}.png`;
           await item.save();
         }
+
+        if (item.itemName === "Хомяк") {
+          const number = getRandomInt(1, 31);
+          item.src = `img/homa_${number}.png`;
+          await item.save();
+        }
+
+        if (item.itemName === "Balance Bag") {
+          let number;
+          const { balance } = user;
+          if (balance <= 100000) {
+            number = 1;
+          } else if (balance <= 500000) {
+            number = 2;
+          } else if (balance <= 1000000) {
+            number = 3;
+          } else if (balance <= 5000000) {
+            number = 4;
+          } else if (balance <= 10000000) {
+            number = 5;
+          } else if (balance <= 25000000) {
+            number = 6;
+          } else {
+            number = 7;
+          }
+
+          item.src = `img/moneyBag_${number}.png`;
+          await item.save();
+        }
       });
 
-      if (items.every((item) => item.itemName !== "BEARBRICKS")) {
+      if (
+        items.every((item) => item.itemName !== "BEARBRICKS") &&
+        items.every((item) => item.itemName !== "Хомяк") &&
+        items.every((item) => item.itemName !== "Balance Bag")
+      ) {
         buffer = await blendImages(src);
         await redisServise.set(redisKey, buffer.toString("base64"));
         await redisServise.set(srcKey, JSON.stringify(src));
@@ -53,7 +86,7 @@ const getWornItems = async (user, ctx) => {
     }
 
     const wornItems = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>]`
+      (item) => `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
     );
 
     if (wornItems.length === 0) {
@@ -74,7 +107,6 @@ const getWornItems = async (user, ctx) => {
       rows.push(row);
     }
 
-    // возвращаем список надетых вещей
     await ctx.replyWithPhoto(
       { source: buffer },
       {

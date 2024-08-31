@@ -9,10 +9,20 @@ const { Keyboard, Key } = require("telegram-keyboard");
 vipChatRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    if (userMessage == "випчат") {
-      await ctx.reply(ru_text.about_vip_chat);
-    }
     if (ctx.chat.type === "private") return next();
+    if (userMessage == "випчат") {
+      const chat = await getChat(ctx.chat.id);
+
+      await ctx.reply(
+        ru_text.about_vip_chat +
+          `\n\n🕓 ${
+            chat.vip
+              ? `В этом чате випчат будет действовать еще ${chat.vipTime} дней`
+              : "В чате нет випчата"
+          } 🕓`
+      );
+    }
+
     const chat = await getChat(ctx.chat.id);
     const userStatus = await ctx.telegram.getChatMember(
       ctx.chat.id,
@@ -21,7 +31,6 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
     const isOwner = userStatus.status === "creator";
 
     if (userMessage == "купить випчат") {
-      if (chat.vip) return await ctx.reply("Випчат уже куплен🤑");
       await ctx.reply(
         ru_text.buy_vip_chat,
         Keyboard.inline([
@@ -61,7 +70,7 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
     await chat.save();
     return next();
   } catch (e) {
-    await ctx.reply("ВИП ошибка, " + e);
+    console.log(e);
   }
 });
 

@@ -11,12 +11,13 @@ const {
 const redisServise = require("../../../services/redis-servise");
 const { syncUserCaseToDb } = require("../../../db/functions");
 const { Keyboard, Key } = require("telegram-keyboard");
+const { getFamilyByUserId } = require("../../fam-module/fam-service");
 
 const openDonateCase = async (user, ctx) => {
   try {
     const userCase = await getUserCase(user.id);
     if (userCase.donate === 0) {
-      await ctx.reply(`Недостаточно старкейсов😥`);
+      await ctx.reply(`Недостаточно мефкейсов😥`);
       return;
     }
 
@@ -49,14 +50,13 @@ const openDonateCase = async (user, ctx) => {
 const open = async (user, ctx, box, luck) => {
   let result = ``;
   try {
-    let chance = getRandomInt(0, 5000);
+    let chance = getRandomInt(0, 6000);
     chance -= luck;
 
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
       user.balance += win;
-      result += `${win} старок🌿`;
-      await resiveLog(user, "стар", win, "приз из кейса");
+      result += `${win} мефа🌿`;
     }
 
     if (chance >= 500 && chance <= 505 && user.slots < 200) {
@@ -65,7 +65,6 @@ const open = async (user, ctx, box, luck) => {
 
       user.fullSlots++;
       await user.addItem(item);
-      await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
       await user.save();
       result = `❗️${item.itemName}❗️`;
@@ -75,21 +74,20 @@ const open = async (user, ctx, box, luck) => {
         Keyboard.inline([[`Удалить вещь ${item.id}`]])
       );
       return result;
-    } else if (chance >= 500 && chance <= 505 && user.slots === 200) {
+    } else if (chance >= 500 && chance <= 505 && user.slots >= 200) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
-      result += `${win} старок🌿`;
-      await resiveLog(user, "стар", win, "приз из кейса");
+      result += `${win} мефа🌿`;
     }
 
     if (chance >= 506 && chance <= 1500) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
-      result += `${win} старок🌿`;
-      await resiveLog(user, "стар", win, "приз из кейса");
+      result += `${win} мефа🌿`;
     }
 
-    if (chance === 1501 && user.slots === 200) {
+    const dopChance = await getRandomInt(1, 10);
+    if (chance === 1501 && user.slots < 200 && dopChance === 1) {
       const item = await createItem(100);
       user.fullSlots++;
       await user.addItem(item);
@@ -103,31 +101,33 @@ const open = async (user, ctx, box, luck) => {
         Keyboard.inline([["Удалить вещь"]])
       );
       return result;
-    } else if (chance === 1501 && user.slots === 200) {
-      user.balance += 25000;
-      result += `${win} старок🌿`;
-      await resiveLog(user, "стар", win, "приз из кейса");
+    } else if (chance === 1501 && (user.slots >= 200 || dopChance != 1)) {
+      user.stones += 1;
+      result += `ТОЧИЛЬНЫЙ КАМЕНЬ `;
     }
 
-    if (chance >= 1502 && chance <= 1550) {
-      const win = getRandomInt(1, 25);
+    if (chance >= 1502 && chance <= 1510) {
+      const win = getRandomInt(1, 5);
       user.gems += win;
       result += `${win} гемов💎`;
-      await resiveLog(user, "гемы", win, "приз из кейса");
     }
 
-    if (chance >= 1551 && chance <= 1585 && user.slots < 200) {
+    if (chance >= 1511 && chance <= 1515 && user.slots < 200) {
       user.slots += 1;
       result += `+1 СЛОТ В ИНВЕНТАРЬ🎒`;
-      await resiveLog(user, "слоты", 1, "приз из кейса");
     } else if (chance >= 1551 && chance <= 1585 && user.slots === 200) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
-      result += `${win} старок🌿`;
-      await resiveLog(user, "стар", win, "приз из кейса");
+      result += `${win} мефа🌿`;
     }
 
-    if (chance > 1586) {
+    if (chance >= 1516 && chance <= 2000) {
+      const win = getRandomInt(100, 500);
+      user.balance += win;
+      result += `${win} мефа🌿`;
+    }
+
+    if (chance > 2000) {
       result += "Ничего😥";
     }
 
@@ -174,42 +174,29 @@ const buyCase = async (user, id, count, ctx) => {
       count = 1;
     }
 
-    if (user.balance < price && needCase.class !== "gem") {
-      await ctx.reply(`У вас недостаточно старок😥`);
+    if (
+      user.balance < price &&
+      needCase.class !== "gem" &&
+      needCase.class !== "fam"
+    ) {
+      await ctx.reply(`У тебя недостаточно мефа 😥`);
       return;
     } else if (needCase.class !== "gem") {
       user.balance -= price;
-      await loseLog(
-        user,
-        "стар",
-        `покупка ${needCase.name} в количестве ${count}`
-      );
-
-      await resiveLog(
-        user,
-        `${needCase.name}`,
-        `${count}`,
-        "покупка в магазине"
-      );
     }
 
     if (user.gems < price && needCase.class === "gem") {
-      await ctx.reply(`У вас недостаточно гемов😥`);
+      await ctx.reply(`У тебя недостаточно гемов 😥`);
       return;
     } else if (needCase.class === "gem") {
       user.gems -= price;
-      await loseLog(
-        user,
-        "гемы",
-        `покупка ${needCase.name} в количестве ${count}`
-      );
+    }
 
-      await resiveLog(
-        user,
-        `${needCase.name}`,
-        `${count}`,
-        "покупка в магазине"
-      );
+    if (user.famMoney < price && needCase.class === "fam") {
+      await ctx.reply(`У тебя недостаточно семейных монет 😥`);
+      return;
+    } else if (needCase.class === "fam") {
+      user.famMoney -= price;
     }
     userCase[needCase.dbName] += Number(count);
     await userCase.save();
@@ -219,7 +206,7 @@ const buyCase = async (user, id, count, ctx) => {
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
   } else {
-    await ctx.reply(`Такого старкейса нет😥`);
+    await ctx.reply(`Такого мефкейса нет😥`);
   }
 };
 
@@ -232,7 +219,7 @@ const openCase = async (user, id, ctx, count = 1) => {
   try {
     const needCase = cases[id];
     if (!needCase) {
-      await ctx.reply("Такого старкейса нет😥");
+      await ctx.reply("Такого мефкейса нет😥");
       return;
     }
 
@@ -247,12 +234,23 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     if (userCase[caseName] < count) {
-      return await ctx.reply("Недостаточно старкейсов😥");
+      return await ctx.reply("Недостаточно мефкейсов😥");
     }
 
-    const isYesMane = await checkItem(user.id, "Йес-мэн");
+    let caseCounte = 1;
+    const isYesMan = await checkItem(user.id, "Йес-мэн");
 
-    if ((!isYesMane && Number(count) > 1) || Number(count) >= 4) {
+    if (isYesMan) {
+      caseCounte += 2;
+    }
+
+    const fam = await getFamilyByUserId(user.chatId);
+
+    if (fam) {
+      caseCounte += fam.Baf.case;
+    }
+
+    if (caseCounte < Number(count)) {
       await ctx.reply("Ты не можешь открыть столько за раз😥");
       return;
     }
@@ -266,13 +264,18 @@ const openCase = async (user, id, ctx, count = 1) => {
     if (pupsItem) {
       luck += 1000;
     }
+
+    if (fam) {
+      luck += fam.Baf.luck * 200;
+    }
+
     for (let i = 0; i < count; i++) {
       const result = await open(user, ctx, needCase, luck);
       results.push("• " + result);
     }
     await loseLog(user, user[caseName], "открытие");
     await ctx.reply(
-      `Ты открыл ${count} старкейса и получил(а):\n\n${results.join("\n")}`
+      `Ты открыл ${count} мефкейса и получил(а):\n\n${results.join("\n")}`
     );
   } catch (error) {
     console.log(error);

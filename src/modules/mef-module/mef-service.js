@@ -1,5 +1,5 @@
 const { getUser } = require("../../db/functions");
-const { User } = require("../../db/models");
+const { separateNumber } = require("../../utils/helpers");
 const { giveResoursesLog, loseLog } = require("../logs-module/globalLogs");
 
 const giveCoins = async (ctx) => {
@@ -17,9 +17,8 @@ const giveCoins = async (ctx) => {
     return;
   }
 
-  // проверяем, что отправитель не является ботом
   if (message.from.is_bot) {
-    await ctx.reply("Зачем боту стар🧐");
+    await ctx.reply("Зачем боту меф🧐");
     return;
   }
 
@@ -28,7 +27,7 @@ const giveCoins = async (ctx) => {
     let receiver = await getUser(receiverChatId);
 
     if (sender.balance < amount) {
-      await ctx.reply("Недостаточно старок🥲");
+      await ctx.reply("Недостаточно мефа🥲");
       return;
     }
 
@@ -38,7 +37,7 @@ const giveCoins = async (ctx) => {
     }
 
     if (amount < 100) {
-      await ctx.reply("Минимальная сумма передачи 100 штук");
+      await ctx.reply("Минимальная сумма передачи 100 мефа");
       return;
     }
 
@@ -47,12 +46,16 @@ const giveCoins = async (ctx) => {
     await sender.save();
     await receiver.save();
     await ctx.reply(
-      `Вы успешно отсыпали ${amount} штук старок <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      `Ты успешно отсыпал(а) ${separateNumber(
+        amount
+      )} мефа <a href="tg://user?id=${receiver.chatId}">${
+        receiver.firstname
+      }</a>`,
       { parse_mode: "HTML" }
     );
 
-    await loseLog(sender, "стар", "передача другому юзеру");
-    await giveResoursesLog(sender, receiver, "стар", amount);
+    await loseLog(sender, "меф", "передача другому юзеру");
+    await giveResoursesLog(sender, receiver, "меф", amount);
   } catch (error) {
     console.log(error);
     await ctx.reply("Ошибка при выполнении операции.");

@@ -46,7 +46,7 @@ const giveCase = async (sender, id, count, ctx) => {
     receiverCase[needCase.dbName] += intCount;
 
     await ctx.replyWithHTML(
-      `Вы успешно передали ${intCount} ${needCase.name}[${id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`
+      `Ты успешно передал(а) ${intCount} ${needCase.name}[${id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`
     );
 
     await senderCase.save();
@@ -104,7 +104,7 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     receiverCase.donate += count;
 
     await ctx.reply(
-      `Вы успешно передали ${count} донаткейсов @${receiver.username}`
+      `Ты успешно передал(а) ${count} донаткейсов @${receiver.username}`
     );
 
     await senderCase.save();

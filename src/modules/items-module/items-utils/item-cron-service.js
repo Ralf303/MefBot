@@ -4,6 +4,7 @@ const {
   calculateMiningAmount,
   sleep,
 } = require("../../../utils/helpers");
+const { userFerma } = require("../../mef-module/ferma");
 const { createItem, checkItem } = require("./item-tool-service");
 const CronJob = require("cron").CronJob;
 
@@ -332,7 +333,7 @@ class ItemService {
                 await user.addItem(item);
                 await bot.telegram.sendMessage(
                   user.chatId,
-                  `❗️Вы испытали удачу и получили ${item.itemName}❗️`,
+                  `❗️Ты испытал(а) удачу и получили ${item.itemName}❗️`,
                   { parse_mode: "HTML" }
                 );
                 await item.save();
@@ -340,8 +341,39 @@ class ItemService {
 
               user.balance += minedAmount;
               await user.save();
-              const message = `Я намайнил ${minedAmount} старок🤑`;
+              const message = `Я намайнил ${minedAmount} мефа🤑`;
               await bot.telegram.sendMessage(user.chatId, message);
+              await sleep(200);
+            } catch (error) {
+              continue;
+            }
+          }
+        }
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+
+    new CronJob(
+      "59 37 */1 * * *",
+      async function () {
+        const helpers = await Item.findAll({
+          where: {
+            itemName: "Мистер помощник",
+            isWorn: true,
+          },
+        });
+
+        if (helpers) {
+          for (const helper of helpers) {
+            try {
+              const user = await User.findOne({ where: { id: helper.userId } });
+              const message = await userFerma(user);
+              await bot.telegram.sendMessage(
+                user.chatId,
+                `${message}\n\n\n\nВаш мистер помощник 🎩`
+              );
               await sleep(200);
             } catch (error) {
               continue;

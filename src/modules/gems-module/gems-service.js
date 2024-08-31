@@ -47,7 +47,7 @@ class GemService {
       await sender.save();
       await receiver.save();
       await ctx.reply(
-        `Вы успешно передали ${amount} гемов ${message.from.first_name}`
+        `Тыуспешно передал(а) ${amount} гемов ${message.from.first_name}`
       );
 
       await loseLog(sender, "гемы", "передача другому юзеру");
@@ -108,7 +108,7 @@ class GemService {
         user.balance += mef;
         await user.save();
 
-        return `Вы успешно синтезировали ${amount} гемов в ${mef} штук старок🧪`;
+        return `Ты успешно синтезировал(а) ${amount} гемов в ${mef} мефа🧪`;
       } else return "У вас нет пупса науки🥲";
     } catch (error) {
       console.log(error);

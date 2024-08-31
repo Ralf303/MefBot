@@ -30,12 +30,12 @@ const giveItem = async (sender, id, ctx) => {
     });
 
     if (!item) {
-      await ctx.reply(`У вас нет такой вещи😥`);
+      await ctx.reply(`У вас нет такой вещи 😥`);
       return;
     }
 
     if (receiver.slots <= receiver.fullSlots) {
-      await ctx.reply(`У ${receiver.firstname} нет места😥`);
+      await ctx.reply(`У ${receiver.firstname} нет места 😥`);
       return;
     }
 
@@ -55,7 +55,7 @@ const giveItem = async (sender, id, ctx) => {
     await receiver.save();
     await item.save();
     await ctx.reply(
-      `Вы успешно передали ${item.itemName}[${item.id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      `Ты успешно передал(а) ${item.itemName}[${item.id}](+${item.lvl}) <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
       { parse_mode: "HTML" }
     );
     await loseLog(

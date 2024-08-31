@@ -34,18 +34,21 @@ const {
 const usersItemRouter = require("./src/API/getUserPablo.js");
 const { cronService } = require("./src/services/cron-service.js");
 const keysService = require("./src/modules/keys-module/keys-service.js");
+const { famName } = require("./src/scenes/fam-scene.js");
+const famCron = require("./src/modules/fam-module/fam-cron-service.js");
 
 const stage = new Scenes.Stage([
   buyPrefix,
   changePrefix,
   rouletteScene,
   diceScene,
+  famName,
 ]);
 
 const start = async () => {
   try {
     bot.catch(async (err) => {
-      console.log(`Error occurred: ${err}`);
+      console.log(`ОШИБКА В БОТ CATCH: ${err}`);
     });
 
     await connectToDb();
@@ -58,16 +61,13 @@ const start = async () => {
       })
     );
 
-    // bot.use(async (ctx, next) => {
-    //   console.log(ctx.chat);
-    //   await next();
-    // });
     bot.use(require("./middlewares.js"));
     mainCronService(bot);
     activePrize(bot);
     vipCron(bot);
     cronService(bot);
     captureGenerator(bot);
+    famCron(bot);
     keysService.giveAllKeys();
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);

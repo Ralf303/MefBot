@@ -17,18 +17,30 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     return;
   }
 
-  if (user.balance < itemInfo.price && status && itemInfo.class !== "gem") {
-    await ctx.reply("Недостаточно старок😢");
+  if (
+    user.balance < itemInfo.price &&
+    status &&
+    itemInfo.class !== "gem" &&
+    itemInfo.class !== "fam"
+  ) {
+    await ctx.reply("Недостаточно мефа 😢");
     return;
-  } else if (status && itemInfo.class !== "gem") {
+  } else if (status && itemInfo.class !== "gem" && itemInfo.class !== "fam") {
     user.balance -= itemInfo.price;
   }
 
   if (user.gems < itemInfo.price && status && itemInfo.class === "gem") {
-    await ctx.reply("Недостаточно гемов😢");
+    await ctx.reply("Недостаточно гемов 😢");
     return;
   } else if (status && itemInfo.class === "gem") {
     user.gems -= itemInfo.price;
+  }
+
+  if (user.famMoney < itemInfo.price && status && itemInfo.class === "fam") {
+    await ctx.reply("Недостаточно семейных монет 😢");
+    return;
+  } else if (status && itemInfo.class === "fam") {
+    user.famMoney -= itemInfo.price;
   }
 
   await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
@@ -43,9 +55,9 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   await user.addItem(item);
   await user.save();
   await item.save();
-  await loseLog(user, "стар", `покупка ${item.itemName}[${item.id}]`);
+  await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
   await ctx.replyWithHTML(
-    `Вы купили: ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
+    `Ты купил(а): ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
   );
   await resiveLog(
     user,
@@ -63,9 +75,11 @@ const buyItem = async (user, itemInfo, ctx, status) => {
       itemName: itemInfo.name,
       bodyPart: itemInfo.bodyPart,
       isWorn: false,
+      price: itemInfo.price,
     });
 
-    user.fullSlots++;
+    await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
+
     await user.addItem(item);
     await user.save();
     await item.save();
@@ -131,7 +145,7 @@ const removeItem = async (user, id, ctx) => {
     item.isWorn = false;
     await item.save();
 
-    await ctx.reply(`Вы сняли ${item.itemName}[${id}]`);
+    await ctx.reply(`Ты снял(а) ${item.itemName}[${id}](+${item.lvl})`);
   } catch (error) {
     console.log(error);
     await ctx.reply("Что-то пошло не так");
@@ -147,7 +161,7 @@ const getInventory = async (user, ctx) => {
       return;
     }
     const itemNames = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>]`
+      (item) => `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
     );
     let rows = [];
     for (let i = 0; i < itemNames.length; i++) {
@@ -191,7 +205,7 @@ const getInventory = async (user, ctx) => {
 const sellItem = async (user, id, price, replyMessage, ctx) => {
   try {
     if (price < 100) {
-      return `Минимальная цена продажи 100 старок🌿`;
+      return `Минимальная цена продажи 100 мефа🌿`;
     }
 
     const item = await Item.findOne({
@@ -220,14 +234,14 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
     }
 
     if (receiver.balance < price) {
-      return `У юзера недостаточно старок😥`;
+      return `У юзера недостаточно мефа😥`;
     }
 
     await ctx.telegram.sendMessage(
       receiver.chatId,
-      `${user.firstname} хочет продать вам ${item.itemName}[${
-        item.id
-      }] за ${separateNumber(price)} старок`,
+      `${user.firstname} хочет продать тебе ${item.itemName}[${item.id}](+${
+        item.lvl
+      }) за ${separateNumber(price)} мефа`,
       Keyboard.inline([
         [
           Key.callback(
@@ -242,11 +256,27 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
 
     return `Предложение о покупке ${item.itemName}[${
       item.id
-    }] за ${separateNumber(price)} старок было отправлено `;
+    }] за ${separateNumber(price)} мефа было отправлено `;
   } catch (error) {
     console.log(error);
     return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;
   }
+};
+
+const getItemsLvl = async (userId) => {
+  const items = await Item.findAll({
+    where: {
+      userId: userId,
+      isWorn: true,
+    },
+  });
+
+  let lvl = 0;
+  items.forEach((item) => {
+    lvl += item.lvl;
+  });
+
+  return lvl;
 };
 
 module.exports = {
@@ -255,4 +285,5 @@ module.exports = {
   getInventory,
   removeItem,
   sellItem,
+  getItemsLvl,
 };

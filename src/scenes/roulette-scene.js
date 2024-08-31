@@ -33,7 +33,7 @@ rouletteScene.hears(/^(\d+)$/, async (ctx) => {
     const amount = Number(ctx.match[1]);
 
     if (balance < amount) {
-      await ctx.reply("Недостаточно старок😢");
+      await ctx.reply("Недостаточно мефа😢");
       return;
     }
 
@@ -92,9 +92,7 @@ rouletteScene.on("callback_query", async (ctx) => {
     await checkAction(user.id, ctx);
 
     if (user.balance < amount) {
-      await ctx.reply(
-        "У вас кончился стар😢\nДля начала игры наберите рулетка"
-      );
+      await ctx.reply("У вас кончился меф😢\nДля начала игры наберите рулетка");
       ctx.scene.leave();
       return;
     }
@@ -102,7 +100,7 @@ rouletteScene.on("callback_query", async (ctx) => {
     const bet = ctx.callbackQuery.data;
 
     if (rightCalback.includes(bet)) {
-      const winNumber = Math.floor(Math.random() * 36 + 1); // генерация случайного числа от 1 до 36
+      const winNumber = Math.floor(Math.random() * 36 + 1);
       const winColor = getWinColor(winNumber);
       const winAmount = getWinAmount(amount, bet, winNumber);
       const message = `Выпавшее число: ${winNumber} (${winColor}),\nТвоя ставка: ${amount} на (${bet}). ${

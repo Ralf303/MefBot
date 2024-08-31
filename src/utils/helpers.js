@@ -1,4 +1,5 @@
 const { User } = require("../db/models");
+const { getFamilyByUserId } = require("../modules/fam-module/fam-service");
 const items = require("../modules/items-module/items");
 const redisServise = require("../services/redis-servise");
 
@@ -80,30 +81,20 @@ async function checkUserSub(ctx, channel, id) {
 
 async function checkUserProfile(user, ctx) {
   const message = ctx.message.reply_to_message;
-
   if (!message) {
+    const fam = await getFamilyByUserId(user.chatId);
     await ctx.replyWithHTML(
-      "Ник: " +
-        user.firstname +
-        "\nId: <code>" +
-        user.chatId +
-        "</code>\nСтар: " +
-        separateNumber(user.balance) +
-        "\nГемы: " +
-        user.gems +
-        "\nКлючи: " +
-        user.chests +
-        "\nКапчей введено: " +
-        user.captureCounter +
-        "\nУровень сбора: " +
-        user.meflvl +
-        "\nУровень времени: " +
-        user.timelvl +
-        "\nСлотов всего: " +
-        user.slots +
-        "\nСлотов занято: " +
-        user.fullSlots
+      `Ник: ${user.firstname}
+Id: <code>${user.chatId}</code>
+Семья: ${fam ? `«${fam.name}»` : "Нет"}
+Меф: ${separateNumber(user.balance)}
+Гемы: ${user.gems}
+Семейные монеты: ${user.famMoney}
+Капчей введено: ${user.captureCounter}
+Слотов всего: ${user.slots}
+Слотов занято: ${user.fullSlots}`
     );
+
     return;
   }
 
@@ -121,27 +112,17 @@ async function checkUserProfile(user, ctx) {
     });
 
     if (player) {
+      const fam = await getFamilyByUserId(player.chatId);
       await ctx.replyWithHTML(
-        "Профиль " +
-          player.firstname +
-          "\nId: <code>" +
-          player.chatId +
-          "</code>\nСтар: " +
-          separateNumber(player.balance) +
-          "\nГемы: " +
-          player.gems +
-          "\nКлючи: " +
-          player.chests +
-          "\nКапчей введено: " +
-          player.captureCounter +
-          "\nУровень сбора: " +
-          player.meflvl +
-          "\nУровень времени: " +
-          player.timelvl +
-          "\nСлотов всего: " +
-          player.slots +
-          "\nСлотов занято: " +
-          player.fullSlots
+        `Профиль ${player.firstname}
+Id: <code>${player.chatId}</code>
+Семья: ${fam ? `«${fam.name}»` : "Нет"}
+Меф: ${separateNumber(player.balance)}
+Гемы: ${player.gems}
+Семейные монеты: ${user.famMoney}
+Капчей введено: ${player.captureCounter}
+Слотов всего: ${player.slots}
+Слотов занято: ${player.fullSlots}`
       );
     } else {
       await ctx.reply("Я ничего о нем не знаю...");
@@ -163,7 +144,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} старок\n`;
+        )} мефа\n`;
       }
     }
   }
@@ -177,7 +158,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} старок\n`;
+        )} мефа\n`;
       }
     }
   }
@@ -191,7 +172,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} старок\n`;
+        )} мефа\n`;
       }
     }
   }
@@ -208,11 +189,11 @@ async function shopGenerator(id, ctx) {
     }
 
     result +=
-      "• Донат кейс Цена: 25\n• 1000 старок Цена: 1\n\n❗️Все цены в ру рублях❗️\n";
+      "• Донат кейс Цена: 25\n• 1000 мефа Цена: 1\n• 20 точильных камней Цена: 50\n\n❗️Все цены в ру рублях❗️\n";
     await ctx.replyWithHTML(
       result +
         "\nДля покупки связывайтесь с @ralf303" +
-        "\n\n📖Инфа id\n📖Инфа старкейс донат"
+        "\n\n📖Инфа id\n📖Инфа мефкейс донат"
     );
     return;
   }
@@ -226,6 +207,20 @@ async function shopGenerator(id, ctx) {
     sorteditems.forEach((item) => {
       result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} гемов\n`;
     });
+  }
+
+  if (id === "6") {
+    result = "👥Fam Shop👥\n\n";
+    const sorteditems = Object.keys(items)
+      .filter((item) => items[item].class === "fam")
+      .sort((a, b) => items[a].price - items[b].price);
+
+    sorteditems.forEach((item) => {
+      result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} семейных монет\n`;
+    });
+    result +=
+      "• Точильный камень Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камень [кол-во]";
+    return await ctx.replyWithHTML(result);
   }
 
   await ctx.replyWithHTML(

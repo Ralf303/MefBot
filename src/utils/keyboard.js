@@ -2,7 +2,7 @@ const { Keyboard } = require("telegram-keyboard");
 
 const mainButton = Keyboard.make([
   ["Магазин"],
-  ["Топ стар", "Топ капча"],
+  ["Топ меф", "Топ капча"],
   ["Команды", "Донат"],
   ,
 ]).reply();

@@ -54,6 +54,17 @@ const craftItems = {
     ],
     chance: 77,
   },
+
+  7: {
+    name: "Мистер помощник",
+    personalId: 165,
+    components: [
+      { name: "Супер Грабли", quantity: 1 },
+      { name: "Гладос", quantity: 1 },
+      { name: "Скутер", quantity: 3 },
+    ],
+    chance: 52,
+  },
 };
 
 module.exports = craftItems;
