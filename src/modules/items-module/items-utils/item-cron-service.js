@@ -23,6 +23,17 @@ class ItemService {
             },
           }
         );
+
+        await Item.update(
+          {
+            src: "img/bill_d.png",
+          },
+          {
+            where: {
+              itemName: "Билл Шифр",
+            },
+          }
+        );
       },
       null,
       true,
@@ -271,6 +282,17 @@ class ItemService {
           {
             where: {
               itemName: "Horny Tyan",
+            },
+          }
+        );
+
+        await Item.update(
+          {
+            src: "img/bill_n.png",
+          },
+          {
+            where: {
+              itemName: "Билл Шифр",
             },
           }
         );
