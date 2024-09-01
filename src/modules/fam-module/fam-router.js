@@ -21,6 +21,7 @@ const {
   getUser,
 } = require("../../db/functions");
 const redisServise = require("../../services/redis-servise");
+const { separateNumber } = require("../../utils/helpers");
 
 const famModule = new Composer();
 
