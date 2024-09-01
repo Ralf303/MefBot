@@ -64,11 +64,11 @@ famModule.hears(/^моя семья$/i, async (ctx, next) => {
         fam.reputation
       }\n${fam.check ? "✅" : "❌"} Галочка: ${
         fam.check ? "есть" : "нет"
-      }\n💰 Процент фермы: ${fam.percent}%\n🌿 Меф: ${fam.mef}\n🪙 Монеты: ${
-        fam.balance
-      }\n👥 Участников: ${fam.fullSlots}\n🏠 Макс. Участников: ${
-        fam.slots
-      }\n\nОписание: ${fam.description}`,
+      }\n💰 Процент фермы: ${fam.percent}%\n🌿 Меф: ${separateNumber(
+        fam.mef
+      )}\n🪙 Монеты: ${fam.balance}\n👥 Участников: ${
+        fam.fullSlots
+      }\n🏠 Макс. Участников: ${fam.slots}\n\nОписание: ${fam.description}`,
       {
         parse_mode: "HTML",
       }
@@ -415,8 +415,10 @@ famModule.hears(/^семья повысить/i, async (ctx, next) => {
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
-    if (rang != 5)
-      return await ctx.reply("Только основатель может повышать ранг 😢");
+    if (rang < 4)
+      return await ctx.reply(
+        "Только основатель или замы могут повышать ранг 😢"
+      );
 
     if (ctx.message.reply_to_message) {
       const userChatId = ctx.message.reply_to_message.from.id;
@@ -431,6 +433,12 @@ famModule.hears(/^семья повысить/i, async (ctx, next) => {
       if (userRang === 4) {
         return await ctx.reply(
           "Этот пользователь уже имеет максимальный ранг 👑"
+        );
+      }
+
+      if (rang === 4 && userRang === 3) {
+        return await ctx.reply(
+          "Снимать и назначать заместителей может только основатель 😢"
         );
       }
 
@@ -461,6 +469,12 @@ famModule.hears(/^семья повысить/i, async (ctx, next) => {
         );
       }
 
+      if (rang === 4 && userRang === 3) {
+        return await ctx.reply(
+          "Снимать и назначать заместителей может только основатель 😢"
+        );
+      }
+
       if (userRang === 3 && zams.length == 2) {
         return await ctx.reply("В семье могут быть только два зама 👑");
       }
@@ -481,8 +495,10 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
-    if (rang != 5)
-      return await ctx.reply("Только основатель может понижать ранг 😢");
+    if (rang < 4)
+      return await ctx.reply(
+        "Только основатель или замы могут повышать ранг 😢"
+      );
 
     if (ctx.message.reply_to_message) {
       const userChatId = ctx.message.reply_to_message.from.id;
@@ -495,6 +511,12 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
       const userRang = await getRang(userChatId, fam.id);
       if (userRang === 1) {
         return await ctx.reply("Этот пользователь и так минимального ранга 😢");
+      }
+
+      if (rang === 4 && userRang >= 4) {
+        return await ctx.reply(
+          "Снимать и назначать заместителей может только основатель 😢"
+        );
       }
 
       await setRang(userChatId, fam.id, userRang - 1);
@@ -513,10 +535,15 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
         return await ctx.reply("Этот пользователь не из вашей семьи 😳");
 
       const userRang = await getRang(user.chatId, fam.id);
-      if (userRang === 4) {
+      if (userRang === 1) {
         return await ctx.reply("Этот пользователь и так минимального ранга 😢");
       }
 
+      if (rang === 4 && userRang >= 4) {
+        return await ctx.reply(
+          "Снимать и назначать заместителей может только основатель 😢"
+        );
+      }
       await setRang(user.chatId, fam.id, userRang - 1);
       await ctx.reply("Пользователь успешно понижен ✅");
     }

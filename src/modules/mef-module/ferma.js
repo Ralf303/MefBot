@@ -45,9 +45,6 @@ async function userFerma(user) {
     const fam = await getFamilyByUserId(user.chatId);
 
     if (fam) {
-      const percent = Math.floor((randmef * fam.percent) / 100);
-      randmef -= percent;
-
       if (fam.check) {
         fam.reputation += 2;
       } else {
@@ -56,6 +53,8 @@ async function userFerma(user) {
 
       randmef += fam.Baf.farm * 100;
 
+      const percent = Math.floor((randmef * fam.percent) / 100);
+      randmef -= percent;
       fam.mef += percent;
       await fam.save();
       message = `✅ Меф собран ${randmef}\n\nВ банк семьи начислено: ${percent}`;

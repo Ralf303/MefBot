@@ -88,7 +88,7 @@ async function checkUserProfile(user, ctx) {
 Id: <code>${user.chatId}</code>
 Семья: ${fam ? `«${fam.name}»` : "Нет"}
 Меф: ${separateNumber(user.balance)}
-Гемы: ${user.gems}
+Гемы: ${separateNumber(user.gems)}
 Семейные монеты: ${user.famMoney}
 Капчей введено: ${user.captureCounter}
 Слотов всего: ${user.slots}
@@ -118,7 +118,7 @@ Id: <code>${user.chatId}</code>
 Id: <code>${player.chatId}</code>
 Семья: ${fam ? `«${fam.name}»` : "Нет"}
 Меф: ${separateNumber(player.balance)}
-Гемы: ${player.gems}
+Гемы: ${separateNumber(player.gems)}
 Семейные монеты: ${player.famMoney}
 Капчей введено: ${player.captureCounter}
 Слотов всего: ${player.slots}
