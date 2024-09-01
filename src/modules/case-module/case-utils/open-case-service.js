@@ -59,7 +59,7 @@ const open = async (user, ctx, box, luck) => {
       result += `${win} мефа🌿`;
     }
 
-    if (chance >= 500 && chance <= 505 && user.slots < 200) {
+    if (chance >= 500 && chance <= 505 && user.fullSlots < 200) {
       const randomItem = getRandomInt(0, box.itemsId.length - 1);
       const item = await createItem(box.itemsId[randomItem]);
 
@@ -74,7 +74,7 @@ const open = async (user, ctx, box, luck) => {
         Keyboard.inline([[`Удалить вещь ${item.id}`]])
       );
       return result;
-    } else if (chance >= 500 && chance <= 505 && user.slots >= 200) {
+    } else if (chance >= 500 && chance <= 505 && user.fullSlots >= 200) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
       result += `${win} мефа🌿`;
@@ -87,7 +87,7 @@ const open = async (user, ctx, box, luck) => {
     }
 
     const dopChance = await getRandomInt(1, 10);
-    if (chance === 1501 && user.slots < 200 && dopChance === 1) {
+    if (chance === 1501 && user.fullSlots < 200 && dopChance === 1) {
       const item = await createItem(100);
       user.fullSlots++;
       await user.addItem(item);
@@ -101,7 +101,7 @@ const open = async (user, ctx, box, luck) => {
         Keyboard.inline([["Удалить вещь"]])
       );
       return result;
-    } else if (chance === 1501 && (user.slots >= 200 || dopChance != 1)) {
+    } else if (chance === 1501 && (user.fullSlots >= 200 || dopChance != 1)) {
       user.stones += 1;
       result += `ТОЧИЛЬНЫЙ КАМЕНЬ `;
     }
