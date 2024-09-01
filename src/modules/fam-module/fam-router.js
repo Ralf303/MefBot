@@ -734,7 +734,7 @@ famModule.hears(/^семья состав/i, async (ctx, next) => {
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const list = await getFamilyMembers(fam.id, fam.name);
 
-    await ctx.reply(list, { parse_mode: "HTML" });
+    await ctx.reply(list, { parse_mode: "HTML", disable_notification: true });
 
     return next();
   } catch (error) {

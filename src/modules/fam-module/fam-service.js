@@ -206,7 +206,7 @@ const getFamilyMembers = async (familyId, famName) => {
 
     familyMembers.forEach((member, index) => {
       const user = member.user;
-      responseString += `• <a href="tg://user?id=${user.chatId}">${user.firstname}</a> (${member.rang})\n`;
+      responseString += `• <a href="tg://openmessage?user_id=${user.chatId}">${user.firstname}</a> (${member.rang})\n`;
     });
 
     return responseString;
