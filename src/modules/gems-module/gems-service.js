@@ -2,7 +2,7 @@ const sequelize = require("sequelize");
 const CronJob = require("cron").CronJob;
 const { User, Item } = require("../../db/models");
 const { loseLog, giveResoursesLog } = require("../logs-module/globalLogs");
-const { getRandomInt } = require("../../utils/helpers");
+const { getRandomInt, separateNumber } = require("../../utils/helpers");
 const { checkItem } = require("../items-module/items-utils/item-tool-service");
 const { getUser } = require("../../db/functions.js");
 
@@ -47,7 +47,9 @@ class GemService {
       await sender.save();
       await receiver.save();
       await ctx.reply(
-        `Тыуспешно передал(а) ${amount} гемов ${message.from.first_name}`
+        `Тыуспешно передал(а) ${separateNumber(amount)} гемов ${
+          message.from.first_name
+        }`
       );
 
       await loseLog(sender, "гемы", "передача другому юзеру");
