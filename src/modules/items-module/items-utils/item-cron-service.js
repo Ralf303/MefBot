@@ -348,7 +348,7 @@ class ItemService {
 
               const chance = getRandomInt(0, 500);
 
-              if (chance <= 1) {
+              if (chance === 1) {
                 const item = await createItem(126);
 
                 user.fullSlots++;

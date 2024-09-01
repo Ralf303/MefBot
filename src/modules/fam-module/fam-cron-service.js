@@ -13,7 +13,7 @@ const CronJob = require("cron").CronJob;
 
 function famCron(bot) {
   new CronJob(
-    "* 15 */3 * * *",
+    "1 15 */3 * * *",
     async function () {
       try {
         const fams = await getCheckFamily();
