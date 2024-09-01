@@ -85,7 +85,7 @@ stoneRouter.hears(/^передать камни.*$/i, async (ctx, next) => {
   }
 });
 
-stoneRouter.hears(/^купить камниь.*$/i, async (ctx, next) => {
+stoneRouter.hears(/^купить камни.*$/i, async (ctx, next) => {
   try {
     let count = parseInt(ctx.message.text.split(" ")[2]);
 

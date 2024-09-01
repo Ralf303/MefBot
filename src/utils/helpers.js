@@ -219,7 +219,7 @@ async function shopGenerator(id, ctx) {
       result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} семейных монет\n`;
     });
     result +=
-      "• Точильный камень Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камень [кол-во]";
+      "• Точильный камень Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]";
     return await ctx.replyWithHTML(result);
   }
 
