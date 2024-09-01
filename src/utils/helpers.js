@@ -119,7 +119,7 @@ Id: <code>${player.chatId}</code>
 Семья: ${fam ? `«${fam.name}»` : "Нет"}
 Меф: ${separateNumber(player.balance)}
 Гемы: ${player.gems}
-Семейные монеты: ${user.famMoney}
+Семейные монеты: ${player.famMoney}
 Капчей введено: ${player.captureCounter}
 Слотов всего: ${player.slots}
 Слотов занято: ${player.fullSlots}`

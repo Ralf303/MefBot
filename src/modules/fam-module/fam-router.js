@@ -795,4 +795,53 @@ famModule.hears(/^семья купить слот/i, async (ctx, next) => {
   }
 });
 
+famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
+  const chatId = ctx.from.id;
+  const message = ctx.message.reply_to_message;
+
+  if (!message) {
+    return;
+  }
+
+  const receiverChatId = message.from.id;
+  const amount = parseInt(ctx.message.text.split(" ")[2]);
+
+  if (isNaN(amount) || amount <= 0) {
+    return;
+  }
+
+  // проверяем, что отправитель не является ботом
+  if (message.from.is_bot) {
+    await ctx.reply("Зачем боту семейные монеты 🧐");
+    return;
+  }
+
+  try {
+    const sender = await getUser(chatId);
+    const receiver = await getUser(receiverChatId);
+
+    if (sender.famMoney < amount) {
+      await ctx.reply("Недостаточно семейных монет 🥲");
+      return;
+    }
+
+    if (sender.id === receiver.id) {
+      await ctx.reply(`Иди нахуй, так нельзя🖕`);
+      return;
+    }
+
+    sender.famMoney -= amount;
+    receiver.famMoney += amount;
+    await sender.save();
+    await receiver.save();
+    await ctx.reply(
+      `Ты успешно передал(а) ${amount} семейных монет ${message.from.first_name}`
+    );
+    return next();
+  } catch (error) {
+    console.log(error);
+    await ctx.reply("Ошибка при выполнении операции.");
+  }
+});
+
 module.exports = famModule;

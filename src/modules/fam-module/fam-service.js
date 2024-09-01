@@ -239,7 +239,6 @@ const flushReputation = async () => {
   } catch (error) {
     console.log(error);
   }
-  S;
 };
 module.exports = {
   getFamilyByFamId,
