@@ -22,6 +22,12 @@ stoneRouter.hears(/^карман/i, async (ctx, next) => {
 stoneRouter.hears(/^улучшить вещь.*$/i, async (ctx, next) => {
   try {
     const itemId = ctx.message.text.split(" ")[2];
+
+    if (!itemId) {
+      await ctx.reply("Укажи id предмета");
+      return;
+    }
+
     const result = await upgradeItem(ctx.state.user, itemId);
     await ctx.reply(result);
     return next();
@@ -79,7 +85,7 @@ stoneRouter.hears(/^передать камни.*$/i, async (ctx, next) => {
   }
 });
 
-stoneRouter.hears(/^купить камень.*$/i, async (ctx, next) => {
+stoneRouter.hears(/^купить камниь.*$/i, async (ctx, next) => {
   try {
     let count = parseInt(ctx.message.text.split(" ")[2]);
 
