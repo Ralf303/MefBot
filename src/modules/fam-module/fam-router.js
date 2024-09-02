@@ -4,7 +4,6 @@ const {
   getFamilyByUserId,
   getRang,
   addUserToFamily,
-  getFamUsers,
   getMainUser,
   getDeputies,
   removeUserFromFamily,
