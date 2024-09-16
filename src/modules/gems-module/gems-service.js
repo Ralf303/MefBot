@@ -47,7 +47,7 @@ class GemService {
       await sender.save();
       await receiver.save();
       await ctx.reply(
-        `Тыуспешно передал(а) ${separateNumber(amount)} гемов ${
+        `Ты успешно передал(а) ${separateNumber(amount)} гемов ${
           message.from.first_name
         }`
       );

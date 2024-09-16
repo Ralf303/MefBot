@@ -569,7 +569,7 @@ famModule.hears(/^семья пополнить меф.*$/i, async (ctx, next) =
     ctx.state.user.balance -= ammount;
     fam.mef += ammount;
     await fam.save();
-    await ctx.reply(`Ты успешно поплнил баланс семьи на ${ammount} мефа 🌿`);
+    await ctx.reply(`Ты успешно пополнил баланс семьи на ${ammount} мефа 🌿`);
     return next();
   } catch (error) {
     console.log(error);
@@ -592,7 +592,7 @@ famModule.hears(/^семья пополнить монеты.*$/i, async (ctx, n
     fam.balance += ammount;
     await fam.save();
     await ctx.reply(
-      `Ты успешно поплнил баланс семьи на ${ammount} семейных монет 🪙`
+      `Ты успешно пополнил баланс семьи на ${ammount} семейных монет 🪙`
     );
     return next();
   } catch (error) {
