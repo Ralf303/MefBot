@@ -11,7 +11,7 @@ mainRouter.on(message("text"), async (ctx, next) => {
     const userMessage = ctx.message.text.toLowerCase();
     if (userMessage == "бот") {
       await ctx.react("👍");
-      await ctx.reply("✅На месте");
+      await ctx.reply("✅ На месте");
     }
 
     if (userMessage == "команды") {

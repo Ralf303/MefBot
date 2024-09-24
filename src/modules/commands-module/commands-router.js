@@ -152,7 +152,9 @@ commandRouter.command("time", async (ctx) => {
       const hours = (date.getHours() < 10 ? "0" : "") + date.getHours();
       const minutes = (date.getMinutes() < 10 ? "0" : "") + date.getMinutes();
 
-      await ctx.reply(`${item.itemName} показали: ${hours}:${minutes} по МСК`);
+      await ctx.reply(
+        `${item.itemName} показали: ${hours + 1}:${minutes} по МСК`
+      );
     } else {
       return await ctx.reply("У вас нет часов😢");
     }

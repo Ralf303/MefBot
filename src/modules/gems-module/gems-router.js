@@ -2,7 +2,6 @@ const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 
 const gemsService = require("./gems-service.js");
-const { getUser } = require("../../db/functions.js");
 
 const gemsRouter = new Composer();
 
