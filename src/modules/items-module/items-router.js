@@ -2,7 +2,6 @@ const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
 
 const { shopGenerator } = require("../../utils/helpers.js");
-const { getUser } = require("../../db/functions.js");
 const items = require("./items.js");
 const {
   getInventory,
@@ -19,6 +18,7 @@ const {
 } = require("./items-utils/blend-items-service.js");
 const { getItemInfo, checkId } = require("./items-utils/item-tool-service.js");
 const { giveItem } = require("./items-utils/give-item-service.js");
+const { house } = require("../house-module/house.js");
 const itemsRouter = new Composer();
 
 itemsRouter.on(message("text"), async (ctx, next) => {

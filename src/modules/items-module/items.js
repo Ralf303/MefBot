@@ -1064,7 +1064,7 @@ const items = {
 
   117: {
     name: "Подарки",
-    bodyPart: "leg1",
+    bodyPart: "legs",
     src: "img/podarki.png",
     price: 75,
     canBuy: true,

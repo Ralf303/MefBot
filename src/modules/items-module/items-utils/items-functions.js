@@ -102,7 +102,7 @@ const deleteItem = async (user, id) => {
   });
 
   if (!item) {
-    return `У вас нет такой вещи😥`;
+    return `У тебя нет такой вещи😥`;
   }
   const havePups = await checkItem(user.id, "Пупс «Бартер»");
   let cashBack;
@@ -129,13 +129,11 @@ const removeItem = async (user, id, ctx) => {
       },
     });
 
-    // проверяем, что указанный предмет существует
     if (!item) {
-      await ctx.reply("Такой вещи у вас нет😥");
+      await ctx.reply("Такой вещи у тебя нет😥");
       return;
     }
 
-    // проверяем, что предмет не надет
     if (!item.isWorn) {
       await ctx.reply("Эта вещь и так не надета😎");
       return;
@@ -216,7 +214,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
     });
 
     if (!item) {
-      return `У вас нет такой вещи😥`;
+      return `У тебя нет такой вещи😥`;
     }
 
     if (replyMessage.isBot) {

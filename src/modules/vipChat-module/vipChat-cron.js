@@ -18,7 +18,7 @@ function vipCron(bot) {
             await chat.save();
             await bot.telegram.sendMessage(
               chat.chatId,
-              "Беседа больше не является вип чатом, что купить напишите «Купить випчат»"
+              "Беседа больше не является вип чатом, что купить введи «Купить випчат»"
             );
             await sleep(500);
           }

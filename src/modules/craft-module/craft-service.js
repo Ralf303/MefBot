@@ -105,13 +105,7 @@ class CrafService {
         await newItem.save();
 
         await ctx.reply(
-          `Успешно скрафтено! Получено: ${newItem.itemName}[${newItem.id}]`
-        );
-        await resiveLog(
-          user,
-          `${newItem.itemName}[${newItem.id}]`,
-          "1",
-          "Успешный крафт"
+          `🎉 Успешно создано! Получено: ${newItem.itemName}[${newItem.id}]`
         );
       } else {
         await ctx.reply("Крафт не удался. Компоненты потеряны.");

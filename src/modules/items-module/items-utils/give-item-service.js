@@ -30,7 +30,7 @@ const giveItem = async (sender, id, ctx) => {
     });
 
     if (!item) {
-      await ctx.reply(`У вас нет такой вещи 😥`);
+      await ctx.reply(`У тебя нет такой вещи 😥`);
       return;
     }
 

@@ -3,21 +3,31 @@ const { Item } = require("../../../db/models");
 const { getRandomInt } = require("../../../utils/helpers");
 const redisServise = require("../../../services/redis-servise");
 
-async function blendImages(imagePaths) {
-  const bg = await Jimp.read("img/bg.jpg");
-  for (let i = 0; i < imagePaths.length; i++) {
-    const fg = await Jimp.read(imagePaths[i]);
+async function blendImages(imagePaths, backgroundPath) {
+  const bg = await Jimp.read(backgroundPath);
+  for (const imagePath of imagePaths) {
+    const fg = await Jimp.read(imagePath);
     const y = 0;
     const x = 0;
-
     bg.composite(fg, x, y);
   }
-
-  const buffer = await bg.getBufferAsync(Jimp.MIME_JPEG);
+  const buffer = await bg.getBufferAsync(Jimp.MIME_PNG);
   return buffer;
 }
 
-const getWornItems = async (user, ctx) => {
+async function overlayImage(foregroundBuffer, house) {
+  const bg = await Jimp.read(house.src);
+  const fg = await Jimp.read(foregroundBuffer);
+
+  fg.resize(house.scale, Jimp.AUTO);
+  const y = house.y;
+  const x = house.x;
+  bg.composite(fg, x, y);
+  const buffer = await bg.getBufferAsync(Jimp.MIME_PNG);
+  return buffer;
+}
+
+const getWornItems = async (user, ctx, house) => {
   try {
     const redisKey = `pablo_${user.id}`;
     const srcKey = `src_${user.id}`;
@@ -33,19 +43,17 @@ const getWornItems = async (user, ctx) => {
     const src = items.map((item) => `${item.src}`);
 
     if (!buffer || srcInRedis !== JSON.stringify(src)) {
-      items.forEach(async (item) => {
+      for (const item of items) {
         if (item.itemName === "BEARBRICKS") {
           const number = getRandomInt(1, 32);
           item.src = `img/bear_${number}.png`;
           await item.save();
         }
-
         if (item.itemName === "Хомяк") {
           const number = getRandomInt(1, 31);
           item.src = `img/homa_${number}.png`;
           await item.save();
         }
-
         if (item.itemName === "Balance Bag") {
           let number;
           const { balance } = user;
@@ -64,23 +72,22 @@ const getWornItems = async (user, ctx) => {
           } else {
             number = 7;
           }
-
           item.src = `img/moneyBag_${number}.png`;
           await item.save();
         }
-      });
-
-      if (
-        items.every((item) => item.itemName !== "BEARBRICKS") &&
-        items.every((item) => item.itemName !== "Хомяк") &&
-        items.every((item) => item.itemName !== "Balance Bag")
-      ) {
-        buffer = await blendImages(src);
-        await redisServise.set(redisKey, buffer.toString("base64"));
-        await redisServise.set(srcKey, JSON.stringify(src));
-      } else {
-        buffer = await blendImages(src);
       }
+
+      if (house) {
+        const mainBg = `./img/no_bg.png`;
+        buffer = await blendImages(src, mainBg);
+        buffer = await overlayImage(buffer, house);
+      } else {
+        const mainBg = `./img/bg.png`;
+        buffer = await blendImages(src, mainBg);
+      }
+
+      await redisServise.set(redisKey, buffer.toString("base64"));
+      await redisServise.set(srcKey, JSON.stringify(src));
     } else {
       buffer = Buffer.from(buffer, "base64");
     }
@@ -90,35 +97,39 @@ const getWornItems = async (user, ctx) => {
     );
 
     if (wornItems.length === 0) {
+      let imgSrc;
+
+      if (house) {
+        imgSrc = `./img/no_bg.png`;
+
+        imgSrc = await overlayImage(imgSrc, house);
+      } else {
+        imgSrc = `./img/bg.png`;
+      }
       await ctx.replyWithPhoto(
-        { source: "img/bg.jpg" },
+        { source: imgSrc },
         {
-          caption: `На вас ничего не надето`,
+          caption: `На тебе ничего не надето`,
           reply_to_message_id: ctx.message.message_id,
         }
       );
       return;
     }
 
-    const rows = [];
-
-    for (let i = 0; i < wornItems.length; i++) {
-      let row = wornItems[i];
-      rows.push(row);
-    }
+    const rows = wornItems.map((item) => item);
 
     await ctx.replyWithPhoto(
       { source: buffer },
       {
         parse_mode: "HTML",
-        caption: `На вас надето:\n${rows.join("\n")}`,
+        caption: `На тебе надето:\n${rows.join("\n")}`,
         reply_to_message_id: ctx.message.message_id,
       }
     );
     return;
   } catch (error) {
     console.log(error);
-    await ctx.reply("Что-то пошло не так😥");
+    await ctx.reply("Что-то пошло не так");
   }
 };
 

@@ -92,7 +92,9 @@ rouletteScene.on("callback_query", async (ctx) => {
     await checkAction(user.id, ctx);
 
     if (user.balance < amount) {
-      await ctx.reply("У вас кончился меф😢\nДля начала игры наберите рулетка");
+      await ctx.reply(
+        'У тебя кончился меф😢\nДля начала игры введи команду "рулетка"'
+      );
       ctx.scene.leave();
       return;
     }

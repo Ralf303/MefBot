@@ -110,7 +110,7 @@ commandRouter.command("change", async (ctx) => {
     });
 
     if (isItem.length === 0) {
-      await ctx.reply("У вас нет шайлушая🥲");
+      await ctx.reply("У тебя нет шайлушая🥲");
       return;
     }
 
@@ -156,7 +156,7 @@ commandRouter.command("time", async (ctx) => {
 
       await ctx.reply(`${item.itemName} показали: ${hours}:${minutes} по МСК`);
     } else {
-      return await ctx.reply("У вас нет часов😢");
+      return await ctx.reply("У тебя нет часов😢");
     }
   } catch (error) {
     console.log(error);

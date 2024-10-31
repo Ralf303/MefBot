@@ -33,7 +33,7 @@ const giveCase = async (sender, id, count, ctx) => {
     const caseCount = senderCase[needCase.dbName];
 
     if (intCount > caseCount) {
-      await ctx.reply(`У вас не хватает ${needCase.name}📦`);
+      await ctx.reply(`У тебя не хватает ${needCase.name}📦`);
       return;
     }
 
@@ -91,7 +91,7 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     }
 
     if (count > senderCase.donate) {
-      await ctx.reply(`У вас не хватает кейсов донат кейсов📦`);
+      await ctx.reply(`У тебя не хватает кейсов донат кейсов📦`);
       return;
     }
 

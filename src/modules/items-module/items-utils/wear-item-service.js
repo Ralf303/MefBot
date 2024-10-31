@@ -10,7 +10,7 @@ const wearItem = async (user, id, ctx) => {
     });
 
     if (!item) {
-      await ctx.reply("Такой вещи у вас нет😥");
+      await ctx.reply("Такой вещи у тебя нет😥");
       return;
     }
 

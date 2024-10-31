@@ -67,7 +67,9 @@ compose.action("slotapp", async (ctx) => {
     await loseLog(user, `меф`, "покупка в магазине");
     user.slots += 1;
     await ctx.reply(
-      "Поздравляем с успешной покупкой!\nТеперь у вас " + user.slots + " слотов"
+      "Поздравляем с успешной покупкой!\nТеперь у тебя " +
+        user.slots +
+        " слотов"
     );
     await user.save();
   } else {

@@ -12,15 +12,18 @@ const usersItemRouter = new Router();
 usersItemRouter.get("/getPhoto", async (req, res) => {
   try {
     const userId = req.query.userId;
+
     const user = await getUser(userId);
+
     const items = await Item.findAll({
       where: {
         userId: user.id,
         isWorn: true,
       },
     });
+
     if (items.length === 0) {
-      res.sendFile(path.join(__dirname, "../../img/bg.jpg")); // Отправляем фоновое изображение
+      res.sendFile(path.join(__dirname, "../../img/no_bg.png"));
       return;
     }
 
@@ -33,7 +36,7 @@ usersItemRouter.get("/getPhoto", async (req, res) => {
     });
 
     const src = items.map((item) => `${item.src}`);
-    const imageBuffer = await blendImages(src);
+    const imageBuffer = await blendImages(src, "./img/no_bg.png");
     res.contentType("image/jpeg");
     res.send(imageBuffer);
   } catch (error) {
