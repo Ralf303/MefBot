@@ -115,7 +115,7 @@ const open = async (user, ctx, box, luck) => {
     if (chance >= 1511 && chance <= 1515 && user.slots < 200) {
       user.slots += 1;
       result += `+1 СЛОТ В ИНВЕНТАРЬ🎒`;
-    } else if (chance >= 1551 && chance <= 1585 && user.slots === 200) {
+    } else if (chance >= 1511 && chance <= 1515 && user.slots === 200) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
       result += `${win} мефа🌿`;
