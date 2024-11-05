@@ -81,7 +81,7 @@ const open = async (user, ctx, box, luck) => {
     }
 
     if (chance >= 506 && chance <= 1500) {
-      const win = getRandomInt(250, 1000);
+      const win = getRandomInt(200, 400);
       user.balance += win;
       result += `${win} мефа🌿`;
     }
@@ -103,7 +103,7 @@ const open = async (user, ctx, box, luck) => {
       return result;
     } else if (chance === 1501 && (user.fullSlots >= 200 || dopChance != 1)) {
       user.stones += 1;
-      result += `ТОЧИЛЬНЫЙ КАМЕНЬ `;
+      result += `ТОЧИЛЬНЫЙ КАМЕНЬ`;
     }
 
     if (chance >= 1502 && chance <= 1510) {
@@ -127,8 +127,15 @@ const open = async (user, ctx, box, luck) => {
       result += `${win} мефа🌿`;
     }
 
-    if (chance > 2000) {
-      result += "Ничего😥";
+    if (chance >= 2001 && chance <= 2003) {
+      user.stones += 1;
+      result += `ТОЧИЛЬНЫЙ КАМЕНЬ`;
+    }
+
+    if (chance > 2004) {
+      const win = getRandomInt(22, 52);
+      user.balance += win;
+      result += `${win} мефа🌿`;
     }
 
     await user.save();
@@ -262,7 +269,7 @@ const openCase = async (user, id, ctx, count = 1) => {
     const pupsItem = await checkItem(user.id, "Пупс «Удача»");
 
     if (pupsItem) {
-      luck += 1000;
+      luck += 500;
     }
 
     if (fam) {
@@ -273,7 +280,6 @@ const openCase = async (user, id, ctx, count = 1) => {
       const result = await open(user, ctx, needCase, luck);
       results.push("• " + result);
     }
-    await loseLog(user, user[caseName], "открытие");
     await ctx.reply(
       `Ты открыл ${count} мефкейса и получил(а):\n\n${results.join("\n")}`
     );

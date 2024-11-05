@@ -113,10 +113,13 @@ const Chat = sequelize.define("chat", {
     primaryKey: true,
     unique: true,
   },
+  name: { type: DataTypes.STRING, defaultValue: "-" },
   vip: { type: DataTypes.BOOLEAN, defaultValue: false },
   vipTime: { type: DataTypes.INTEGER, defaultValue: 0 },
   allowCase: { type: DataTypes.BOOLEAN, defaultValue: false },
   allowGames: { type: DataTypes.BOOLEAN, defaultValue: false },
+  bank: { type: DataTypes.INTEGER, defaultValue: 0 },
+  chatLink: { type: DataTypes.STRING, defaultValue: "none" },
 });
 
 const Active = sequelize.define("active", {

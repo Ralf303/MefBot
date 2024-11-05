@@ -253,6 +253,31 @@ async function saveAction(id, message) {
   }
 }
 
+function daysRemaining(days) {
+  if (days < 0 || days > 31) {
+    return "Некорректное количество дней";
+  }
+
+  if (days === 0) {
+    return "0 дней";
+  }
+
+  const lastDigit = days % 10;
+  const lastTwoDigits = days % 100;
+
+  if (lastDigit === 1 && lastTwoDigits !== 11) {
+    return `${days} день`;
+  } else if (
+    lastDigit >= 2 &&
+    lastDigit <= 4 &&
+    (lastTwoDigits < 12 || lastTwoDigits > 14)
+  ) {
+    return `${days} дня`;
+  } else {
+    return `${days} дней`;
+  }
+}
+
 module.exports = {
   getRandomInt,
   generateCapcha,
@@ -266,4 +291,5 @@ module.exports = {
   checkAction,
   saveAction,
   separateNumber,
+  daysRemaining,
 };

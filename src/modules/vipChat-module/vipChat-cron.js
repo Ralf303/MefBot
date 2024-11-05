@@ -4,6 +4,7 @@ require("dotenv").config({
 });
 
 const { getVipChats, updateChatTime } = require("../../db/functions.js");
+const { Chat } = require("../../db/models.js");
 const { sleep } = require("../../utils/helpers.js");
 
 function vipCron(bot) {
@@ -27,6 +28,16 @@ function vipCron(bot) {
         }
       }
       await updateChatTime();
+    },
+    null,
+    true,
+    "Europe/Moscow"
+  );
+
+  new CronJob(
+    "15 16 16 */5 * *",
+    async function () {
+      await Chat.update({ chatLink: "none" });
     },
     null,
     true,

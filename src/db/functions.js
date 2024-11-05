@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const {
   getUserCase,
 } = require("../modules/case-module/case-utils/case-tool-service.js");
@@ -58,12 +59,19 @@ const checkUserByUsername = async (username) => {
   }
 };
 
-const getChat = async (chatId) => {
+const getChat = async (chatId, title) => {
   try {
     let chat = await Chat.findOne({ where: { chatId: chatId } });
+
     if (!chat) {
-      chat = await Chat.create({ chatId: chatId });
+      chat = await Chat.create({ chatId: chatId, name: title });
     }
+
+    if (chat.name != title) {
+      chat.name = title;
+      await chat.save();
+    }
+
     return chat;
   } catch (error) {
     console.log(error);
@@ -122,6 +130,21 @@ const syncUserCaseToDb = async (userId) => {
     console.log(error);
   }
 };
+
+const getTopChats = async () => {
+  try {
+    const chats = await Chat.findAll({
+      where: { bank: { [Op.gt]: 0 } },
+      order: [["bank", "DESC"]],
+      limit: 10,
+    });
+
+    return chats;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   connectToDb,
   getUser,
@@ -131,4 +154,5 @@ module.exports = {
   syncUserCaseToDb,
   checkUserById,
   checkUserByUsername,
+  getTopChats,
 };
