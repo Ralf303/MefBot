@@ -40,6 +40,20 @@ const Item = sequelize.define("item", {
   lvl: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
+const Home = sequelize.define("home", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  name: { type: DataTypes.STRING },
+  homeId: { type: DataTypes.INTEGER },
+  price: { type: DataTypes.INTEGER },
+  tax: { type: DataTypes.INTEGER, defaultValue: 0 },
+  energy: { type: DataTypes.INTEGER, defaultValue: 0 },
+});
+
 const Case = sequelize.define("case", {
   id: {
     type: DataTypes.INTEGER,
@@ -171,6 +185,8 @@ Bafs.belongsTo(Family, { foreignKey: "familyId" });
 User.hasMany(FamMember, { foreignKey: "userId", sourceKey: "chatId" });
 FamMember.belongsTo(User, { foreignKey: "userId", targetKey: "chatId" });
 User.hasOne(Case);
+User.hasOne(Home);
+Home.belongsTo(User);
 Case.belongsTo(User);
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
@@ -192,4 +208,5 @@ module.exports = {
   Add,
   Active,
   Chat,
+  Home,
 };

@@ -346,7 +346,7 @@ class ItemService {
                 minedAmount = 150000;
               }
 
-              const chance = getRandomInt(0, 500);
+              const chance = getRandomInt(0, 300);
 
               if (chance === 1) {
                 const item = await createItem(126);

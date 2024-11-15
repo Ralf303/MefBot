@@ -36,6 +36,8 @@ const { cronService } = require("./src/services/cron-service.js");
 const keysService = require("./src/modules/keys-module/keys-service.js");
 const { famName } = require("./src/scenes/fam-scene.js");
 const famCron = require("./src/modules/fam-module/fam-cron-service.js");
+const homeCronService = require("./src/modules/home-module/home-cron-service.js");
+const homeApi = require("./src/API/homeApi.js");
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -68,11 +70,13 @@ const start = async () => {
     cronService(bot);
     captureGenerator(bot);
     famCron(bot);
+    homeCronService();
     keysService.giveAllKeys();
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);
     await redisServise.connect();
     app.use(usersItemRouter);
+    app.use(homeApi);
     if (process.env.WEB_HOOK_URL) {
       const options = {
         key: fs.readFileSync(process.env.SECRET_KEY),

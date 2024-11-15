@@ -2,7 +2,6 @@ const { Composer } = require("telegraf");
 const { Item } = require("../../db/models");
 const { getUser } = require("../../db/functions");
 const { separateNumber } = require("../../utils/helpers");
-const { loseLog, resiveLog } = require("../logs-module/globalLogs");
 const { Keyboard, Key } = require("telegram-keyboard");
 
 const itemsActions = new Composer();
@@ -42,15 +41,7 @@ itemsActions.action(/^sell/, async (ctx) => {
     await sender.save();
     await receiver.save();
     await item.save();
-    await loseLog(sender, `${item.itemName[item.id]}`, "продажа другому юзеру");
-    await resiveLog(
-      receiver,
-      `${item.itemName[item.id]}`,
-      1,
-      "покупка у другого юзера"
-    );
-    await loseLog(sender, `меф`, "продажа другому юзеру");
-    await resiveLog(receiver, `меф`, price, "покупка у другого юзера");
+
     await ctx.reply(
       `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} мефа`
     );
@@ -69,7 +60,7 @@ itemsActions.action(/^sell/, async (ctx) => {
 itemsActions.action("cancel", async (ctx) => {
   try {
     await ctx.deleteMessage();
-    await ctx.reply("Сделка успешно отменена");
+    await ctx.reply("Сделка успешно отменена.");
   } catch (error) {
     console.log(error);
   }

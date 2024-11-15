@@ -1,6 +1,6 @@
 const Jimp = require("jimp");
 const { Item } = require("../../../db/models");
-const { getRandomInt } = require("../../../utils/helpers");
+const { getRandomInt, separateNumber } = require("../../../utils/helpers");
 const redisServise = require("../../../services/redis-servise");
 
 async function blendImages(imagePaths, backgroundPath) {
@@ -11,25 +11,26 @@ async function blendImages(imagePaths, backgroundPath) {
     const x = 0;
     bg.composite(fg, x, y);
   }
+
   const buffer = await bg.getBufferAsync(Jimp.MIME_PNG);
   return buffer;
 }
 
-async function overlayImage(foregroundBuffer, house) {
-  const bg = await Jimp.read(house.src);
+async function overlayImage(foregroundBuffer, home) {
+  const bg = await Jimp.read(home.src);
   const fg = await Jimp.read(foregroundBuffer);
-
-  fg.resize(house.scale, Jimp.AUTO);
-  const y = house.y;
-  const x = house.x;
+  fg.resize(home.scale, Jimp.AUTO);
+  const y = home.y;
+  const x = home.x;
   bg.composite(fg, x, y);
   const buffer = await bg.getBufferAsync(Jimp.MIME_PNG);
   return buffer;
 }
 
-const getWornItems = async (user, ctx, house) => {
+const getWornItems = async (user, ctx, home, dbHome) => {
   try {
-    const redisKey = `pablo_${user.id}`;
+    const homeKey = home ? `${home.src}` : "default";
+    const redisKey = `pablo_${user.id}_${homeKey}`;
     const srcKey = `src_${user.id}`;
     let buffer = await redisServise.get(redisKey);
     let srcInRedis = await redisServise.get(srcKey);
@@ -77,10 +78,10 @@ const getWornItems = async (user, ctx, house) => {
         }
       }
 
-      if (house) {
+      if (home) {
         const mainBg = `./img/no_bg.png`;
         buffer = await blendImages(src, mainBg);
-        buffer = await overlayImage(buffer, house);
+        buffer = await overlayImage(buffer, home);
       } else {
         const mainBg = `./img/bg.png`;
         buffer = await blendImages(src, mainBg);
@@ -93,23 +94,28 @@ const getWornItems = async (user, ctx, house) => {
     }
 
     const wornItems = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
+      (item) => `• ${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
     );
+
+    const homeInfo = home
+      ? `\n🏠 Твой дом «${home.name}»\n💸 Налог: ${separateNumber(
+          dbHome.tax
+        )}/36.000\n⚡️ Электричество: ${separateNumber(dbHome.energy)}/10.000`
+      : "";
 
     if (wornItems.length === 0) {
       let imgSrc;
 
-      if (house) {
+      if (home) {
         imgSrc = `./img/no_bg.png`;
-
-        imgSrc = await overlayImage(imgSrc, house);
+        imgSrc = await overlayImage(imgSrc, home);
       } else {
         imgSrc = `./img/bg.png`;
       }
       await ctx.replyWithPhoto(
         { source: imgSrc },
         {
-          caption: `На тебе ничего не надето`,
+          caption: `На тебе ничего не надето\n\n${homeInfo}`,
           reply_to_message_id: ctx.message.message_id,
         }
       );
@@ -122,7 +128,7 @@ const getWornItems = async (user, ctx, house) => {
       { source: buffer },
       {
         parse_mode: "HTML",
-        caption: `На тебе надето:\n${rows.join("\n")}`,
+        caption: `👕 На тебе надето:\n${rows.join("\n")}\n\n${homeInfo}`,
         reply_to_message_id: ctx.message.message_id,
       }
     );
@@ -150,4 +156,4 @@ const tryItem = async (itemInfo, ctx, id) => {
   );
 };
 
-module.exports = { getWornItems, blendImages, tryItem };
+module.exports = { getWornItems, blendImages, tryItem, overlayImage };

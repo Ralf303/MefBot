@@ -17,6 +17,8 @@ middleware.use(async (ctx, next) => {
   }
 });
 middleware.use(require("./src/modules/items-module/items-actions.js"));
+middleware.use(require("./src/modules/home-module/home-router.js"));
+middleware.use(require("./src/modules/home-module/home-actions.js"));
 middleware.use(require("./src/modules/fam-module/fam-actions.js"));
 middleware.use(require("./src/modules/case-module/case-action.js"));
 middleware.use(require("./src/actions/actionOnBuy.js"));

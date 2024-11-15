@@ -18,7 +18,8 @@ const {
 } = require("./items-utils/blend-items-service.js");
 const { getItemInfo, checkId } = require("./items-utils/item-tool-service.js");
 const { giveItem } = require("./items-utils/give-item-service.js");
-const { house } = require("../house-module/house.js");
+const { home } = require("../home-module/home.js");
+const { getHomeByUserId } = require("../home-module/home-service.js");
 const itemsRouter = new Composer();
 
 itemsRouter.on(message("text"), async (ctx, next) => {
@@ -106,6 +107,16 @@ itemsRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (userMessage == "мой пабло") {
+      const isHome = await getHomeByUserId(ctx.state.user.id);
+      if (isHome) {
+        return await getWornItems(
+          ctx.state.user,
+          ctx,
+          home[isHome.homeId],
+          isHome
+        );
+      }
+
       await getWornItems(ctx.state.user, ctx);
     }
 

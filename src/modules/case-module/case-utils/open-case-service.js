@@ -91,7 +91,6 @@ const open = async (user, ctx, box, luck) => {
       const item = await createItem(100);
       user.fullSlots++;
       await user.addItem(item);
-      await resiveLog(user, item.itemName, 1, "приз из кейса");
       await item.save();
       await user.save();
       result = `❗️${item.itemName}❗️`;
@@ -106,16 +105,16 @@ const open = async (user, ctx, box, luck) => {
       result += `ТОЧИЛЬНЫЙ КАМЕНЬ`;
     }
 
-    if (chance >= 1502 && chance <= 1510) {
+    if (chance >= 1502 && chance <= 1512) {
       const win = getRandomInt(1, 5);
       user.gems += win;
       result += `${win} гемов💎`;
     }
 
-    if (chance >= 1511 && chance <= 1515 && user.slots < 200) {
+    if (chance >= 1513 && chance <= 1515 && user.slots < 200) {
       user.slots += 1;
       result += `+1 СЛОТ В ИНВЕНТАРЬ🎒`;
-    } else if (chance >= 1511 && chance <= 1515 && user.slots === 200) {
+    } else if (chance >= 1513 && chance <= 1515 && user.slots === 200) {
       const win = getRandomInt(250, 1000);
       user.balance += win;
       result += `${win} мефа🌿`;

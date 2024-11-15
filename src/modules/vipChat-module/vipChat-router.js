@@ -65,6 +65,7 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
       ctx.chat.id,
       ctx.from.id
     );
+
     const isOwner = userStatus.status === "creator";
 
     if (userMessage == "инфа чат") {
