@@ -6,7 +6,7 @@ const { message } = require("telegraf/filters");
 const items = require("../items-module/items");
 const { buyItem } = require("../items-module/items-utils/items-functions");
 const { getUser } = require("../../db/functions");
-const { User, Roles, Logs } = require("../../db/models");
+const { User, Roles, Logs, Home } = require("../../db/models");
 const { generatePassword } = require("../../utils/helpers");
 const { adminList, adminTriggers } = require("./admins");
 const addServise = require("../../services/add-servise");
@@ -20,6 +20,11 @@ adminRouter.on(message("text"), async (ctx, next) => {
 
   try {
     if (IsAdmin) {
+      if (word1 == "дом" && word2 == "задать") {
+        await Home.update({ homeId: Number(word3) }, { where: { userId: 1 } });
+        await ctx.reply("Готово, босс 👌");
+      }
+
       if (userMessage == "список вещей") {
         let result = "Список всех вещей\n";
         let i = 1;
@@ -50,7 +55,7 @@ adminRouter.on(message("text"), async (ctx, next) => {
 
         if (word2 == "мани" && !isNaN(id)) {
           ctx.state.user.balance += id;
-          await ctx.reply(`Успешно выдано ${id}MF`);
+          await ctx.reply(`Успешно выдано ${id} мефа`);
         }
 
         if (word2 == "гемы" && !isNaN(id)) {

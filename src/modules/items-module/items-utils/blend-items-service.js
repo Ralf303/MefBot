@@ -87,8 +87,8 @@ const getWornItems = async (user, ctx, home, dbHome) => {
         buffer = await blendImages(src, mainBg);
       }
 
-      await redisServise.set(redisKey, buffer.toString("base64"));
-      await redisServise.set(srcKey, JSON.stringify(src));
+      // await redisServise.set(redisKey, buffer.toString("base64"));
+      // await redisServise.set(srcKey, JSON.stringify(src));
     } else {
       buffer = Buffer.from(buffer, "base64");
     }
