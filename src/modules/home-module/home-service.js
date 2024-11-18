@@ -20,41 +20,34 @@ const getHomeById = async (id) => {
   return home;
 };
 
-const getHomeImg = async () => {
-  const homes = await Home.findAll({ include: "user" });
-
-  const images = await Promise.all(
-    homes.map(async (house) => {
-      const homeData = house.toJSON();
-      const imgPath = home[house.homeId]?.src;
-
-      if (!house.userId) {
-        if (imgPath) {
-          const imgBuffer = fs.readFileSync(imgPath);
-          homeData.imgSrc = imgBuffer.toString("base64");
-        } else {
-          homeData.imgSrc = null;
-        }
-      } else {
-        const redisKey = `pablo_${house.userId}_${home[house.homeId].src}`;
-        let cachedImage = await redisServise.get(redisKey);
-
-        if (cachedImage) {
-          homeData.imgSrc = cachedImage;
-        } else {
-          const generatedImage = await generateHomeImg(
-            house.user,
-            home[house.homeId]
-          );
-          homeData.imgSrc = generatedImage;
-        }
-      }
-
-      return homeData;
-    })
-  );
-
-  return images;
+const getHomeImg = async (homeId) => {
+  const house = await Home.findOne({ where: { id: homeId }, include: "user" });
+  if (!house) {
+    throw new Error(`Дом с ID ${homeId} не найден`);
+  }
+  const homeData = house.toJSON();
+  const imgPath = home[house.homeId]?.src;
+  if (!house.userId) {
+    if (imgPath) {
+      const imgBuffer = fs.readFileSync(imgPath);
+      homeData.imgSrc = imgBuffer.toString("base64");
+    } else {
+      homeData.imgSrc = null;
+    }
+  } else {
+    const redisKey = `pablo_${house.userId}_${home[house.homeId].src}`;
+    let cachedImage = await redisServise.get(redisKey);
+    if (cachedImage) {
+      homeData.imgSrc = cachedImage;
+    } else {
+      const generatedImage = await generateHomeImg(
+        house.user,
+        home[house.homeId]
+      );
+      homeData.imgSrc = generatedImage;
+    }
+  }
+  return homeData;
 };
 
 const generateHomeImg = async (user, home) => {
@@ -108,7 +101,7 @@ const sellHome = async (user, price, replyMessage, ctx) => {
     const receiverHome = await getHomeByUserId(receiver.id);
 
     if (receiverHome) {
-      return `У него/нее и так уже есть дом, зачем ему/ей второй 🧐`;
+      return `У юзера и так уже есть дом, зачем ему второй 🧐`;
     }
 
     if (receiver.balance < price) {

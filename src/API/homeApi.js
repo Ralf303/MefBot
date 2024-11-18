@@ -6,11 +6,24 @@ const {
   getHomeByUserId,
 } = require("../modules/home-module/home-service");
 const { getUser } = require("../db/functions");
+const { Home } = require("../db/models");
 const homeApi = new Router();
+
+homeApi.get("/homeCount", async (req, res) => {
+  try {
+    const count = await Home.count();
+
+    return res.json(count);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
 
 homeApi.get("/getHomes", async (req, res) => {
   try {
-    const homesWithImages = await getHomeImg();
+    const { id } = req.query;
+    const homesWithImages = await getHomeImg(id);
 
     return res.json(homesWithImages);
   } catch (error) {

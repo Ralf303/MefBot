@@ -2,7 +2,7 @@ const home = {
   1: {
     name: "Домик в лесу",
     src: "img/home_anime.png",
-    x: 200,
+    x: 250,
     y: 530,
     scale: 350,
   },
