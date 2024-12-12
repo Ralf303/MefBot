@@ -65,7 +65,7 @@ class AddService {
 
     await ctx.telegram.sendPhoto(
       this.#chatId,
-      { source: await blendImages([itemInfo.src]) },
+      { source: await blendImages([itemInfo.src], `./img/bg.png`) },
       {
         caption: `❗️РАЗДАЧА❗️\n\nУсловия:\n•Быть подписаным на ${channelName}\n•Нажать на кнопку внизу👇\n\nТот кто выполнит условие получит:\n•${itemInfo.name}\n•Немного мефа\n\n👇Скорее участвуй👇`,
         reply_markup: keyboard,

@@ -148,7 +148,7 @@ const tryItem = async (itemInfo, ctx, id) => {
   let src = [];
   src.push(itemInfo.src);
   await ctx.replyWithPhoto(
-    { source: await blendImages(src) },
+    { source: await blendImages(src, `./img/bg.png`) },
     {
       parse_mode: "HTML",
       caption: `Вот как будет выглядить ${itemInfo.name}[${id}]\nКупить ее можно командой:\n<code>Купить вещь ${id}</code>`,
