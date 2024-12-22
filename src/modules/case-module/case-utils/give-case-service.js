@@ -51,13 +51,6 @@ const giveCase = async (sender, id, count, ctx) => {
 
     await senderCase.save();
     await receiverCase.save();
-    await loseLog(sender, `${needCase.name}[${id}]`, "передача другому юзеру");
-    await giveResoursesLog(
-      sender,
-      receiver,
-      `${needCase.name}[${id}]`,
-      `${count}`
-    );
   } catch (error) {
     console.log(error);
   }

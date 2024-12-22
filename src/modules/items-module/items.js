@@ -1122,7 +1122,7 @@ const items = {
     src: "img/ng_tyne.png",
     price: 1000,
     canBuy: true,
-    class: "event",
+    class: "impossible",
   },
 
   124: {
@@ -1597,6 +1597,52 @@ const items = {
     price: 123,
     canBuy: false,
     class: "impossible",
+  },
+
+  177: {
+    name: "Рога",
+    bodyPart: "head",
+    src: "img/deer.png",
+    price: 1000,
+    canBuy: true,
+    class: "event",
+  },
+
+  176: {
+    name: "Нг дрон",
+    bodyPart: "extra",
+    src: "img/ng_dron.png",
+    price: 5000,
+    canBuy: true,
+    class: "event",
+    info: "Каждый час дрон генерирует один случайный кейс!",
+  },
+
+  178: {
+    name: "Нг чилл гай",
+    bodyPart: "leg2",
+    src: "img/chiloviy_Pablo.png",
+    price: 2400,
+    canBuy: true,
+    class: "event",
+  },
+
+  179: {
+    name: "Салатик",
+    bodyPart: "right",
+    src: "img/ng_salat.png",
+    price: 80,
+    canBuy: true,
+    class: "event",
+  },
+
+  180: {
+    name: "Леденец",
+    bodyPart: "right",
+    src: "img/ledenes.png",
+    price: 90,
+    canBuy: true,
+    class: "event",
   },
 };
 

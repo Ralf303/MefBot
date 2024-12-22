@@ -1,9 +1,14 @@
+const { syncUserCaseToDb } = require("../../../db/functions");
 const { Item, User } = require("../../../db/models");
 const {
   getRandomInt,
   calculateMiningAmount,
   sleep,
 } = require("../../../utils/helpers");
+const {
+  getUserCase,
+} = require("../../case-module/case-utils/case-tool-service");
+const cases = require("../../case-module/cases");
 const { userFerma } = require("../../mef-module/ferma");
 const { createItem, checkItem } = require("./item-tool-service");
 const CronJob = require("cron").CronJob;
@@ -396,6 +401,45 @@ class ItemService {
                 user.chatId,
                 `${message}\n\n\n\nВаш мистер помощник 🎩`
               );
+              await sleep(200);
+            } catch (error) {
+              continue;
+            }
+          }
+        }
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+
+    new CronJob(
+      "0 0 */1 * * *",
+      async function () {
+        const drons = await Item.findAll({
+          where: {
+            itemName: "Нг дрон",
+            isWorn: true,
+          },
+        });
+
+        if (drons) {
+          for (const helper of drons) {
+            try {
+              const user = await User.findOne({
+                where: { id: helper.userId },
+              });
+
+              const caseNumber = getRandomInt(1, 7);
+
+              const needCase = cases[caseNumber];
+              await syncUserCaseToDb(user.id);
+              const userCase = await getUserCase(user.id);
+
+              userCase[needCase.dbName] += 1;
+              await userCase.save();
+              await user.save();
+
               await sleep(200);
             } catch (error) {
               continue;

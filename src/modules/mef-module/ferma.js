@@ -57,14 +57,16 @@ async function userFerma(user) {
       randmef -= percent;
       fam.mef += percent;
       await fam.save();
-      message = `✅ Меф собран ${randmef}\n\nВ банк семьи начислено: ${percent}`;
+      message = `🎄 Меф собран ${randmef}\n\nВ банк семьи начислено: ${percent}`;
     } else {
-      message = `✅ Меф собран ${randmef}`;
+      message = `🎄 Меф собран ${randmef}`;
     }
 
+    const randSnows = getRandomInt(1, 10);
+    user.snows += randSnows;
+    message += `\n\n❄️ Снежинки собраны ${randSnows}`;
     user.balance += randmef;
     await user.save();
-    await resiveLog(user, "меф", randmef, "сбор фермы");
     return message;
   } else {
     let remainingTime;

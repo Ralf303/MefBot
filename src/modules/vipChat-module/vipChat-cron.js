@@ -37,7 +37,11 @@ function vipCron(bot) {
   new CronJob(
     "15 16 16 */5 * *",
     async function () {
-      await Chat.update({ chatLink: "none" });
+      try {
+        await Chat.update({ chatLink: "none" });
+      } catch (error) {
+        console.log(error);
+      }
     },
     null,
     true,

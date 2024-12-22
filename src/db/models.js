@@ -23,6 +23,7 @@ const User = sequelize.define("user", {
   gems: { type: DataTypes.INTEGER, defaultValue: 0 },
   takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
   chests: { type: DataTypes.INTEGER, defaultValue: 0 },
+  snows: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {

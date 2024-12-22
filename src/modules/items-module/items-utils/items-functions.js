@@ -43,6 +43,13 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     user.famMoney -= itemInfo.price;
   }
 
+  if (user.snows < itemInfo.price && status && itemInfo.class === "event") {
+    await ctx.reply("Недостаточно снежинок 😢");
+    return;
+  } else if (status && itemInfo.class === "event") {
+    user.snows -= itemInfo.price;
+  }
+
   await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
   const item = await Item.create({
     src: itemInfo.src,
@@ -55,15 +62,8 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   await user.addItem(item);
   await user.save();
   await item.save();
-  await loseLog(user, "меф", `покупка ${item.itemName}[${item.id}]`);
   await ctx.replyWithHTML(
     `Ты купил(а): ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
-  );
-  await resiveLog(
-    user,
-    `${item.itemName}[${item.id}]`,
-    "1",
-    "покупка в магазине"
   );
 
   const chance = getRandomInt(0, 100);

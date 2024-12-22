@@ -1,6 +1,5 @@
 const { getUser } = require("../../db/functions");
 const { separateNumber } = require("../../utils/helpers");
-const { giveResoursesLog, loseLog } = require("../logs-module/globalLogs");
 
 const giveCoins = async (ctx) => {
   const chatId = ctx.from.id;
@@ -53,9 +52,6 @@ const giveCoins = async (ctx) => {
       }</a>`,
       { parse_mode: "HTML" }
     );
-
-    await loseLog(sender, "меф", "передача другому юзеру");
-    await giveResoursesLog(sender, receiver, "меф", amount);
   } catch (error) {
     console.log(error);
     await ctx.reply("Ошибка при выполнении операции.");
