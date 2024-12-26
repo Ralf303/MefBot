@@ -44,7 +44,7 @@ eventRouter.hears(/^передать снежинки.*$/i, async (ctx, next) =>
     await sender.save();
     await receiver.save();
     await ctx.reply(
-      `Ты успешно передал(а) ${amount} точильных камней ${message.from.first_name}`
+      `Ты успешно передал(а) ${amount} снежинок ${message.from.first_name}`
     );
     return next();
   } catch (error) {
@@ -58,8 +58,8 @@ eventRouter.hears(/^нг магазин*$/i, async (ctx) => {
     let result = "🎄Новогодний магазин🎄\n\n";
 
     const sortedItems = Object.entries(items)
-      .filter(([key, item]) => item.class === "event")
-      .sort(([, itemA], [, itemB]) => itemA.price - itemB.price);
+      .filter(([item]) => item.class === "event")
+      .sort(([itemA], [, itemB]) => itemA.price - itemB.price);
 
     for (const [key, item] of sortedItems) {
       result += `• ${item.name}[<code>${key}</code>] Цена: ${separateNumber(
