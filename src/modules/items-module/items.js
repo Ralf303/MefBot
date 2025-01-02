@@ -1621,7 +1621,7 @@ const items = {
   178: {
     name: "Нг чилл гай",
     bodyPart: "leg2",
-    src: "img/chiloviy_Pablo.png",
+    src: "img/chiloviy_pablo.png",
     price: 2400,
     canBuy: true,
     class: "event",

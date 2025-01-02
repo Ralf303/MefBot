@@ -58,8 +58,8 @@ eventRouter.hears(/^нг магазин*$/i, async (ctx) => {
     let result = "🎄Новогодний магазин🎄\n\n";
 
     const sortedItems = Object.entries(items)
-      .filter(([item]) => item.class === "event")
-      .sort(([itemA], [, itemB]) => itemA.price - itemB.price);
+      .filter(([key, item]) => item.class === "event")
+      .sort(([, itemA], [, itemB]) => itemA.price - itemB.price);
 
     for (const [key, item] of sortedItems) {
       result += `• ${item.name}[<code>${key}</code>] Цена: ${separateNumber(

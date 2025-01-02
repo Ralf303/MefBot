@@ -70,6 +70,11 @@ class GemService {
             { where: {} }
           );
 
+          await User.update(
+            { snows: sequelize.literal("`snows` + 1") },
+            { where: {} }
+          );
+
           const usersWithSuperPickaxe = await Item.findAll({
             where: {
               itemName: "Супер Кирка",
