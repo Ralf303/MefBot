@@ -43,12 +43,12 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     user.famMoney -= itemInfo.price;
   }
 
-  if (user.snows < itemInfo.price && status && itemInfo.class === "event") {
-    await ctx.reply("Недостаточно снежинок 😢");
-    return;
-  } else if (status && itemInfo.class === "event") {
-    user.snows -= itemInfo.price;
-  }
+  // if (user.snows < itemInfo.price && status && itemInfo.class === "event") {
+  //   await ctx.reply("Недостаточно снежинок 😢");
+  //   return;
+  // } else if (status && itemInfo.class === "event") {
+  //   user.snows -= itemInfo.price;
+  // }
 
   await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
   const item = await Item.create({

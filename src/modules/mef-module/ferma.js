@@ -62,9 +62,9 @@ async function userFerma(user) {
       message = `🎄 Меф собран ${randmef}`;
     }
 
-    const randSnows = getRandomInt(1, 10);
-    user.snows += randSnows;
-    message += `\n\n❄️ Снежинки собраны ${randSnows}`;
+    // const randSnows = getRandomInt(1, 10);
+    // user.snows += randSnows;
+    // message += `\n\n❄️ Снежинки собраны ${randSnows}`;
     user.balance += randmef;
     await user.save();
     return message;

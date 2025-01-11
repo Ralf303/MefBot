@@ -42,7 +42,7 @@ middleware.use(require("./src/modules/logs-module/logs-router.js"));
 middleware.use(require("./src/modules/channel-module/channel-router.js"));
 middleware.use(require("./src/modules/game-module/game-router.js"));
 middleware.use(require("./src/modules/capcha-module/capcha-router.js"));
-middleware.use(require("./src/modules/event-module/event-router.js"));
+// middleware.use(require("./src/modules/event-module/event-router.js"));
 
 middleware.use(async (ctx) => {
   try {

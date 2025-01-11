@@ -22,7 +22,6 @@ class GemService {
       return;
     }
 
-    // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
       await ctx.reply("Зачем боту гемы🧐");
       return;
@@ -51,9 +50,6 @@ class GemService {
           message.from.first_name
         }`
       );
-
-      await loseLog(sender, "гемы", "передача другому юзеру");
-      await giveResoursesLog(sender, receiver, "гемы", amount);
     } catch (error) {
       console.log(error);
       await ctx.reply("Ошибка при выполнении операции.");
@@ -70,10 +66,10 @@ class GemService {
             { where: {} }
           );
 
-          await User.update(
-            { snows: sequelize.literal("`snows` + 1") },
-            { where: {} }
-          );
+          // await User.update(
+          //   { snows: sequelize.literal("`snows` + 1") },
+          //   { where: {} }
+          // );
 
           const usersWithSuperPickaxe = await Item.findAll({
             where: {
