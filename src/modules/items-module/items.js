@@ -1480,7 +1480,7 @@ const items = {
 
   163: {
     name: "Хомяк",
-    bodyPart: "leg1",
+    bodyPart: "leg2",
     src: "img/homa_1.png",
     price: 123,
     canBuy: false,
