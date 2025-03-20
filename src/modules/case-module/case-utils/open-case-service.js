@@ -17,7 +17,7 @@ const openDonateCase = async (user, ctx) => {
   try {
     const userCase = await getUserCase(user.id);
     if (userCase.donate === 0) {
-      await ctx.reply(`Недостаточно мефкейсов😥`);
+      await ctx.reply(`Недостаточно старкейсов😥`);
       return;
     }
 
@@ -56,7 +56,7 @@ const open = async (user, ctx, box, luck) => {
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
       user.balance += win;
-      result += `${win} мефа🌿`;
+      result += `${win} старок⭐️`;
     }
 
     if (chance >= 500 && chance <= 505 && user.fullSlots < 200) {
@@ -75,15 +75,15 @@ const open = async (user, ctx, box, luck) => {
       );
       return result;
     } else if (chance >= 500 && chance <= 505 && user.fullSlots >= 200) {
-      const win = getRandomInt(250, 1000);
-      user.balance += win;
-      result += `${win} мефа🌿`;
+      const win = getRandomInt(1, 10);
+      user.freeze += win;
+      result += `${win} охлаждающих жидкостей❄️`;
     }
 
     if (chance >= 506 && chance <= 1500) {
       const win = getRandomInt(200, 400);
       user.balance += win;
-      result += `${win} мефа🌿`;
+      result += `${win} старок⭐️`;
     }
 
     const dopChance = await getRandomInt(1, 10);
@@ -115,15 +115,15 @@ const open = async (user, ctx, box, luck) => {
       user.slots += 1;
       result += `+1 СЛОТ В ИНВЕНТАРЬ🎒`;
     } else if (chance >= 1513 && chance <= 1515 && user.slots === 200) {
-      const win = getRandomInt(250, 1000);
-      user.balance += win;
-      result += `${win} мефа🌿`;
+      const win = getRandomInt(1, 10);
+      user.freeze += win;
+      result += `${win} охлаждающих жидкостей❄️`;
     }
 
     if (chance >= 1516 && chance <= 2000) {
       const win = getRandomInt(100, 500);
       user.balance += win;
-      result += `${win} мефа🌿`;
+      result += `${win} старок⭐️`;
     }
 
     if (chance >= 2001 && chance <= 2003) {
@@ -131,10 +131,22 @@ const open = async (user, ctx, box, luck) => {
       result += `ТОЧИЛЬНЫЙ КАМЕНЬ`;
     }
 
+    if (chance >= 2004 && chance <= 2006) {
+      const win = getRandomInt(1, 3);
+      user.freeze += win;
+      result += `${win} охлаждающих жидкостей ❄️`;
+    }
+
+    if (chance >= 2007 && chance <= 2010) {
+      const win = getRandomInt(1, 10);
+      user.oil += win;
+      result += `${win} смазок для видеокарты 🛢`;
+    }
+
     if (chance > 2004) {
       const win = getRandomInt(22, 52);
       user.balance += win;
-      result += `${win} мефа🌿`;
+      result += `${win} старок⭐️`;
     }
 
     await user.save();
@@ -185,7 +197,7 @@ const buyCase = async (user, id, count, ctx) => {
       needCase.class !== "gem" &&
       needCase.class !== "fam"
     ) {
-      await ctx.reply(`У тебя недостаточно мефа 😥`);
+      await ctx.reply(`У тебя недостаточно старок 😥`);
       return;
     } else if (needCase.class !== "gem") {
       user.balance -= price;
@@ -212,7 +224,7 @@ const buyCase = async (user, id, count, ctx) => {
       `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
     );
   } else {
-    await ctx.reply(`Такого мефкейса нет😥`);
+    await ctx.reply(`Такого старкейса нет😥`);
   }
 };
 
@@ -225,7 +237,7 @@ const openCase = async (user, id, ctx, count = 1) => {
   try {
     const needCase = cases[id];
     if (!needCase) {
-      await ctx.reply("Такого мефкейса нет😥");
+      await ctx.reply("Такого старкейса нет😥");
       return;
     }
 
@@ -240,7 +252,7 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     if (userCase[caseName] < count) {
-      return await ctx.reply("Недостаточно мефкейсов😥");
+      return await ctx.reply("Недостаточно старкейсов😥");
     }
 
     let caseCounte = 1;
@@ -280,7 +292,7 @@ const openCase = async (user, id, ctx, count = 1) => {
       results.push("• " + result);
     }
     await ctx.reply(
-      `Ты открыл ${count} мефкейса и получил(а):\n\n${results.join("\n")}`
+      `Ты открыл ${count} старкейса и получил(а):\n\n${results.join("\n")}`
     );
   } catch (error) {
     console.log(error);

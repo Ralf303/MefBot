@@ -36,14 +36,14 @@ commandRouter.start(async (ctx) => {
         return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
-            "!\n\nЯ, мефбот, игровой чатбот\nБолее подробно => /help",
+            "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help",
           mainButton
         );
       } else {
         return await ctx.replyWithHTML(
           "Привет " +
             ctx.from.first_name +
-            "!\n\nЯ, мефбот, игровой чатбот\nБолее подробно => /help"
+            "!\n\nЯ, старбот, игровой чатбот\nБолее подробно => /help"
         );
       }
     }

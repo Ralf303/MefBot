@@ -16,7 +16,7 @@ vipChatActions.action(/vipChat(\d+)/, async (ctx) => {
     const user = await getUser(userId);
 
     if (user.balance < 1000000) {
-      return await ctx.reply("Недостаточно мефа для покупки випчата😢");
+      return await ctx.reply("Недостаточно старок для покупки випчата😢");
     }
 
     user.balance -= 1000000;

@@ -120,7 +120,7 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       await getWornItems(ctx.state.user, ctx);
     }
 
-    if (word1 == "донат") {
+    if (word1 == "донат" || userMessage == "🤑 донат 🤑") {
       await shopGenerator("4", ctx);
     }
 

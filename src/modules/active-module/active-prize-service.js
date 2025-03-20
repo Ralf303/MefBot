@@ -63,7 +63,7 @@ function activePrize(bot) {
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
             } catch (error) {
               continue;
             }
@@ -138,7 +138,7 @@ function activePrize(bot) {
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
             } catch (error) {
               continue;
             }
@@ -212,7 +212,7 @@ function activePrize(bot) {
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
-              }">${active.user.firstname}</a> получает ${prize} мефа\n\n`;
+              }">${active.user.firstname}</a> получает ${prize} старок\n\n`;
             } catch (error) {
               continue;
             }

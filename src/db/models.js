@@ -24,6 +24,10 @@ const User = sequelize.define("user", {
   takeBonus: { type: DataTypes.INTEGER, defaultValue: 0 },
   chests: { type: DataTypes.INTEGER, defaultValue: 0 },
   snows: { type: DataTypes.INTEGER, defaultValue: 0 },
+  freeze: { type: DataTypes.INTEGER, defaultValue: 0 },
+  oil: { type: DataTypes.INTEGER, defaultValue: 0 },
+  donate: { type: DataTypes.INTEGER, defaultValue: 0 },
+  coin: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
 const Item = sequelize.define("item", {

@@ -25,7 +25,7 @@ mefRouter.on(message("text"), async (ctx, next) => {
       await checkUserProfile(ctx.state.user, ctx);
     }
 
-    if (userMessage == "магазин") {
+    if (userMessage == "магазин" || userMessage == "🏬 магазин 🏬") {
       try {
         await ctx.telegram.sendMessage(
           ctx.from.id,
@@ -53,17 +53,23 @@ mefRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (
-      userMessage == "мой меф" ||
-      userMessage == "меф" ||
+      userMessage == "мои старки" ||
+      userMessage == "старки" ||
+      userMessage == "мои стар" ||
+      userMessage == "стар" ||
       userMessage == "б"
     ) {
       await ctx.reply(
-        "Меф: " +
+        "Старки: " +
           separateNumber(ctx.state.user.balance) +
           "\nГемы: " +
           separateNumber(ctx.state.user.gems) +
+          "\nБиткоины: " +
+          separateNumber(ctx.state.user.coin) +
           "\nСемейные монеты: " +
-          separateNumber(ctx.state.user.famMoney)
+          separateNumber(ctx.state.user.famMoney) +
+          "\nГолда: " +
+          separateNumber(ctx.state.user.donate)
         //+ "\n❄️ Снежинки: " +
         // separateNumber(ctx.state.user.snows)
       );

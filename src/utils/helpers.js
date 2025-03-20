@@ -144,7 +144,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
@@ -158,7 +158,7 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
@@ -172,28 +172,30 @@ async function shopGenerator(id, ctx) {
           items[item].name
         }[<code>${item}</code>] Цена: ${separateNumber(
           items[item].price
-        )} мефа\n`;
+        )} старок\n`;
       }
     }
   }
 
   if (id === "4") {
-    result = "Донат услуги\n\n";
+    result = "🤑 Донат услуги 🤑\n\n";
 
     for (const item in items) {
       if (items[item].class === "donate") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>] Цена: ${separateNumber(items[item].price)}\n`;
+        }[<code>${item}</code>] Цена: ${separateNumber(
+          items[item].price
+        )} голд\n`;
       }
     }
 
     result +=
-      "• Донат кейс Цена: 25\n• 1000 мефа Цена: 1\n• 20 точильных камней Цена: 50\n\n❗️Все цены в ру рублях❗️\n";
+      "• Донат кейс Цена: 25 голды\n• 1000 старок Цена: 1 голда\n• 20 точильных камней Цена: 50 голды\n\n❗️ 1 RUB = 1 Голд❗️\n";
     await ctx.replyWithHTML(
       result +
-        "\nДля покупки связывайтесь с @ralfy" +
-        "\n\n📖Инфа id\n📖Инфа мефкейс донат"
+        "\nДля пополнения голд => @ralfy" +
+        "\n\n📖Купить вещь id\n📖Купить старкейс донат\n📖Купить старки\n📖Донат купить камни\n📖Инфа id\n📖Инфа старкейс донат"
     );
     return;
   }
@@ -207,6 +209,9 @@ async function shopGenerator(id, ctx) {
     sorteditems.forEach((item) => {
       result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} гемов\n`;
     });
+    result +=
+      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить охлаждение [кол-во]";
+    return await ctx.replyWithHTML(result);
   }
 
   if (id === "6") {

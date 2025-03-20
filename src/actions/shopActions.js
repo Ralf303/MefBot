@@ -29,7 +29,7 @@ shopActions.action("farmApp", async (ctx) => {
         user.meflvl +
         "\nТвой уровень времени: " +
         user.timelvl +
-        "\nТвой меф: " +
+        "\nТвои старки: " +
         user.balance,
       Keyboard.inline([
         ["Улучшить сбор", "Улучшить время"],

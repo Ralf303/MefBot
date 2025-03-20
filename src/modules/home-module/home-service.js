@@ -79,7 +79,7 @@ const generateHomeImg = async (user, home) => {
 const sellHome = async (user, price, replyMessage, ctx) => {
   try {
     if (price < 100) {
-      return `Минимальная цена продажи 100 мефа🌿`;
+      return `Минимальная цена продажи 100 старок⭐️`;
     }
 
     const senderHome = await getHomeByUserId(user.id);
@@ -105,14 +105,14 @@ const sellHome = async (user, price, replyMessage, ctx) => {
     }
 
     if (receiver.balance < price) {
-      return `У юзера недостаточно мефа😥`;
+      return `У юзера недостаточно старок😥`;
     }
 
     await ctx.telegram.sendMessage(
       receiver.chatId,
       `${user.firstname} хочет продать тебе дом «${
         senderHome.name
-      }» за ${separateNumber(price)} мефа`,
+      }» за ${separateNumber(price)} старок`,
       Keyboard.inline([
         [
           Key.callback(
@@ -127,7 +127,7 @@ const sellHome = async (user, price, replyMessage, ctx) => {
 
     return `Предложение о покупке ${senderHome.name} за ${separateNumber(
       price
-    )} мефа было отправлено `;
+    )} старок было отправлено `;
   } catch (error) {
     console.log(error);
     return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;

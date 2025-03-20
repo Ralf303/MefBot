@@ -28,12 +28,6 @@ homeApi.get("/getHomes", async (req, res) => {
     const { id } = req.query;
     const homesWithImages = await getHomeImg(id);
 
-    console.log(
-      `Дома получены и отправлены, ИТОГОВОЕ ВРЕМЯ ${
-        new Date().getTime() - startTime
-      } мс `
-    );
-
     return res.json(homesWithImages);
   } catch (error) {
     console.error(error);

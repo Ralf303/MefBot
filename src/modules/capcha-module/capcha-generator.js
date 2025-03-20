@@ -12,7 +12,7 @@ async function captureGenerator(bot) {
       for (const chatId of vipChats) {
         try {
           const capture = generateCapcha();
-          await bot.telegram.sendMessage(chatId.chatId, "МефКапча " + capture);
+          await bot.telegram.sendMessage(chatId.chatId, "СтарКапча " + capture);
           await redisServise.set(capture, chatId.chatId);
           await sleep(100);
         } catch (error) {

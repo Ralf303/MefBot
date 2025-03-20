@@ -57,11 +57,9 @@ capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
 
       ctx.state.user.balance += randommef;
 
-      await ctx.reply("Верно, ты получил " + randommef + " мефа", {
+      await ctx.reply("Верно, ты получил " + randommef + " старок", {
         reply_to_message_id: ctx.message.message_id,
       });
-
-      await resiveLog(ctx.state.user, "меф", `${randommef}`, "ввод капчи");
     }
     return next();
   } catch (e) {

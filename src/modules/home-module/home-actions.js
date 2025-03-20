@@ -26,7 +26,7 @@ homeActions.action(/^homeSell/, async (ctx) => {
     }
 
     if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно мефа😥`);
+      return await ctx.reply(`У тебя недостаточно старок😥`);
     }
 
     receiver.balance -= Number(price);
@@ -39,13 +39,15 @@ homeActions.action(/^homeSell/, async (ctx) => {
     await senderHome.save();
 
     await ctx.reply(
-      `Ты успешно купил(а) ${senderHome.name} за ${separateNumber(price)} мефа`
+      `Ты успешно купил(а) ${senderHome.name} за ${separateNumber(
+        price
+      )} старок`
     );
     await ctx.telegram.sendMessage(
       sender.chatId,
       `Ты успешно продал(а) ${senderHome.name} за ${separateNumber(
         price
-      )} мефа`,
+      )} старок`,
       { parse_mode: "HTML" }
     );
   } catch (error) {

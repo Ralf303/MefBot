@@ -22,7 +22,7 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
       topChats.forEach((chat, index) => {
         message += `${index + 1}. <a href="${chat.chatLink}">${
           chat.name
-        }</a> - ${separateNumber(chat.bank)} мефа\n`;
+        }</a> - ${separateNumber(chat.bank)} старок\n`;
       });
       return await ctx.replyWithHTML(message, {
         disable_web_page_preview: true,
@@ -73,7 +73,7 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
         `🗓 Чат «${ctx.chat.title}»
 💎 Випчат действует еще ${daysRemaining(chat.vipTime)}
 🔗 <a href="${chat.chatLink}">Чат-ссылка</a>
-🌿 Хранилище чата: ${separateNumber(chat.bank)} мефа
+⭐️ Хранилище чата: ${separateNumber(chat.bank)} старок
 
 
 ⚠️ Разрешения чата:
@@ -87,12 +87,12 @@ ${chat.allowCase ? "✅" : "❌"} Кейсы`,
 
     if (word1 == "пожертвовать" && !isNaN(Number(word2)) && word2 > 0) {
       if (ctx.state.user.balance < Number(word2)) {
-        return await ctx.reply("У тебя не хватает мефа 😥");
+        return await ctx.reply("У тебя не хватает старок 😥");
       }
       ctx.state.user.balance -= Number(word2);
       chat.bank += Number(word2);
       await ctx.reply(
-        `🎉 Ты успешно пожертвовал ${separateNumber(word2)} мефа в беседу «${
+        `🎉 Ты успешно пожертвовал ${separateNumber(word2)} старок в беседу «${
           ctx.chat.title
         }»`
       );

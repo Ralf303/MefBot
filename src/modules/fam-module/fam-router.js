@@ -47,30 +47,31 @@ famModule.hears(/^моя семья$/i, async (ctx, next) => {
 
     if (zams.length > 0) {
       zam1 = await getUser(zams[0].userId);
-      zam1 = `<a href="tg://user?id=${zam1.chatId}">${zam1.firstname}</a>`;
+      zam1 = `<a href="tg://openmessage?user_id=${zam1.chatId}">${zam1.firstname}</a>`;
     }
 
     if (zams.length > 1) {
       zam2 = await getUser(zams[1].userId);
-      zam2 = `<a href="tg://user?id=${zam2.chatId}">${zam2.firstname}</a>`;
+      zam2 = `<a href="tg://openmessage?user_id=${zam2.chatId}">${zam2.firstname}</a>`;
     }
 
     await ctx.reply(
-      `⚔️ [${fam.id}] Семья «${fam.name}»\n\n🔅 Лидер: <a href="tg://user?id=${
-        mainUser.chatId
-      }">${
+      `⚔️ [${fam.id}] Семья «${
+        fam.name
+      }»\n\n🔅 Лидер: <a href="tg://openmessage?user_id=${mainUser.chatId}">${
         mainUser.firstname
       }</a>\n🔅 Зам: ${zam1}\n🔅 Зам: ${zam2}\n💼 Твой ранг: ${rang}\n☢️ Репутация: ${
         fam.reputation
       }\n${fam.check ? "✅" : "❌"} Галочка: ${
         fam.check ? "есть" : "нет"
-      }\n💰 Процент фермы: ${fam.percent}%\n🌿 Меф: ${separateNumber(
+      }\n💰 Процент фермы: ${fam.percent}%\n⭐️ Старки: ${separateNumber(
         fam.mef
-      )}\n🪙 Монеты: ${fam.balance}\n👥 Участников: ${
+      )}\n🪙 Монеты: ${separateNumber(fam.balance)}\n👥 Участников: ${
         fam.fullSlots
       }\n🏠 Макс. Участников: ${fam.slots}\n\nОписание: ${fam.description}`,
       {
         parse_mode: "HTML",
+        disable_notification: true,
       }
     );
 
@@ -150,25 +151,34 @@ famModule.hears(/^семья процент.*$/i, async (ctx, next) => {
   }
 });
 
-famModule.hears(/^семья снять меф.*$/i, async (ctx, next) => {
+famModule.hears(/^семья снять стар.*$/i, async (ctx, next) => {
   try {
-    const ammount = Number(ctx.message.text.split(" ")[3]);
+    const amountText = ctx.message.text.split(" ")[3];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
     if (rang != 5)
-      return await ctx.reply("Только основатель может снимать меф 👑");
+      return await ctx.reply("Только основатель может снимать старки 👑");
 
-    if (isNaN(ammount) || ammount <= 0)
-      return await ctx.reply("Введи число больше 0");
+    let ammount;
+    if (
+      amountText.toLowerCase() === "все" ||
+      amountText.toLowerCase() === "всё"
+    ) {
+      ammount = fam.mef;
+    } else {
+      ammount = Number(amountText);
+      if (isNaN(ammount) || ammount <= 0)
+        return await ctx.reply("Введи число больше 0");
+    }
 
     if (fam.mef < ammount)
-      return await ctx.reply("В семье нет столько мефа 😢");
+      return await ctx.reply("В семье нет столько старок 😢");
 
     ctx.state.user.balance += ammount;
     fam.mef -= ammount;
     await fam.save();
-    await ctx.reply(`Ты успешно снял ${ammount} мефа 🌿`);
+    await ctx.reply(`Ты успешно снял ${separateNumber(ammount)} старок ⭐️`);
     return next();
   } catch (error) {
     console.log(error);
@@ -177,15 +187,24 @@ famModule.hears(/^семья снять меф.*$/i, async (ctx, next) => {
 
 famModule.hears(/^семья снять монеты.*$/i, async (ctx, next) => {
   try {
-    const ammount = Number(ctx.message.text.split(" ")[3]);
+    const amountText = ctx.message.text.split(" ")[3];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
     if (rang != 5)
       return await ctx.reply("Только основатель может снимать монеты 👑");
 
-    if (isNaN(ammount) || ammount <= 0)
-      return await ctx.reply("Введи число больше 0");
+    let ammount;
+    if (
+      amountText.toLowerCase() === "все" ||
+      amountText.toLowerCase() === "всё"
+    ) {
+      ammount = fam.balance;
+    } else {
+      ammount = Number(amountText);
+      if (isNaN(ammount) || ammount <= 0)
+        return await ctx.reply("Введи число больше 0");
+    }
 
     if (fam.balance < ammount)
       return await ctx.reply("В семье нет столько монет 😢");
@@ -193,7 +212,7 @@ famModule.hears(/^семья снять монеты.*$/i, async (ctx, next) => 
     ctx.state.user.famMoney += ammount;
     fam.balance -= ammount;
     await fam.save();
-    await ctx.reply(`Ты успешно снял ${ammount} монет 🪙`);
+    await ctx.reply(`Ты успешно снял ${separateNumber(ammount)} монет 🪙`);
     return next();
   } catch (error) {
     console.log(error);
@@ -207,7 +226,7 @@ famModule.hears(/^семья галочка/i, async (ctx) => {
       `${
         fam.check
           ? `У семьи уже есть галочка ✅`
-          : "У семьи нет галочки, ты ее можешь купить за 10.000.000 мефа\n\nЗачем галочка?\n\n• 2х репутация.\n\n• Каждый час, все участники семьи получают семейные монеты в зависимости от ранга(5 ранг 5 монет, 4 ранг 4 монеты и так далее).\n\n• +10 слотов единовременно.\n\n\n📖 Семья купить галочку"
+          : "У семьи нет галочки, ты ее можешь купить за 10.000.000 старок\n\nЗачем галочка?\n\n• 2х репутация.\n\n• Каждый час, все участники семьи получают семейные монеты в зависимости от ранга(5 ранг 5 монет, 4 ранг 4 монеты и так далее).\n\n• +10 слотов единовременно.\n\n\n📖 Семья купить галочку"
       }`
     );
   } catch (error) {
@@ -553,23 +572,35 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
     console.log(error);
   }
 });
-
-famModule.hears(/^семья пополнить меф.*$/i, async (ctx, next) => {
+famModule.hears(/^семья пополнить стар.*$/i, async (ctx, next) => {
   try {
-    const ammount = Number(ctx.message.text.split(" ")[3]);
+    const amountText = ctx.message.text.split(" ")[3];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
 
-    if (isNaN(ammount) || ammount <= 0)
-      return await ctx.reply("Введи число больше 0");
+    let ammount;
+    if (
+      amountText.toLowerCase() === "все" ||
+      amountText.toLowerCase() === "всё"
+    ) {
+      ammount = ctx.state.user.balance;
+    } else {
+      ammount = Number(amountText);
+      if (isNaN(ammount) || ammount <= 0)
+        return await ctx.reply("Введи число больше 0");
+    }
 
     if (ctx.state.user.balance < ammount)
-      return await ctx.reply("У тебя нет столько мефа 😢");
+      return await ctx.reply("У тебя нет столько старок 😢");
 
     ctx.state.user.balance -= ammount;
     fam.mef += ammount;
     await fam.save();
-    await ctx.reply(`Ты успешно пополнил баланс семьи на ${ammount} мефа 🌿`);
+    await ctx.reply(
+      `Ты успешно пополнил баланс семьи на ${separateNumber(
+        ammount
+      )} старок ⭐️`
+    );
     return next();
   } catch (error) {
     console.log(error);
@@ -578,12 +609,21 @@ famModule.hears(/^семья пополнить меф.*$/i, async (ctx, next) =
 
 famModule.hears(/^семья пополнить монеты.*$/i, async (ctx, next) => {
   try {
-    const ammount = Number(ctx.message.text.split(" ")[3]);
+    const amountText = ctx.message.text.split(" ")[3];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
 
-    if (isNaN(ammount) || ammount <= 0)
-      return await ctx.reply("Введи число больше 0");
+    let ammount;
+    if (
+      amountText.toLowerCase() === "все" ||
+      amountText.toLowerCase() === "всё"
+    ) {
+      ammount = ctx.state.user.famMoney;
+    } else {
+      ammount = Number(amountText);
+      if (isNaN(ammount) || ammount <= 0)
+        return await ctx.reply("Введи число больше 0");
+    }
 
     if (ctx.state.user.famMoney < ammount)
       return await ctx.reply("У тебя нет столько семейных монет 😢");
@@ -592,7 +632,9 @@ famModule.hears(/^семья пополнить монеты.*$/i, async (ctx, n
     fam.balance += ammount;
     await fam.save();
     await ctx.reply(
-      `Ты успешно пополнил баланс семьи на ${ammount} семейных монет 🪙`
+      `Ты успешно пополнил баланс семьи на ${separateNumber(
+        ammount
+      )} семейных монет 🪙`
     );
     return next();
   } catch (error) {
@@ -623,7 +665,7 @@ famModule.hears(/^семья купить улучшение.*$/i, async (ctx, n
       return await ctx.reply("Введи id улучшения");
 
     if (ctx.state.user.balance < 1000000)
-      return await ctx.reply("У тебя нет столько мефа 😢");
+      return await ctx.reply("У тебя нет столько старок 😢");
 
     ctx.state.user.balance -= 1000000;
 
@@ -638,7 +680,7 @@ famModule.hears(/^семья купить улучшение.*$/i, async (ctx, n
         await ctx.reply(
           `Готово, теперь участники семьи получают +${
             fam.Baf.active * 250
-          } мефа к награде за актив 🎉`
+          } старок к награде за актив 🎉`
         );
         break;
 
@@ -676,7 +718,7 @@ famModule.hears(/^семья купить улучшение.*$/i, async (ctx, n
         await ctx.reply(
           `Готово, теперь участники семьи получают +${
             fam.Baf.farm * 100
-          } мефа к сбору фермы 🎉`
+          } старок к сбору фермы 🎉`
         );
         break;
 
@@ -690,7 +732,7 @@ famModule.hears(/^семья купить улучшение.*$/i, async (ctx, n
         await ctx.reply(
           `Готово, теперь участники семьи получают +${
             fam.Baf.capcha * 200
-          } мефа за ввод капчи 🎉`
+          } старок за ввод капчи 🎉`
         );
         break;
 
@@ -704,7 +746,7 @@ famModule.hears(/^семья купить улучшение.*$/i, async (ctx, n
         await ctx.reply(
           `Готово, теперь участники семьи получают +${
             fam.Baf.invite * 500
-          } мефа за добавление новых юзеров в чат 🎉`
+          } старок за добавление новых юзеров в чат 🎉`
         );
         break;
 
@@ -837,7 +879,6 @@ famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
     return;
   }
 
-  // проверяем, что отправитель не является ботом
   if (message.from.is_bot) {
     await ctx.reply("Зачем боту семейные монеты 🧐");
     return;
@@ -862,7 +903,9 @@ famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
     await sender.save();
     await receiver.save();
     await ctx.reply(
-      `Ты успешно передал(а) ${amount} семейных монет ${message.from.first_name}`
+      `Ты успешно передал(а) ${separateNumber(amount)} семейных монет ${
+        message.from.first_name
+      }`
     );
     return next();
   } catch (error) {

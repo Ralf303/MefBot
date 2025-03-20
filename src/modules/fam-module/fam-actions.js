@@ -12,7 +12,7 @@ famActions.action(/fam(\d+)/, async (ctx) => {
     const user = await getUser(userId);
 
     if (user.balance < 5000000) {
-      return await ctx.reply("Недостаточно мефа для создания семьи 😢");
+      return await ctx.reply("Недостаточно старок для создания семьи 😢");
     }
 
     user.balance -= 5000000;
@@ -42,7 +42,7 @@ famActions.action(/check(\d+)/, async (ctx) => {
     const user = await getUser(userId);
 
     if (user.balance < 10000000) {
-      return await ctx.reply("Недостаточно мефа для покупки галочки 😢");
+      return await ctx.reply("Недостаточно старок для покупки галочки 😢");
     }
 
     user.balance -= 10000000;

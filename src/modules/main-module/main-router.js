@@ -14,7 +14,7 @@ mainRouter.on(message("text"), async (ctx, next) => {
       await ctx.reply("✅ На месте");
     }
 
-    if (userMessage == "команды") {
+    if (userMessage == "команды" || userMessage == "📖 команды 📖") {
       await ctx.reply(ru_text.commands);
     }
 
@@ -25,7 +25,11 @@ mainRouter.on(message("text"), async (ctx, next) => {
       );
     }
 
-    if (userMessage === "топ меф" || userMessage === "форбс") {
+    if (
+      userMessage === "топ стар" ||
+      userMessage === "форбс" ||
+      userMessage == "⭐️ топ стар ⭐️"
+    ) {
       const top = await User.findAll({
         order: [["balance", "DESC"]],
         limit: 10,
@@ -36,10 +40,14 @@ mainRouter.on(message("text"), async (ctx, next) => {
             `${index + 1}. ${user.firstname} - ${separateNumber(user.balance)}`
         )
         .join("\n");
-      await ctx.reply(`🤑Богатейшие в мефботе🤑\n\n${message}`);
+      await ctx.reply(`⭐️ Богатейшие в старботе ⭐️\n\n${message}`);
     }
 
-    if (userMessage === "топ капча" || userMessage === "топ капчи") {
+    if (
+      userMessage === "топ капча" ||
+      userMessage === "топ капчи" ||
+      userMessage === "🧮 топ капча 🧮"
+    ) {
       const top = await User.findAll({
         order: [["captureCounter", "DESC"]],
         limit: 10,

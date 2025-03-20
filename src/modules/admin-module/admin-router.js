@@ -55,7 +55,7 @@ adminRouter.on(message("text"), async (ctx, next) => {
 
         if (word2 == "мани" && !isNaN(id)) {
           ctx.state.user.balance += id;
-          await ctx.reply(`Успешно выдано ${id} мефа`);
+          await ctx.reply(`Успешно выдано ${id} старок`);
         }
 
         if (word2 == "гемы" && !isNaN(id)) {

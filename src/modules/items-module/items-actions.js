@@ -43,13 +43,13 @@ itemsActions.action(/^sell/, async (ctx) => {
     await item.save();
 
     await ctx.reply(
-      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} мефа`
+      `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} старок`
     );
     await ctx.telegram.sendMessage(
       sender.chatId,
       `Ты успешно продал(а) ${item.itemName}[${item.id}] за ${separateNumber(
         price
-      )} мефа`,
+      )} старок`,
       { parse_mode: "HTML" }
     );
   } catch (error) {
@@ -69,37 +69,73 @@ itemsActions.action("cancel", async (ctx) => {
 itemsActions.action("next", async (ctx) => {
   try {
     await ctx.deleteMessage();
-    const button = Keyboard.inline([Key.callback("🔽Закрыть🔽", "dell")]);
+    let buttons = Keyboard.inline([Key.callback("🔽Закрыть🔽", "dell")]);
+
     const user = await getUser(
       ctx.from.id,
       ctx.from.first_name,
       ctx.from.username
     );
     const items = await user.getItems();
-    const itemNames = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>](${+item.lvl})`
-    );
-    let rows = [];
-    for (let i = 0; i < itemNames.length; i++) {
-      let row = itemNames[i];
-      rows.push(row);
-    }
-    if (rows.join("\n").length > 4000) {
-      rows = rows.slice(150);
-      button = Keyboard.inline([
+
+    const categories = {
+      head: "Голова",
+      face: "Лицо",
+      legs: "Ноги",
+      leg1: "Ноги",
+      leg2: "Ноги",
+      left: "Рука(L)",
+      right: "Рука(R)",
+      extra: "Прочее",
+      default: "Прочее",
+    };
+
+    const categorizedItems = {
+      Голова: [],
+      Лицо: [],
+      Ноги: [],
+      "Рука(L)": [],
+      "Рука(R)": [],
+      Прочее: [],
+    };
+
+    items.forEach((item) => {
+      const category = categories[item.bodyPart] || categories.default;
+      categorizedItems[category].push(
+        `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
+      );
+    });
+
+    const inventoryMessage = Object.entries(categorizedItems)
+      .map(([category, items]) => {
+        if (items.length > 0) {
+          return `• ${category}:\n${items.join("\n")}`;
+        }
+        return "";
+      })
+      .filter((section) => section)
+      .join("\n\n");
+
+    if (inventoryMessage.length > 4000) {
+      const nextPage = inventoryMessage.split("\n").slice(150).join("\n");
+      buttons = Keyboard.inline([
         [Key.callback("Дальше", "next")],
         [Key.callback("🔽Закрыть🔽", "dell")],
       ]);
+
+      await ctx.telegram.sendMessage(user.chatId, nextPage, {
+        parse_mode: "HTML",
+        reply_markup: buttons.reply_markup,
+      });
+    } else {
+      const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
+      await ctx.telegram.sendMessage(user.chatId, message, {
+        parse_mode: "HTML",
+        reply_markup: buttons.reply_markup,
+      });
     }
-    const message = `Твой инвентарь:\n${rows.join(
-      "\n"
-    )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
-    await ctx.telegram.sendMessage(user.chatId, message, {
-      parse_mode: "HTML",
-      reply_markup: button.reply_markup,
-    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 });
 

@@ -12,7 +12,6 @@ compose.action("timeapp", async (ctx) => {
   await ctx.deleteMessage();
   if (user.balance >= 10000 && user.timelvl < 4) {
     user.balance -= 10000;
-    await loseLog(user, `меф`, "покупка в магазине");
     user.timelvl += 1;
     await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь твой уровень времени " +
@@ -20,7 +19,7 @@ compose.action("timeapp", async (ctx) => {
     );
     user.save();
   } else if (user.balance < 10000) {
-    await ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно старок😢");
   } else {
     await ctx.reply("ТЫ уже прокачал(а) уровень времени на максимум");
   }
@@ -35,7 +34,6 @@ compose.action("mefapp", async (ctx) => {
   await ctx.deleteMessage();
   if (user.balance >= 20000 && user.meflvl < 4) {
     user.balance -= 20000;
-    await loseLog(user, `меф`, "покупка в магазине");
     user.meflvl += 1;
     await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь твой уровень сбора " +
@@ -43,7 +41,7 @@ compose.action("mefapp", async (ctx) => {
     );
     user.save();
   } else if (user.balance < 20000) {
-    await ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно старок😢");
   } else {
     await ctx.reply("ТЫ уже прокачал(а) уровень сбора на максимум");
   }
@@ -64,7 +62,6 @@ compose.action("slotapp", async (ctx) => {
 
   if (user.balance >= 5000) {
     user.balance -= 5000;
-    await loseLog(user, `меф`, "покупка в магазине");
     user.slots += 1;
     await ctx.reply(
       "Поздравляем с успешной покупкой!\nТеперь у тебя " +
@@ -73,7 +70,7 @@ compose.action("slotapp", async (ctx) => {
     );
     await user.save();
   } else {
-    await ctx.reply("Недостаточно мефа😢");
+    await ctx.reply("Недостаточно старок😢");
   }
 });
 module.exports = compose;

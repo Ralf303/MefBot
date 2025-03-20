@@ -111,7 +111,7 @@ class GemService {
         user.balance += mef;
         await user.save();
 
-        return `Ты успешно синтезировал(а) ${amount} гемов в ${mef} мефа🧪`;
+        return `Ты успешно синтезировал(а) ${amount} гемов в ${mef} старок🧪`;
       } else return "У тебя нет пупса науки🥲";
     } catch (error) {
       console.log(error);

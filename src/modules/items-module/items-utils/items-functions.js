@@ -23,7 +23,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     itemInfo.class !== "gem" &&
     itemInfo.class !== "fam"
   ) {
-    await ctx.reply("Недостаточно мефа 😢");
+    await ctx.reply("Недостаточно старок 😢");
     return;
   } else if (status && itemInfo.class !== "gem" && itemInfo.class !== "fam") {
     user.balance -= itemInfo.price;
@@ -154,30 +154,59 @@ const getInventory = async (user, ctx) => {
   try {
     let buttons = Keyboard.inline([Key.callback("🔽Закрыть🔽", "dell")]);
     const items = await user.getItems();
+
     if (items.length === 0) {
       await ctx.reply("Твой инвентарь пуст.");
       return;
     }
-    const itemNames = items.map(
-      (item) => `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
-    );
-    let rows = [];
-    for (let i = 0; i < itemNames.length; i++) {
-      let row = itemNames[i];
-      rows.push(row);
-    }
-    if (rows.join("\n").length > 4000) {
-      rows = rows.slice(0, 150);
+
+    const categories = {
+      head: "Голова",
+      face: "Лицо",
+      legs: "Ноги",
+      leg1: "Ноги",
+      leg2: "Ноги",
+      left: "Рука(L)",
+      right: "Рука(R)",
+      extra: "Прочее",
+      default: "Прочее",
+    };
+
+    const categorizedItems = {
+      Голова: [],
+      Лицо: [],
+      Ноги: [],
+      "Рука(L)": [],
+      "Рука(R)": [],
+      Прочее: [],
+    };
+
+    items.forEach((item) => {
+      const category = categories[item.bodyPart] || categories.default;
+      categorizedItems[category].push(
+        `${item.itemName}[<code>${item.id}</code>](+${item.lvl})`
+      );
+    });
+
+    const inventoryMessage = Object.entries(categorizedItems)
+      .map(([category, items]) => {
+        if (items.length > 0) {
+          return `• ${category}:\n${items.join("\n")}`;
+        }
+        return "";
+      })
+      .filter((section) => section)
+      .join("\n\n");
+
+    const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
+
+    if (message.length > 4000) {
+      const firstPage = inventoryMessage.slice(0, 150);
       buttons = Keyboard.inline([
         [Key.callback("Дальше", "next")],
         [Key.callback("🔽Закрыть🔽", "dell")],
       ]);
-    }
-    const message = `Твой инвентарь:\n${rows.join(
-      "\n"
-    )}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
 
-    if (items.length > 30) {
       await ctx.replyWithHTML(
         'Твой инвентарь уже открыт в <a href="https://t.me/PablMefBot">ЛС бота</a>',
         {
@@ -186,7 +215,7 @@ const getInventory = async (user, ctx) => {
         }
       );
 
-      await ctx.telegram.sendMessage(user.chatId, message, {
+      await ctx.telegram.sendMessage(user.chatId, firstPage, {
         parse_mode: "HTML",
         reply_markup: buttons.reply_markup,
       });
@@ -195,7 +224,6 @@ const getInventory = async (user, ctx) => {
     }
   } catch (e) {
     console.log(e);
-    await ctx.replyWithHTML(message);
     return;
   }
 };
@@ -203,7 +231,7 @@ const getInventory = async (user, ctx) => {
 const sellItem = async (user, id, price, replyMessage, ctx) => {
   try {
     if (price < 100) {
-      return `Минимальная цена продажи 100 мефа🌿`;
+      return `Минимальная цена продажи 100 мефа⭐️`;
     }
 
     const item = await Item.findOne({
@@ -239,7 +267,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
       receiver.chatId,
       `${user.firstname} хочет продать тебе ${item.itemName}[${item.id}](+${
         item.lvl
-      }) за ${separateNumber(price)} мефа`,
+      }) за ${separateNumber(price)} старок`,
       Keyboard.inline([
         [
           Key.callback(
@@ -254,7 +282,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
 
     return `Предложение о покупке ${item.itemName}[${
       item.id
-    }] за ${separateNumber(price)} мефа было отправлено `;
+    }] за ${separateNumber(price)} старок было отправлено `;
   } catch (error) {
     console.log(error);
     return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;

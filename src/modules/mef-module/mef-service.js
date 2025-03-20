@@ -17,7 +17,7 @@ const giveCoins = async (ctx) => {
   }
 
   if (message.from.is_bot) {
-    await ctx.reply("Зачем боту меф🧐");
+    await ctx.reply("Зачем боту старки🧐");
     return;
   }
 
@@ -26,7 +26,7 @@ const giveCoins = async (ctx) => {
     let receiver = await getUser(receiverChatId);
 
     if (sender.balance < amount) {
-      await ctx.reply("Недостаточно мефа🥲");
+      await ctx.reply("Недостаточно старок🥲");
       return;
     }
 
@@ -36,7 +36,7 @@ const giveCoins = async (ctx) => {
     }
 
     if (amount < 100) {
-      await ctx.reply("Минимальная сумма передачи 100 мефа");
+      await ctx.reply("Минимальная сумма передачи 100 старок");
       return;
     }
 
@@ -47,7 +47,7 @@ const giveCoins = async (ctx) => {
     await ctx.reply(
       `Ты успешно отсыпал(а) ${separateNumber(
         amount
-      )} мефа <a href="tg://user?id=${receiver.chatId}">${
+      )} старок <a href="tg://user?id=${receiver.chatId}">${
         receiver.firstname
       }</a>`,
       { parse_mode: "HTML" }

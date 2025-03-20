@@ -57,9 +57,9 @@ async function userFerma(user) {
       randmef -= percent;
       fam.mef += percent;
       await fam.save();
-      message = `Меф собран ${randmef}\n\nВ банк семьи начислено: ${percent}`;
+      message = `Стар собраны ${randmef}\n\nВ банк семьи начислено: ${percent}`;
     } else {
-      message = `Меф собран ${randmef}`;
+      message = `Стар собраны ${randmef}`;
     }
 
     // const randSnows = getRandomInt(1, 10);
@@ -82,7 +82,7 @@ async function userFerma(user) {
     }
 
     const formattedTime = formatTime(remainingTime);
-    return `❌ Собрать меф можно через ${formattedTime}`;
+    return `❌ Собрать стар можно через ${formattedTime}`;
   }
 }
 
