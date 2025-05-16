@@ -210,7 +210,8 @@ async function shopGenerator(id, ctx) {
       result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} гемов\n`;
     });
     result +=
-      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить охлаждение [кол-во]";
+      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
+    // 📖Купить охлаждение [кол-во]
     return await ctx.replyWithHTML(result);
   }
 

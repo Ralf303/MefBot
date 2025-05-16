@@ -271,11 +271,19 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
       );
       if (isInvaited)
         return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
-      await ctx.telegram.sendMessage(
-        userChatId,
-        `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-        { parse_mode: "HTML" }
-      );
+
+      await ctx.telegram
+        .sendMessage(
+          userChatId,
+          `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+          { parse_mode: "HTML" }
+        )
+        .catch(async () => {
+          return await ctx.reply(
+            `<a href="tg://openmessage?user_id=${ctx.message.reply_to_message.from.id}">${ctx.message.reply_to_message.from.first_name}</a> Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+            { parse_mode: "HTML" }
+          );
+        });
       await redisServise.setInvite(
         ctx.message.reply_to_message.from.id,
         fam.id
@@ -299,20 +307,25 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
       const isInvaited = await redisServise.get(`invite:${user.chatId}`);
       if (isInvaited)
         return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
-      await ctx.telegram.sendMessage(
-        user.chatId,
-        `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-        { parse_mode: "HTML" }
-      );
-      await redisServise.setInvite(user.chatId, fam.id);
+      await ctx.telegram
+        .sendMessage(
+          user.chatId,
+          `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+          { parse_mode: "HTML" }
+        )
+        .catch(async () => {
+          return await ctx.reply(
+            `<a href="tg://openmessage?user_id=${user.chatId}">${user.firstname}</a> Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+            { parse_mode: "HTML" }
+          );
+        });
+
+      await redisServise.setInvite(user.chatIdя, fam.id);
       await ctx.reply("Заявка успешно отправлена ✅");
     }
 
     return next();
   } catch (error) {
-    await ctx.reply(
-      "Я не смог отправить приглашение, так как юзер меня забанил ❌"
-    );
     console.log(error);
   }
 });

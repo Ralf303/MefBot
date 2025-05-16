@@ -1,5 +1,6 @@
 const { Composer } = require("telegraf");
 const { message } = require("telegraf/filters");
+const { Keyboard } = require("telegram-keyboard");
 
 const logsRouter = new Composer();
 
@@ -12,6 +13,12 @@ logsRouter.on(message("text"), async (ctx, next) => {
   const messageId = ctx.message.message_id;
 
   try {
+    if (userMessage === "войти в никуда") {
+      await ctx.deleteMessage();
+      const message = await ctx.reply(".", Keyboard.remove());
+      await ctx.telegram.deleteMessage(chatId, message.message_id);
+    }
+
     if (message) {
       if (word1 == "мут") {
         ctx.telegram.sendMessage(

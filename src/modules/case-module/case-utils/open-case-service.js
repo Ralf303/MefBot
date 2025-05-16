@@ -131,19 +131,19 @@ const open = async (user, ctx, box, luck) => {
       result += `ТОЧИЛЬНЫЙ КАМЕНЬ`;
     }
 
-    if (chance >= 2004 && chance <= 2006) {
-      const win = getRandomInt(1, 3);
-      user.freeze += win;
-      result += `${win} охлаждающих жидкостей ❄️`;
-    }
+    // if (chance >= 2004 && chance <= 2006) {
+    //   const win = getRandomInt(1, 3);
+    //   user.freeze += win;
+    //   result += `${win} охлаждающих жидкостей ❄️`;
+    // }
 
-    if (chance >= 2007 && chance <= 2010) {
-      const win = getRandomInt(1, 10);
-      user.oil += win;
-      result += `${win} смазок для видеокарты 🛢`;
-    }
+    // if (chance >= 2007 && chance <= 2010) {
+    //   const win = getRandomInt(1, 10);
+    //   user.oil += win;
+    //   result += `${win} смазок для видеокарты 🛢`;
+    // }
 
-    if (chance > 2004) {
+    if (chance >= 2004) {
       const win = getRandomInt(22, 52);
       user.balance += win;
       result += `${win} старок⭐️`;

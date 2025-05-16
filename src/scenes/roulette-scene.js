@@ -80,28 +80,28 @@ rouletteScene.action("Отмена", async (ctx) => {
 
 rouletteScene.on("callback_query", async (ctx) => {
   try {
-    await ctx.deleteMessage();
-    const { amount } = ctx.session;
-
-    const user = await getUser(
-      ctx.from.id,
-      ctx.from.first_name,
-      ctx.from.username
-    );
-
-    await checkAction(user.id, ctx);
-
-    if (user.balance < amount) {
-      await ctx.reply(
-        'У тебя кончились сстарки😢\nДля начала игры введи команду "рулетка"'
-      );
-      ctx.scene.leave();
-      return;
-    }
-
     const bet = ctx.callbackQuery.data;
 
     if (rightCalback.includes(bet)) {
+      await ctx.deleteMessage();
+      const { amount } = ctx.session;
+
+      const user = await getUser(
+        ctx.from.id,
+        ctx.from.first_name,
+        ctx.from.username
+      );
+
+      await checkAction(user.id, ctx);
+
+      if (user.balance < amount) {
+        await ctx.reply(
+          'У тебя кончились сстарки😢\nДля начала игры введи команду "рулетка"'
+        );
+        ctx.scene.leave();
+        return;
+      }
+
       const winNumber = Math.floor(Math.random() * 36 + 1);
       const winColor = getWinColor(winNumber);
       const winAmount = getWinAmount(amount, bet, winNumber);
@@ -151,6 +151,8 @@ rouletteScene.on("callback_query", async (ctx) => {
       await user.save();
     } else {
       ctx.scene.leave();
+      await ctx.answerCbQuery("Рулетка отменена.");
+      await ctx.deleteMessage();
     }
   } catch (error) {
     return;

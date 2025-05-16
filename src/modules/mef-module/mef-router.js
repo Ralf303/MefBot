@@ -67,9 +67,9 @@ mefRouter.on(message("text"), async (ctx, next) => {
           "\nБиткоины: " +
           separateNumber(ctx.state.user.coin) +
           "\nСемейные монеты: " +
-          separateNumber(ctx.state.user.famMoney) +
-          "\nГолда: " +
-          separateNumber(ctx.state.user.donate)
+          separateNumber(ctx.state.user.famMoney)
+        // "\nГолда: " +
+        // separateNumber(ctx.state.user.donate)
         //+ "\n❄️ Снежинки: " +
         // separateNumber(ctx.state.user.snows)
       );
