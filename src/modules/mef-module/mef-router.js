@@ -10,7 +10,7 @@ const {
   checkUserProfile,
   separateNumber,
 } = require("../../utils/helpers");
-const { giveCoins } = require("./mef-service.js");
+const { giveStars } = require("./mef-service.js");
 const ru_text = require("../../../ru_text.js");
 const { userFerma } = require("./ferma.js");
 
@@ -64,8 +64,8 @@ mefRouter.on(message("text"), async (ctx, next) => {
           separateNumber(ctx.state.user.balance) +
           "\nГемы: " +
           separateNumber(ctx.state.user.gems) +
-          "\nБиткоины: " +
-          separateNumber(ctx.state.user.coin) +
+          // "\nБиткоины: " +
+          // separateNumber(ctx.state.user.coin) +
           "\nСемейные монеты: " +
           separateNumber(ctx.state.user.famMoney)
         // "\nГолда: " +
@@ -76,7 +76,7 @@ mefRouter.on(message("text"), async (ctx, next) => {
     }
 
     if (word1 == "отсыпать") {
-      await giveCoins(ctx);
+      await giveStars(ctx);
     }
 
     if (userMessage == "ферма" || userMessage == "фарма") {
