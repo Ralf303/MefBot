@@ -29,7 +29,7 @@ itemsActions.action(/^sell/, async (ctx) => {
     }
 
     if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно мефа😥`);
+      return await ctx.reply(`У тебя недостаточно старок😥`);
     }
 
     receiver.balance -= Number(price);

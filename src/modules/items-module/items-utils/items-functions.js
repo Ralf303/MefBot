@@ -231,7 +231,7 @@ const getInventory = async (user, ctx) => {
 const sellItem = async (user, id, price, replyMessage, ctx) => {
   try {
     if (price < 100) {
-      return `Минимальная цена продажи 100 мефа⭐️`;
+      return `Минимальная цена продажи 100 старок⭐️`;
     }
 
     const item = await Item.findOne({
@@ -260,7 +260,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
     }
 
     if (receiver.balance < price) {
-      return `У юзера недостаточно мефа😥`;
+      return `У юзера недостаточно старок😥`;
     }
 
     await ctx.telegram.sendMessage(
