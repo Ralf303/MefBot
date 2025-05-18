@@ -1,5 +1,5 @@
 const { gamesLog } = require("../../logs-module/globalLogs.js");
-const { getRandomInt } = require("../../../utils/helpers.js");
+const { getRandomInt, separateNumber } = require("../../../utils/helpers.js");
 const ru_text = require("../../../../ru_text.js");
 const { getChat } = require("../../../db/functions.js");
 
