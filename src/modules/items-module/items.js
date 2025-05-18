@@ -197,12 +197,12 @@ const items = {
   },
 
   23: {
-    name: "Лысый пабло",
-    bodyPart: "head",
-    src: "img/nohair1.png",
-    price: 2000,
-    canBuy: true,
-    class: "low",
+    name: "Тралалело Тралала",
+    bodyPart: "leg2",
+    src: "img/tralalelo.png",
+    price: 2,
+    canBuy: false,
+    class: "impossible",
   },
 
   24: {
