@@ -88,7 +88,7 @@ async function checkUserProfile(user, ctx) {
       `Ник: ${user.firstname}
 Id: <code>${user.chatId}</code>
 Семья: ${fam ? `«${fam.name}»` : "Нет"}
-Меф: ${separateNumber(user.balance)}
+Стар: ${separateNumber(user.balance)}
 Гемы: ${separateNumber(user.gems)}
 Семейные монеты: ${user.famMoney}
 Капчей введено: ${user.captureCounter}
@@ -118,7 +118,7 @@ Id: <code>${user.chatId}</code>
         `Профиль ${player.firstname}
 Id: <code>${player.chatId}</code>
 Семья: ${fam ? `«${fam.name}»` : "Нет"}
-Меф: ${separateNumber(player.balance)}
+Стар: ${separateNumber(player.balance)}
 Гемы: ${separateNumber(player.gems)}
 Семейные монеты: ${player.famMoney}
 Капчей введено: ${player.captureCounter}
@@ -211,11 +211,9 @@ async function shopGenerator(id, ctx) {
       result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} гемов\n`;
     });
     result +=
-      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить охлаждение [кол-во]";
-    return await ctx.replyWithHTML(
-      result,
-      Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])
-    );
+      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
+    // 📖Купить охлаждение [кол-во]
+    return await ctx.replyWithHTML(result);
   }
 
   if (id === "6") {

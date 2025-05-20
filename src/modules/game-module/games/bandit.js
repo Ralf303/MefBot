@@ -25,7 +25,7 @@ async function bandit(word2, user, ctx) {
         await ctx.reply(
           `🤑ДЖЕКПОТ🤑\n${randomEmojis.join("|")}\n @${
             ctx.from.username
-          } выигрыш ${stake * 10}!`
+          } выигрыш ${separateNumber(stake * 10)}!`
         );
       } else if (
         randomEmojis[0] === randomEmojis[1] ||
@@ -34,9 +34,9 @@ async function bandit(word2, user, ctx) {
       ) {
         winAmount = stake * 3;
         await ctx.reply(
-          `${randomEmojis.join("|")}\n @${ctx.from.username} выигрыш ${
-            stake * 3
-          }!`
+          `${randomEmojis.join("|")}\n @${
+            ctx.from.username
+          } выигрыш ${separateNumber(stake * 3)}!`
         );
       } else {
         await ctx.reply(
@@ -47,7 +47,6 @@ async function bandit(word2, user, ctx) {
 
       user.balance += winAmount;
 
-      await gamesLog(user, "бандит", winAmount, previousBalance);
       await user.save();
     } else if (stake > user.balance) {
       await ctx.reply("Недостаточно старок😢");

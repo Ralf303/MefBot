@@ -1,5 +1,5 @@
 const { gamesLog } = require("../../logs-module/globalLogs.js");
-const { getRandomInt } = require("../../../utils/helpers.js");
+const { getRandomInt, separateNumber } = require("../../../utils/helpers.js");
 const ru_text = require("../../../../ru_text.js");
 const { getChat } = require("../../../db/functions.js");
 
@@ -30,11 +30,15 @@ async function dice(word3, word2, user, ctx) {
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
         await ctx.reply(
-          `🥳 Поздравляем! Кубик показал ${dice}\n Выигрыш ${stake * 5}`
+          `🥳 Поздравляем! Кубик показал ${dice}\n Выигрыш ${separateNumber(
+            stake * 5
+          )}`
         );
         winAmount = stake * 5;
       } else {
-        await ctx.reply(`😢 К сожалению, вы проиграли. Кубик показал ${dice}`);
+        await ctx.reply(
+          `😢 К сожалению, вы проиграли. Кубик показал ${separateNumber(dice)}`
+        );
       }
     } else if (userInput === "чет" || userInput === "нечет") {
       const isEven = dice % 2 === 0;
@@ -45,7 +49,7 @@ async function dice(word3, word2, user, ctx) {
         await ctx.reply(
           `🥳 Поздравляем! Кубик показал ${dice} (число ${
             isEven ? "чётное" : "нечётное"
-          })\n Выигрыш ${stake * 1.5}`
+          })\n Выигрыш ${separateNumber(stake * 1.5)}`
         );
         winAmount = stake * 1.5;
       } else {
@@ -59,7 +63,6 @@ async function dice(word3, word2, user, ctx) {
     }
 
     user.balance += winAmount;
-    await gamesLog(user, "кубик", winAmount, previousBalance);
     await user.save();
   } else if (stake > user.balance) {
     await ctx.reply("Не достаточно старок😢");

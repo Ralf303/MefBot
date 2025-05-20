@@ -10,11 +10,10 @@ stoneRouter.hears(/^карман/i, async (ctx, next) => {
     await ctx.reply(
       `Ключи: ${separateNumber(
         ctx.state.user.chests
-      )}\nТочильные камни: ${separateNumber(
-        ctx.state.user.stones
-      )}\nОхлажадающие жидкости: ${separateNumber(
-        ctx.state.user.freeze
-      )}\nСмазки для видеокарты: ${separateNumber(ctx.state.user.oil)} `
+      )}\nТочильные камни: ${separateNumber(ctx.state.user.stones)}`
+      // \nОхлажадающие жидкости: ${separateNumber(
+      //   ctx.state.user.freeze
+      // )}\nСмазки для видеокарты: ${separateNumber(ctx.state.user.oil)}
     );
 
     return next();

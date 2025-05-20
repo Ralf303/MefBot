@@ -46,6 +46,7 @@ mainRouter.on(message("text"), async (ctx, next) => {
     if (
       userMessage === "топ капча" ||
       userMessage === "топ капчи" ||
+      userMessage === "капча топ" ||
       userMessage === "🧮 топ капча 🧮"
     ) {
       const top = await User.findAll({

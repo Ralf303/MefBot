@@ -1,7 +1,7 @@
 const { getUser } = require("../../db/functions");
 const { separateNumber } = require("../../utils/helpers");
 
-const giveCoins = async (ctx) => {
+const giveStars = async (ctx) => {
   const chatId = ctx.from.id;
   const message = ctx.message.reply_to_message;
 
@@ -59,5 +59,5 @@ const giveCoins = async (ctx) => {
 };
 
 module.exports = {
-  giveCoins,
+  giveStars,
 };
