@@ -1,3 +1,4 @@
+const { Keyboard, Key } = require("telegram-keyboard");
 const { User } = require("../db/models");
 const { getFamilyByUserId } = require("../modules/fam-module/fam-service");
 const items = require("../modules/items-module/items");
@@ -211,7 +212,10 @@ async function shopGenerator(id, ctx) {
     });
     result +=
       "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить охлаждение [кол-во]";
-    return await ctx.replyWithHTML(result);
+    return await ctx.replyWithHTML(
+      result,
+      Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])
+    );
   }
 
   if (id === "6") {
@@ -225,12 +229,17 @@ async function shopGenerator(id, ctx) {
     });
     result +=
       "• Точильный камень Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]";
-    return await ctx.replyWithHTML(result);
+    return await ctx.replyWithHTML(
+      result,
+      Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])
+    );
   }
 
   await ctx.replyWithHTML(
-    result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id"
+    result + "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id",
+    Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])
   );
+
   return;
 }
 

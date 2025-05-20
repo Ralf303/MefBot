@@ -1,6 +1,5 @@
 const { Composer } = require("telegraf");
 const { getUser } = require("../db/functions");
-const { loseLog } = require("../modules/logs-module/globalLogs");
 const compose = new Composer();
 
 compose.action("timeapp", async (ctx) => {
