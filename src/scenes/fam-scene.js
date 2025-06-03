@@ -1,6 +1,6 @@
-const { Scenes } = require("telegraf");
-const { message } = require("telegraf/filters");
-const { createFamily } = require("../modules/fam-module/fam-service");
+import { Scenes } from "telegraf";
+import { message } from "telegraf/filters";
+import { createFamily } from "../modules/fam-module/fam-service.js";
 const famName = new Scenes.BaseScene("famName");
 
 famName.on(message("text"), async (ctx) => {
@@ -15,4 +15,4 @@ famName.on(message("text"), async (ctx) => {
   await ctx.scene.leave();
 });
 
-module.exports = { famName };
+export { famName };

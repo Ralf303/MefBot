@@ -1,7 +1,6 @@
-const { gamesLog } = require("../../logs-module/globalLogs.js");
-const { getRandomInt, separateNumber } = require("../../../utils/helpers.js");
-const ru_text = require("../../../../ru_text.js");
-const { getChat } = require("../../../db/functions.js");
+import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
+import ru_text from "../../../../ru_text.js";
+import { getChat } from "../../../db/functions.js";
 
 async function dice(word3, word2, user, ctx) {
   let chat;
@@ -73,4 +72,4 @@ async function dice(word3, word2, user, ctx) {
   }
 }
 
-module.exports = { dice };
+export { dice };

@@ -1,12 +1,12 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import ru_text from "../../../ru_text.js";
+import { getChat, getTopChats } from "../../db/functions.js";
+import { Keyboard, Key } from "telegram-keyboard";
+import { daysRemaining, separateNumber } from "../../utils/helpers.js";
+import moment from "moment";
 
 const vipChatRouter = new Composer();
-const ru_text = require("../../../ru_text");
-const { getChat, getTopChats } = require("../../db/functions");
-const { Keyboard, Key } = require("telegram-keyboard");
-const { daysRemaining, separateNumber } = require("../../utils/helpers");
-const moment = require("moment");
 
 vipChatRouter.on(message("text"), async (ctx, next) => {
   try {
@@ -142,4 +142,4 @@ ${chat.allowCase ? "✅" : "❌"} Кейсы`,
   }
 });
 
-module.exports = vipChatRouter;
+export default vipChatRouter;

@@ -67,4 +67,4 @@ const craftItems = {
   },
 };
 
-module.exports = craftItems;
+export default craftItems;

@@ -1,9 +1,9 @@
-const { syncUserCaseToDb } = require("../db/functions");
-const { User } = require("../db/models");
-const { adminList } = require("../modules/admin-module/admins");
-
-const CronJob = require("cron").CronJob;
-require("dotenv").config({
+import { syncUserCaseToDb } from "../db/functions.js";
+import { User } from "../db/models.js";
+import { adminList } from "../modules/admin-module/admins.js";
+import { CronJob } from "cron";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 
@@ -30,4 +30,4 @@ function cronService(bot) {
   );
 }
 
-module.exports = { cronService };
+export { cronService };

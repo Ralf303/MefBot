@@ -1,18 +1,18 @@
-require("dotenv").config({
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-const { Keyboard, Key } = require("telegram-keyboard");
-
-const {
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import { Keyboard, Key } from "telegram-keyboard";
+import {
   checkUserSub,
   checkUserProfile,
   separateNumber,
-} = require("../../utils/helpers");
-const { giveStars } = require("./mef-service.js");
-const ru_text = require("../../../ru_text.js");
-const { userFerma } = require("./ferma.js");
+} from "../../utils/helpers.js";
+import { giveStars } from "./mef-service.js";
+import ru_text from "../../../ru_text.js";
+import { userFerma } from "./ferma.js";
 
 const mefRouter = new Composer();
 
@@ -102,4 +102,4 @@ mefRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = mefRouter;
+export default mefRouter;

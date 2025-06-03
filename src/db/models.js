@@ -1,5 +1,5 @@
-const sequelize = require("./config.js");
-const { DataTypes } = require("sequelize");
+import sequelize from "./config.js";
+import { DataTypes } from "sequelize";
 
 const User = sequelize.define("user", {
   id: {
@@ -200,7 +200,7 @@ Active.belongsTo(Chat, { foreignKey: "chatId" });
 User.hasOne(Active, { foreignKey: "userId" });
 Chat.hasOne(Active, { foreignKey: "chatId" });
 
-module.exports = {
+export {
   User,
   Item,
   Logs,

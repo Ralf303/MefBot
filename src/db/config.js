@@ -1,8 +1,10 @@
-const { Sequelize } = require("sequelize");
-require("dotenv").config({
+import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-module.exports = new Sequelize(
+
+export default new Sequelize(
   process.env.DATABASE,
   process.env.USER_NAME,
   process.env.PASSWORD,

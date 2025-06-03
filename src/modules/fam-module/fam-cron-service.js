@@ -1,16 +1,17 @@
-const { getUser } = require("../../db/functions");
-const { getItemsLvl } = require("../items-module/items-utils/items-functions");
-const {
+import { getUser } from "../../db/functions.js";
+import { getItemsLvl } from "../items-module/items-utils/items-functions.js";
+import {
   getCheckFamily,
   getRang,
   getFamUsers,
   getTopFams,
   flushReputation,
-} = require("./fam-service");
-require("dotenv").config({
+} from "./fam-service.js";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-const CronJob = require("cron").CronJob;
+import { CronJob } from "cron";
 
 function famCron(bot) {
   new CronJob(
@@ -134,4 +135,4 @@ function famCron(bot) {
   );
 }
 
-module.exports = famCron;
+export default famCron;

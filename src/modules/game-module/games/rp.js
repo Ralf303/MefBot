@@ -21,4 +21,4 @@ async function createRP(rp, emoji, ctx, replyToMessage, comment) {
   }
 }
 
-module.exports = { createRP };
+export { createRP };

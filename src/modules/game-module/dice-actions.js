@@ -1,12 +1,12 @@
-const { Composer } = require("telegraf");
-const { Key, Keyboard } = require("telegram-keyboard");
-const {
+import { Composer } from "telegraf";
+import { Key, Keyboard } from "telegram-keyboard";
+import {
   dice_bandit,
   checkAndMultiplyStake,
   checkAndMultiplyByHalfStake,
-} = require("./games/dice-bandit.js");
-const { getUser } = require("../../db/functions");
-const { checkAction, saveAction } = require("../../utils/helpers");
+} from "./games/dice-bandit.js";
+import { getUser } from "../../db/functions.js";
+import { checkAction, saveAction } from "../../utils/helpers.js";
 
 const diceAction = new Composer();
 
@@ -95,4 +95,4 @@ diceAction.action("0.5х ставка", async (ctx) => {
   }
 });
 
-module.exports = diceAction;
+export default diceAction;

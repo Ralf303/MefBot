@@ -1,15 +1,9 @@
-const CronJob = require("cron").CronJob;
-require("dotenv").config({
-  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
-});
-const { getUser, getVipChats } = require("../../db/functions.js");
-const { sleep, getRandomInt } = require("../../utils/helpers.js");
-const { getFamilyByUserId } = require("../fam-module/fam-service.js");
-const {
-  checkItem,
-  createItem,
-} = require("../items-module/items-utils/item-tool-service.js");
-const activeService = require("./active-service.js");
+import { CronJob } from "cron";
+import { getUser, getVipChats } from "../../db/functions.js";
+import { sleep, getRandomInt } from "../../utils/helpers.js";
+import { getFamilyByUserId } from "../fam-module/fam-service.js";
+import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import activeService from "./active-service.js";
 
 function activePrize(bot) {
   new CronJob(
@@ -236,4 +230,4 @@ function activePrize(bot) {
   );
 }
 
-module.exports = { activePrize };
+export { activePrize };

@@ -56,4 +56,4 @@ function getBetRange(bet) {
   }
 }
 
-module.exports = { getWinAmount, getBetColor, getWinColor, getBetRange };
+export { getWinAmount, getBetColor, getWinColor, getBetRange };

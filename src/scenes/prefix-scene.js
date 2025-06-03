@@ -1,5 +1,5 @@
-const { Scenes } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Scenes } from "telegraf";
+import { message } from "telegraf/filters";
 const buyPrefix = new Scenes.BaseScene("buyPrefix");
 const changePrefix = new Scenes.BaseScene("changePrefix");
 
@@ -53,4 +53,4 @@ changePrefix.on(message("text"), async (ctx) => {
   }
 });
 
-module.exports = { buyPrefix, changePrefix };
+export { buyPrefix, changePrefix };

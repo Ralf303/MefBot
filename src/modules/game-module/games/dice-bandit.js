@@ -1,5 +1,5 @@
-const { gamesLog } = require("../../logs-module/globalLogs.js");
-const { sleep, separateNumber } = require("../../../utils/helpers.js");
+import { gamesLog } from "../../logs-module/globalLogs.js";
+import { sleep, separateNumber } from "../../../utils/helpers.js";
 
 async function dice_bandit(stake, user, ctx) {
   if (stake > user.balance) {
@@ -94,8 +94,4 @@ async function checkAndMultiplyByHalfStake(ctx, user) {
   }
 }
 
-module.exports = {
-  dice_bandit,
-  checkAndMultiplyStake,
-  checkAndMultiplyByHalfStake,
-};
+export { dice_bandit, checkAndMultiplyStake, checkAndMultiplyByHalfStake };

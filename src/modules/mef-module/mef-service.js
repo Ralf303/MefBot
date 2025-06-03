@@ -1,5 +1,5 @@
-const { getUser } = require("../../db/functions");
-const { separateNumber } = require("../../utils/helpers");
+import { getUser } from "../../db/functions.js";
+import { separateNumber } from "../../utils/helpers.js";
 
 const giveStars = async (ctx) => {
   const chatId = ctx.from.id;
@@ -58,6 +58,4 @@ const giveStars = async (ctx) => {
   }
 };
 
-module.exports = {
-  giveStars,
-};
+export { giveStars };

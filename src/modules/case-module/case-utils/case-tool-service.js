@@ -1,5 +1,5 @@
-const { Case } = require("../../../db/models");
-const cases = require("../cases");
+import { Case } from "../../../db/models.js";
+import cases from "../cases.js";
 
 const getUserCase = async (id) => {
   let cases = await Case.findOne({ where: { userId: id } });
@@ -19,4 +19,4 @@ const getCaseInfo = async (id, ctx) => {
   await ctx.reply(`❗️${needCase.name}❗️\n\n${info}`);
 };
 
-module.exports = { getUserCase, getCaseInfo };
+export { getUserCase, getCaseInfo };

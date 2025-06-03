@@ -1,16 +1,14 @@
-const pkg = require("xlsx");
-const fs = require("fs");
-const path = require("path");
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-const items = require("../items-module/items");
-const { buyItem } = require("../items-module/items-utils/items-functions");
-const { getUser } = require("../../db/functions");
-const { User, Roles, Logs, Home } = require("../../db/models");
-const { generatePassword } = require("../../utils/helpers");
-const { adminList, adminTriggers } = require("./admins");
-const addServise = require("../../services/add-servise");
-const { getUserCase } = require("../case-module/case-utils/case-tool-service");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import items from "../items-module/items.js";
+import { buyItem } from "../items-module/items-utils/items-functions.js";
+import { getUser } from "../../db/functions.js";
+import { User, Roles, Logs, Home } from "../../db/models.js";
+import { generatePassword } from "../../utils/helpers.js";
+import { adminList, adminTriggers } from "./admins.js";
+import addServise from "../../services/add-servise.js";
+import { getUserCase } from "../case-module/case-utils/case-tool-service.js";
+
 const adminRouter = new Composer();
 
 adminRouter.on(message("text"), async (ctx, next) => {
@@ -184,36 +182,4 @@ adminRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-// adminRouter.command("logs", async (ctx) => {
-//   await ctx.reply("минутку...");
-
-//   const allLogs = await Logs.findAll();
-//   const logs = allLogs.map((log) => {
-//     return {
-//       Дата: log.date,
-//       Действие: log.action,
-//       баланс_1_юзера: log.userOne,
-//       баланс_2_юзера: log.userTwo,
-//     };
-//   });
-
-//   const workbook = pkg.utils.book_new();
-//   const ws = pkg.utils.json_to_sheet(logs);
-//   pkg.utils.book_append_sheet(workbook, ws, "logs");
-//   const fileName = `logs_${Date.now()}.xlsx`;
-//   const filePath = path.join(process.cwd(), fileName);
-//   pkg.writeFile(workbook, filePath);
-//   const fileBuffer = fs.readFileSync(filePath);
-
-//   await ctx.replyWithDocument(
-//     {
-//       source: fileBuffer,
-//       filename: fileName,
-//     },
-//     { caption: "Готово :)" }
-//   );
-
-//   fs.unlinkSync(filePath);
-// });
-
-module.exports = adminRouter;
+export default adminRouter;

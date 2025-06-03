@@ -1,12 +1,12 @@
-const { Telegraf, session, Scenes } = require("telegraf");
-const express = require("express");
-const https = require("https");
-const http = require("http");
-const fs = require("fs");
-const rateLimit = require("telegraf-ratelimit");
-const cors = require("cors");
-
-require("dotenv").config({
+import { Telegraf, session, Scenes } from "telegraf";
+import express from "express";
+import https from "https";
+import http from "http";
+import fs from "fs";
+import rateLimit from "telegraf-ratelimit";
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 const token = process.env.BOT_TOKEN;
@@ -16,28 +16,25 @@ app.use(cors());
 app.use(express.json());
 const port = 88;
 
-const { connectToDb } = require("./src/db/functions.js");
-const gemsService = require("./src/modules/gems-module/gems-service.js");
-const diceScene = require("./src/scenes/dice-bandit-scene.js");
-const { buyPrefix, changePrefix } = require("./src/scenes/prefix-scene.js");
-const { rouletteScene } = require("./src/scenes/roulette-scene.js");
-const itemCronService = require("./src/modules/items-module/items-utils/item-cron-service.js");
-const captureGenerator = require("./src/modules/capcha-module/capcha-generator.js");
-const redisServise = require("./src/services/redis-servise.js");
-const {
-  activePrize,
-} = require("./src/modules/active-module/active-prize-service.js");
-const { vipCron } = require("./src/modules/vipChat-module/vipChat-cron.js");
-const {
-  mainCronService,
-} = require("./src/modules/main-module/main-cron-service.js");
-const usersItemRouter = require("./src/API/getUserPablo.js");
-const { cronService } = require("./src/services/cron-service.js");
-const keysService = require("./src/modules/keys-module/keys-service.js");
-const { famName } = require("./src/scenes/fam-scene.js");
-const famCron = require("./src/modules/fam-module/fam-cron-service.js");
-const homeCronService = require("./src/modules/home-module/home-cron-service.js");
-const homeApi = require("./src/API/homeApi.js");
+import { connectToDb } from "./src/db/functions.js";
+import gemsService from "./src/modules/gems-module/gems-service.js";
+import diceScene from "./src/scenes/dice-bandit-scene.js";
+import { buyPrefix, changePrefix } from "./src/scenes/prefix-scene.js";
+import { rouletteScene } from "./src/scenes/roulette-scene.js";
+import itemCronService from "./src/modules/items-module/items-utils/item-cron-service.js";
+import captureGenerator from "./src/modules/capcha-module/capcha-generator.js";
+import redisServise from "./src/services/redis-servise.js";
+import { activePrize } from "./src/modules/active-module/active-prize-service.js";
+import { vipCron } from "./src/modules/vipChat-module/vipChat-cron.js";
+import { mainCronService } from "./src/modules/main-module/main-cron-service.js";
+import usersItemRouter from "./src/API/getUserPablo.js";
+import { cronService } from "./src/services/cron-service.js";
+import keysService from "./src/modules/keys-module/keys-service.js";
+import { famName } from "./src/scenes/fam-scene.js";
+import famCron from "./src/modules/fam-module/fam-cron-service.js";
+import homeCronService from "./src/modules/home-module/home-cron-service.js";
+import homeApi from "./src/API/homeApi.js";
+import middleware from "./middlewares.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -63,7 +60,7 @@ const start = async () => {
       })
     );
 
-    bot.use(require("./middlewares.js"));
+    bot.use(middleware);
     mainCronService(bot);
     activePrize(bot);
     vipCron(bot);

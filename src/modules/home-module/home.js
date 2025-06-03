@@ -1,4 +1,4 @@
-const home = {
+export const home = {
   1: {
     name: "Домик в лесу",
     src: "img/home_anime.png",
@@ -48,8 +48,4 @@ const home = {
     y: 470,
     scale: 250,
   },
-};
-
-module.exports = {
-  home,
 };

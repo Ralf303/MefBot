@@ -1,9 +1,7 @@
-const { resiveLog } = require("../../modules/logs-module/globalLogs.js");
-const { formatTime, getRandomInt } = require("../../utils/helpers.js");
-const { getFamilyByUserId } = require("../fam-module/fam-service.js");
-const {
-  checkItem,
-} = require("../items-module/items-utils/item-tool-service.js");
+import { resiveLog } from "../../modules/logs-module/globalLogs.js";
+import { formatTime, getRandomInt } from "../../utils/helpers.js";
+import { getFamilyByUserId } from "../fam-module/fam-service.js";
+import { checkItem } from "../items-module/items-utils/item-tool-service.js";
 
 async function userFerma(user) {
   const now = Math.floor(Date.now() / 1000);
@@ -86,4 +84,4 @@ async function userFerma(user) {
   }
 }
 
-module.exports = { userFerma };
+export { userFerma };

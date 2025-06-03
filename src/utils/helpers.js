@@ -1,8 +1,8 @@
-const { Keyboard, Key } = require("telegram-keyboard");
-const { User } = require("../db/models");
-const { getFamilyByUserId } = require("../modules/fam-module/fam-service");
-const items = require("../modules/items-module/items");
-const redisServise = require("../services/redis-servise");
+import { Keyboard, Key } from "telegram-keyboard";
+import { User } from "../db/models.js";
+import { getFamilyByUserId } from "../modules/fam-module/fam-service.js";
+import items from "../modules/items-module/items.js";
+import redisServise from "../services/redis-servise.js";
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -290,18 +290,18 @@ function daysRemaining(days) {
   }
 }
 
-module.exports = {
+export {
   getRandomInt,
   generateCapcha,
-  sleep,
+  separateNumber,
+  calculateMiningAmount,
+  generatePassword,
   formatTime,
+  sleep,
   checkUserSub,
   checkUserProfile,
   shopGenerator,
-  generatePassword,
-  calculateMiningAmount,
   checkAction,
   saveAction,
-  separateNumber,
-  daysRemaining,
+  daysRemaining
 };

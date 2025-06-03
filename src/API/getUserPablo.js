@@ -1,11 +1,11 @@
-const { Router } = require("express");
-const {
+import { Router } from "express";
+import {
   blendImages,
-} = require("../modules/items-module/items-utils/blend-items-service");
-const { Item } = require("../db/models");
-const { getRandomInt } = require("../utils/helpers");
-const path = require("path");
-const { getUser } = require("../db/functions");
+} from "../modules/items-module/items-utils/blend-items-service.js";
+import { Item } from "../db/models.js";
+import { getRandomInt } from "../utils/helpers.js";
+import path from "path";
+import { getUser } from "../db/functions.js";
 
 const usersItemRouter = new Router();
 
@@ -44,4 +44,4 @@ usersItemRouter.get("/getPhoto", async (req, res) => {
   }
 });
 
-module.exports = usersItemRouter;
+export default usersItemRouter;

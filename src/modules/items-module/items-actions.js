@@ -1,8 +1,8 @@
-const { Composer } = require("telegraf");
-const { Item } = require("../../db/models");
-const { getUser } = require("../../db/functions");
-const { separateNumber } = require("../../utils/helpers");
-const { Keyboard, Key } = require("telegram-keyboard");
+import { Composer } from "telegraf";
+import { Item } from "../../db/models.js";
+import { getUser } from "../../db/functions.js";
+import { separateNumber } from "../../utils/helpers.js";
+import { Keyboard, Key } from "telegram-keyboard";
 
 const itemsActions = new Composer();
 
@@ -139,4 +139,4 @@ itemsActions.action("next", async (ctx) => {
   }
 });
 
-module.exports = itemsActions;
+export default itemsActions;

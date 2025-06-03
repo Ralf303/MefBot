@@ -1,5 +1,6 @@
-const { createClient } = require("redis");
-require("dotenv").config({
+import { createClient } from "redis";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 class RedisService {
@@ -48,4 +49,4 @@ class RedisService {
   }
 }
 
-module.exports = new RedisService();
+export default new RedisService();

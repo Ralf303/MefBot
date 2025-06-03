@@ -1,12 +1,12 @@
-const { Scenes } = require("telegraf");
-const { getUser } = require("../db/functions");
-const {
+import { Scenes } from "telegraf";
+import { getUser } from "../db/functions.js";
+import {
   getWinAmount,
   getWinColor,
-} = require("../modules/game-module/games/roulette");
-const { gamesLog } = require("../modules/logs-module/globalLogs");
-const rightCalback = require("../modules/game-module/game-utils/roulette-util");
-const { checkAction, saveAction, separateNumber } = require("../utils/helpers");
+} from "../modules/game-module/games/roulette.js";
+import { gamesLog } from "../modules/logs-module/globalLogs.js";
+import rightCalback from "../modules/game-module/game-utils/roulette-util.js";
+import { checkAction, saveAction, separateNumber } from "../utils/helpers.js";
 
 const rouletteScene = new Scenes.BaseScene("rouletteScene");
 
@@ -166,4 +166,4 @@ rouletteScene.on("callback_query", async (ctx) => {
   }
 });
 
-module.exports = { rouletteScene };
+export { rouletteScene };

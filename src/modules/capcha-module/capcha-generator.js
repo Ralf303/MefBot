@@ -1,8 +1,7 @@
-const CronJob = require("cron").CronJob;
-
-const { getVipChats } = require("../../db/functions");
-const redisServise = require("../../services/redis-servise");
-const { sleep, generateCapcha } = require("../../utils/helpers");
+import { CronJob } from "cron";
+import { getVipChats } from "../../db/functions.js";
+import redisServise from "../../services/redis-servise.js";
+import { sleep, generateCapcha } from "../../utils/helpers.js";
 
 async function captureGenerator(bot) {
   new CronJob(
@@ -25,4 +24,4 @@ async function captureGenerator(bot) {
     "Europe/Moscow"
   );
 }
-module.exports = captureGenerator;
+export default captureGenerator;

@@ -1,4 +1,4 @@
-const adminTriggers = [
+export const adminTriggers = [
   "список вещей",
   "выдать",
   "основатель",
@@ -10,7 +10,5 @@ const adminTriggers = [
   "дом задать",
 ];
 
-const adminList = [1157591765];
-const adminChannels = [-1002093711414, -1002015930296];
-
-module.exports = { adminList, adminTriggers, adminChannels };
+export const adminList = [1157591765];
+export const adminChannels = [-1002093711414, -1002015930296];

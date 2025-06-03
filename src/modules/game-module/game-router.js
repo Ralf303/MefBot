@@ -1,11 +1,11 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
 
-const { getUser } = require("../../db/functions.js");
-const rp = require("./game-utils/rp-util.js");
-const { dice } = require("./games/dice.js");
-const { bandit } = require("./games/bandit.js");
-const { createRP } = require("./games/rp.js");
+import { getUser } from "../../db/functions.js";
+import rp from "./game-utils/rp-util.js";
+import { dice } from "./games/dice.js";
+import { bandit } from "./games/bandit.js";
+import { createRP } from "./games/rp.js";
 
 const gameRouter = new Composer();
 
@@ -56,4 +56,4 @@ gameRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = gameRouter;
+export default gameRouter;

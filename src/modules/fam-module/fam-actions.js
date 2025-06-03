@@ -1,6 +1,6 @@
-const { Composer } = require("telegraf");
-const { getUser } = require("../../db/functions");
-const { getFamilyByUserId, deleteFam } = require("./fam-service");
+import { Composer } from "telegraf";
+import { getUser } from "../../db/functions.js";
+import { getFamilyByUserId, deleteFam } from "./fam-service.js";
 
 const famActions = new Composer();
 
@@ -66,4 +66,4 @@ famActions.action(/deleteFam/, async (ctx) => {
   await ctx.reply(`Семья успешно удалена 🗑`);
 });
 
-module.exports = famActions;
+export default famActions;

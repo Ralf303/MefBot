@@ -1,7 +1,7 @@
-const { Composer } = require("telegraf");
-const { separateNumber } = require("../../utils/helpers");
-const { upgradeItem } = require("./stone-service");
-const { getUser } = require("../../db/functions");
+import { Composer } from "telegraf";
+import { separateNumber } from "../../utils/helpers.js";
+import { upgradeItem } from "./stone-service.js";
+import { getUser } from "../../db/functions.js";
 
 const stoneRouter = new Composer();
 
@@ -112,4 +112,5 @@ stoneRouter.hears(/^купить камни.*$/i, async (ctx, next) => {
     console.log(error);
   }
 });
-module.exports = stoneRouter;
+
+export default stoneRouter;

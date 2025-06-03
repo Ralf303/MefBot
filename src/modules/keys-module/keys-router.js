@@ -1,7 +1,7 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-const { getUser } = require("../../db/functions.js");
-const keysService = require("./keys-service.js");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import { getUser } from "../../db/functions.js";
+import keysService from "./keys-service.js";
 
 const keysRouter = new Composer();
 
@@ -24,4 +24,4 @@ keysRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = keysRouter;
+export default keysRouter;

@@ -1,6 +1,6 @@
-const { Composer } = require("telegraf");
-const ru_text = require("../../../ru_text");
-const {
+import { Composer } from "telegraf";
+import ru_text from "../../../ru_text.js";
+import {
   getFamilyByUserId,
   getRang,
   addUserToFamily,
@@ -12,15 +12,15 @@ const {
   getBufsText,
   getTopFams,
   getFamilyMembers,
-} = require("./fam-service");
-const { Keyboard, Key } = require("telegram-keyboard");
-const {
+} from "./fam-service.js";
+import { Keyboard, Key } from "telegram-keyboard";
+import {
   checkUserById,
   checkUserByUsername,
   getUser,
-} = require("../../db/functions");
-const redisServise = require("../../services/redis-servise");
-const { separateNumber } = require("../../utils/helpers");
+} from "../../db/functions.js";
+import redisServise from "../../services/redis-servise.js";
+import { separateNumber } from "../../utils/helpers.js";
 
 const famModule = new Composer();
 
@@ -320,7 +320,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
           );
         });
 
-      await redisServise.setInvite(user.chatIdя, fam.id);
+      await redisServise.setInvite(user.chatId, fam.id);
       await ctx.reply("Заявка успешно отправлена ✅");
     }
 
@@ -927,4 +927,4 @@ famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
   }
 });
 
-module.exports = famModule;
+export default famModule;

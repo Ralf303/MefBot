@@ -1,14 +1,14 @@
-const fs = require("fs");
-const { Home, Item } = require("../../db/models");
-const { home } = require("./home");
-const {
+import fs from "fs";
+import { Home, Item } from "../../db/models.js";
+import { home } from "./home.js";
+import {
   blendImages,
   overlayImage,
-} = require("../items-module/items-utils/blend-items-service");
-const redisServise = require("../../services/redis-servise");
-const { getUser } = require("../../db/functions");
-const { Keyboard, Key } = require("telegram-keyboard");
-const { separateNumber, getRandomInt } = require("../../utils/helpers");
+} from "../items-module/items-utils/blend-items-service.js";
+import redisServise from "../../services/redis-servise.js";
+import { getUser } from "../../db/functions.js";
+import { Keyboard, Key } from "telegram-keyboard";
+import { separateNumber, getRandomInt } from "../../utils/helpers.js";
 
 const getHomeByUserId = async (userId) => {
   const home = await Home.findOne({ where: { userId } });
@@ -133,4 +133,5 @@ const sellHome = async (user, price, replyMessage, ctx) => {
     return `Что-то пошло не так, возможно ${replyMessage.first_name} заблокировал меня в лс`;
   }
 };
-module.exports = { getHomeByUserId, getHomeImg, sellHome, getHomeById };
+
+export { getHomeByUserId, getHomeImg, sellHome, getHomeById };

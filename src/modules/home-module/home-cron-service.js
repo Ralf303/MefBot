@@ -1,6 +1,6 @@
-const CronJob = require("cron").CronJob;
-const { Op } = require("sequelize");
-const { Home } = require("../../db/models");
+import { CronJob } from "cron";
+import { Op } from "sequelize";
+import { Home } from "../../db/models.js";
 
 async function homeCronService() {
   new CronJob(
@@ -40,4 +40,4 @@ async function homeCronService() {
   );
 }
 
-module.exports = homeCronService;
+export default homeCronService;

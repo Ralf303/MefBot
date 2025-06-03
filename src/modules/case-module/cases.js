@@ -67,4 +67,4 @@ const cases = {
   },
 };
 
-module.exports = cases;
+export default cases;

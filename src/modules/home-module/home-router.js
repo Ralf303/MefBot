@@ -1,6 +1,6 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-const { getHomeByUserId, sellHome } = require("./home-service");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import { getHomeByUserId, sellHome } from "./home-service.js";
 
 const homeRouter = new Composer();
 
@@ -76,4 +76,4 @@ homeRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = homeRouter;
+export default homeRouter;

@@ -1,7 +1,7 @@
-const Jimp = require("jimp");
-const { Item } = require("../../../db/models");
-const { getRandomInt, separateNumber } = require("../../../utils/helpers");
-const redisServise = require("../../../services/redis-servise");
+import Jimp from "jimp";
+import { Item } from "../../../db/models.js";
+import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
+import redisServise from "../../../services/redis-servise.js";
 
 async function blendImages(imagePaths, backgroundPath) {
   const bg = await Jimp.read(backgroundPath);
@@ -156,4 +156,4 @@ const tryItem = async (itemInfo, ctx, id) => {
   );
 };
 
-module.exports = { getWornItems, blendImages, tryItem, overlayImage };
+export { getWornItems, blendImages, tryItem, overlayImage };

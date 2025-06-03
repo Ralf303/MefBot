@@ -1,6 +1,6 @@
-const { Composer } = require("telegraf");
-const { getUser } = require("../../db/functions");
-const { deleteItem } = require("../items-module/items-utils/items-functions");
+import { Composer } from "telegraf";
+import { getUser } from "../../db/functions.js";
+import { deleteItem } from "../items-module/items-utils/items-functions.js";
 
 const caseActon = new Composer();
 
@@ -16,4 +16,4 @@ caseActon.action(/^Удалить вещь/, async (ctx) => {
   }
 });
 
-module.exports = caseActon;
+export default caseActon;

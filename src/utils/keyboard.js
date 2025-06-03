@@ -1,4 +1,4 @@
-const { Keyboard } = require("telegram-keyboard");
+import { Keyboard } from "telegram-keyboard";
 
 const mainButton = Keyboard.make([
   ["🏬 Магазин 🏬"],
@@ -7,4 +7,4 @@ const mainButton = Keyboard.make([
   ,
 ]).reply();
 
-module.exports = mainButton;
+export default mainButton;

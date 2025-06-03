@@ -1,6 +1,6 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-const { Keyboard } = require("telegram-keyboard");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import { Keyboard } from "telegram-keyboard";
 
 const logsRouter = new Composer();
 
@@ -125,4 +125,4 @@ logsRouter.on(message("text"), async (ctx, next) => {
     await ctx.reply("Какая то ошибка, " + e);
   }
 });
-module.exports = logsRouter;
+export default logsRouter;

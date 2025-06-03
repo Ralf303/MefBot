@@ -1,4 +1,4 @@
-const { Item } = require("../../../db/models");
+import { Item } from "../../../db/models.js";
 
 const wearItem = async (user, id, ctx) => {
   try {
@@ -299,4 +299,5 @@ const wearItem = async (user, id, ctx) => {
     await ctx.reply("Что-то пошло не так");
   }
 };
-module.exports = { wearItem };
+
+export { wearItem };

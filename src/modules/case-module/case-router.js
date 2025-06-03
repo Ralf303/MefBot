@@ -1,16 +1,17 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
 
-const cases = require("./cases");
-const { getUser, getChat, syncUserCaseToDb } = require("../../db/functions");
-const { getCaseInfo, getUserCase } = require("./case-utils/case-tool-service");
-const {
+import cases from "./cases.js";
+import { getUser, getChat, syncUserCaseToDb } from "../../db/functions.js";
+import { getCaseInfo, getUserCase } from "./case-utils/case-tool-service.js";
+import {
   buyCase,
   openCase,
   openDonateCase,
-} = require("./case-utils/open-case-service");
-const ru_text = require("../../../ru_text");
-const { giveCase, giveDonateCase } = require("./case-utils/give-case-service");
+} from "./case-utils/open-case-service.js";
+import ru_text from "../../../ru_text.js";
+import { giveCase, giveDonateCase } from "./case-utils/give-case-service.js";
+
 const caseRouter = new Composer();
 
 caseRouter.on(message("text"), async (ctx, next) => {
@@ -127,4 +128,4 @@ caseRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = caseRouter;
+export default caseRouter;

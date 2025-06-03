@@ -1,10 +1,14 @@
-const { Item, User } = require("../../../db/models.js");
-const items = require("../items.js");
-const { loseLog, resiveLog } = require("../../logs-module/globalLogs");
-const { getRandomInt, separateNumber } = require("../../../utils/helpers");
-const { checkItem } = require("./item-tool-service.js");
-const { getUser } = require("../../../db/functions.js");
-const { Keyboard, Key } = require("telegram-keyboard");
+import { Item, User } from "../../../db/models.js";
+import items from "../items.js";
+import { loseLog } from "../../logs-module/globalLogs.js";
+import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
+import { checkItem } from "./item-tool-service.js";
+import { getUser } from "../../../db/functions.js";
+import { Keyboard, Key } from "telegram-keyboard";
+import dotenv from "dotenv";
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 
 const buyItem = async (user, itemInfo, ctx, status) => {
   if (user.slots < user.fullSlots) {
@@ -305,11 +309,4 @@ const getItemsLvl = async (userId) => {
   return lvl;
 };
 
-module.exports = {
-  buyItem,
-  deleteItem,
-  getInventory,
-  removeItem,
-  sellItem,
-  getItemsLvl,
-};
+export { buyItem, deleteItem, removeItem, getInventory, sellItem, getItemsLvl };

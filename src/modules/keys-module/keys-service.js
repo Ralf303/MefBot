@@ -1,8 +1,7 @@
-const sequelize = require("sequelize");
-const CronJob = require("cron").CronJob;
-const { User } = require("../../db/models");
-
-const { getUser } = require("../../db/functions");
+import sequelize from "sequelize";
+import { CronJob } from "cron";
+import { User } from "../../db/models.js";
+import { getUser } from "../../db/functions.js";
 
 class KeyService {
   async giveKeys(ctx) {
@@ -74,4 +73,4 @@ class KeyService {
   }
 }
 
-module.exports = new KeyService();
+export default new KeyService();

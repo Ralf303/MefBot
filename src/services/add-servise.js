@@ -1,19 +1,15 @@
-require("dotenv").config({
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-const { User, Add } = require("../db/models");
-const { getRandomInt, checkUserSub, sleep } = require("../utils/helpers");
-const items = require("../modules/items-module/items");
-
-const ru_text = require("../../ru_text");
-const jwtService = require("./jwt-service");
-const { adminList } = require("../modules/admin-module/admins");
-const {
-  blendImages,
-} = require("../modules/items-module/items-utils/blend-items-service");
-const {
-  createItem,
-} = require("../modules/items-module/items-utils/item-tool-service");
+import { User, Add } from "../db/models.js";
+import { getRandomInt, checkUserSub, sleep } from "../utils/helpers.js";
+import items from "../modules/items-module/items.js";
+import ru_text from "../../ru_text.js";
+import jwtService from "./jwt-service.js";
+import { adminList } from "../modules/admin-module/admins.js";
+import { blendImages } from "../modules/items-module/items-utils/blend-items-service.js";
+import { createItem } from "../modules/items-module/items-utils/item-tool-service.js";
 
 class AddService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -138,4 +134,4 @@ class AddService {
   }
 }
 
-module.exports = new AddService();
+export default new AddService();

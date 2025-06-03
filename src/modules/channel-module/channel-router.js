@@ -1,8 +1,8 @@
-const { Composer } = require("telegraf");
-const { channelPost } = require("telegraf/filters");
-const bonusService = require("../../services/bonus-service");
-const { adminChannels } = require("../admin-module/admins");
-const addServise = require("../../services/add-servise");
+import { Composer } from "telegraf";
+import { channelPost } from "telegraf/filters";
+import bonusService from "../../services/bonus-service.js";
+import { adminChannels } from "../admin-module/admins.js";
+import addServise from "../../services/add-servise.js";
 
 const channelRouter = new Composer();
 
@@ -32,4 +32,4 @@ channelRouter.on(channelPost("text"), async (ctx, next) => {
   }
 });
 
-module.exports = channelRouter;
+export default channelRouter;

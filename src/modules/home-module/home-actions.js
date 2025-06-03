@@ -1,8 +1,8 @@
-const { Composer } = require("telegraf");
-const { getUser } = require("../../db/functions");
-const { separateNumber } = require("../../utils/helpers");
-const { Keyboard, Key } = require("telegram-keyboard");
-const { getHomeByUserId } = require("./home-service");
+import { Composer } from "telegraf";
+import { getUser } from "../../db/functions.js";
+import { separateNumber } from "../../utils/helpers.js";
+import { Keyboard, Key } from "telegram-keyboard";
+import { getHomeByUserId } from "./home-service.js";
 
 const homeActions = new Composer();
 
@@ -64,4 +64,4 @@ homeActions.action("cancel", async (ctx) => {
   }
 });
 
-module.exports = homeActions;
+export default homeActions;

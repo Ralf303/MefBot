@@ -1,4 +1,4 @@
-module.exports = new (class Jwt {
+class Jwt {
   generateToken(payload) {
     const binaryData = Buffer.from(JSON.stringify(payload), "utf-8").toString(
       "base64"
@@ -10,4 +10,6 @@ module.exports = new (class Jwt {
     const jsonData = Buffer.from(token, "base64").toString("utf-8");
     return JSON.parse(jsonData);
   }
-})();
+}
+
+export default new Jwt();

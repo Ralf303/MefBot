@@ -1,5 +1,5 @@
-const { getUser } = require("../../db/functions");
-const { Family, Bafs, FamMember, User } = require("../../db/models");
+import { getUser } from "../../db/functions.js";
+import { Family, Bafs, FamMember, User } from "../../db/models.js";
 
 const getFamilyByFamId = async (familyId) => {
   try {
@@ -240,7 +240,8 @@ const flushReputation = async () => {
     console.log(error);
   }
 };
-module.exports = {
+
+export {
   getFamilyByFamId,
   getFamilyByUserId,
   addUserToFamily,
@@ -248,13 +249,13 @@ module.exports = {
   createFamily,
   getRang,
   getCheckFamily,
+  getTopFams,
   getFamUsers,
   getMainUser,
   getDeputies,
   setRang,
   getBufsText,
-  getTopFams,
   getFamilyMembers,
   deleteFam,
-  flushReputation,
+  flushReputation
 };

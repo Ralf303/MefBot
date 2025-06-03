@@ -1,5 +1,5 @@
-const { Item } = require("../../../db/models");
-const items = require("../items");
+import { Item } from "../../../db/models.js";
+import items from "../items.js";
 
 const getItemInfo = async (id, ctx) => {
   const needItem = items[id];
@@ -61,9 +61,4 @@ const createItem = async (id) => {
   return item;
 };
 
-module.exports = {
-  getItemInfo,
-  checkId,
-  checkItem,
-  createItem,
-};
+export { getItemInfo, checkId, checkItem, createItem };

@@ -1,12 +1,12 @@
-const { Keyboard, Key } = require("telegram-keyboard");
-const { Composer } = require("telegraf");
-const { getUser } = require("../../db/functions.js");
-const { Item } = require("../../db/models.js");
-const bonusService = require("../../services/bonus-service.js");
-const { Sequelize } = require("../../db/config.js");
-const ru_text = require("../../../ru_text.js");
-const addServise = require("../../services/add-servise.js");
-const mainButton = require("../../utils/keyboard.js");
+import { Keyboard, Key } from "telegram-keyboard";
+import { Composer } from "telegraf";
+import { getUser } from "../../db/functions.js";
+import { Item } from "../../db/models.js";
+import bonusService from "../../services/bonus-service.js";
+import { Sequelize } from "sequelize";
+import ru_text from "../../../ru_text.js";
+import addServise from "../../services/add-servise.js";
+import mainButton from "../../utils/keyboard.js";
 
 const commandRouter = new Composer();
 
@@ -163,4 +163,4 @@ commandRouter.command("time", async (ctx) => {
   }
 });
 
-module.exports = commandRouter;
+export default commandRouter;

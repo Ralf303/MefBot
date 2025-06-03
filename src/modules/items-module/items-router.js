@@ -1,25 +1,26 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
 
-const { shopGenerator } = require("../../utils/helpers.js");
-const items = require("./items.js");
-const {
+import { shopGenerator } from "../../utils/helpers.js";
+import items from "./items.js";
+import {
   getInventory,
   deleteItem,
   removeItem,
   buyItem,
   sellItem,
-} = require(".//items-utils/items-functions.js");
-const ru_text = require("../../../ru_text.js");
-const { wearItem } = require("./items-utils/wear-item-service.js");
-const {
+} from "./items-utils/items-functions.js";
+import ru_text from "../../../ru_text.js";
+import { wearItem } from "./items-utils/wear-item-service.js";
+import {
   tryItem,
   getWornItems,
-} = require("./items-utils/blend-items-service.js");
-const { getItemInfo, checkId } = require("./items-utils/item-tool-service.js");
-const { giveItem } = require("./items-utils/give-item-service.js");
-const { home } = require("../home-module/home.js");
-const { getHomeByUserId } = require("../home-module/home-service.js");
+} from "./items-utils/blend-items-service.js";
+import { getItemInfo, checkId } from "./items-utils/item-tool-service.js";
+import { giveItem } from "./items-utils/give-item-service.js";
+import { home } from "../home-module/home.js";
+import { getHomeByUserId } from "../home-module/home-service.js";
+
 const itemsRouter = new Composer();
 
 itemsRouter.on(message("text"), async (ctx, next) => {
@@ -163,4 +164,4 @@ itemsRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = itemsRouter;
+export default itemsRouter;

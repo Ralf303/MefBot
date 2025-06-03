@@ -14,4 +14,4 @@ function logMessage(message, color) {
   console.log(colors[color], message, colors.reset);
 }
 
-module.exports = logMessage;
+export default logMessage;

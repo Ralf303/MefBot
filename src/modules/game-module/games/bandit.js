@@ -1,6 +1,6 @@
-const ru_text = require("../../../../ru_text");
-const { getChat } = require("../../../db/functions");
-const { gamesLog } = require("../../logs-module/globalLogs");
+import { getChat } from "../../../db/functions.js";
+import { separateNumber } from "../../../utils/helpers.js";
+import ru_text from "../../../../ru_text.js";
 
 async function bandit(word2, user, ctx) {
   const fruits = ["🍇", "🍊", "🍐", "🍋", "🍒", "🍓", "🍑", "🍉", "🍌", "🍍"];
@@ -13,7 +13,6 @@ async function bandit(word2, user, ctx) {
   try {
     let stake = Number(word2);
     let winAmount = 0;
-    const previousBalance = user.balance;
 
     if (stake > 499 && user.balance >= stake && stake && needChat) {
       user.balance -= stake;
@@ -60,4 +59,4 @@ async function bandit(word2, user, ctx) {
   }
 }
 
-module.exports = { bandit };
+export { bandit };

@@ -1,5 +1,5 @@
-const moment = require("moment");
-const { Logs } = require("../../db/models");
+import moment from "moment";
+import { Logs } from "../../db/models.js";
 
 async function giveResoursesLog(user, resiver, item, count) {
   moment.locale("ru");
@@ -58,4 +58,4 @@ async function resiveLog(user, item, count, reason) {
   await newLog.save();
 }
 
-module.exports = { giveResoursesLog, gamesLog, loseLog, resiveLog };
+export { giveResoursesLog, gamesLog, loseLog, resiveLog };

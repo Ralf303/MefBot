@@ -1,8 +1,8 @@
-const { Keyboard, Key } = require("telegram-keyboard");
-const { Composer } = require("telegraf");
-const { getUser } = require("../db/functions.js");
-const { shopGenerator } = require("../utils/helpers.js");
-const ru_text = require("../../ru_text.js");
+import { Keyboard, Key } from "telegram-keyboard";
+import { Composer } from "telegraf";
+import { getUser } from "../db/functions.js";
+import { shopGenerator } from "../utils/helpers.js";
+import text from "../../ru_text.js";
 
 const shopActions = new Composer();
 
@@ -44,7 +44,7 @@ shopActions.action("farmApp", async (ctx) => {
 shopActions.action("Улучшить сбор", async (ctx) => {
   try {
     await ctx.reply(
-      ru_text.mef_upgrade,
+      text.mef_upgrade,
       Keyboard.inline([
         [Key.callback("Купить улучшение", "mefapp")],
         [Key.callback("🔙Назад", "farmApp")],
@@ -60,7 +60,7 @@ shopActions.action("Улучшить время", async (ctx) => {
   try {
     await ctx.deleteMessage();
     await ctx.reply(
-      ru_text.time_upgrade,
+      text.time_upgrade,
       Keyboard.inline([
         [Key.callback("Купить улучшение", "timeapp")],
         [Key.callback("🔙Назад", "farmApp")],
@@ -75,7 +75,7 @@ shopActions.action("Инвентарь", async (ctx) => {
   try {
     await ctx.deleteMessage();
     await ctx.reply(
-      ru_text.inventory_upgrade,
+      text.inventory_upgrade,
       Keyboard.inline([
         [Key.callback("Купить слот", "slotapp")],
         [Key.callback("🔙Назад", "Улучшения")],
@@ -158,4 +158,4 @@ shopActions.action("Видеокарты", async (ctx) => {
   }
 });
 
-module.exports = shopActions;
+export default shopActions;

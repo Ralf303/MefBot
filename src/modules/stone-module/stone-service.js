@@ -1,5 +1,5 @@
-const { Item } = require("../../db/models");
-const { getRandomInt } = require("../../utils/helpers");
+import { Item } from "../../db/models.js";
+import { getRandomInt } from "../../utils/helpers.js";
 
 const upgradeItem = async (user, itemId) => {
   try {
@@ -53,6 +53,4 @@ const upgradeItem = async (user, itemId) => {
   }
 };
 
-module.exports = {
-  upgradeItem,
-};
+export { upgradeItem };

@@ -1,21 +1,13 @@
-const Sequelize = require("sequelize");
-const { Op } = Sequelize;
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-require("dotenv").config({
-  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
-});
-const { getUser, getChat } = require("../../db/functions.js");
-const { User, Active, Chat } = require("../../db/models.js");
-const { getRandomInt, sleep } = require("../../utils/helpers.js");
-
-const {
-  checkItem,
-  createItem,
-} = require("../items-module/items-utils/item-tool-service.js");
-const activeService = require("./active-service.js");
-const ru_text = require("../../../ru_text.js");
-const { getFamilyByUserId } = require("../fam-module/fam-service.js");
+import Sequelize, { Op } from "sequelize";
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import { getUser, getChat } from "../../db/functions.js";
+import { User, Active, Chat } from "../../db/models.js";
+import { getRandomInt, sleep } from "../../utils/helpers.js";
+import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import activeService from "./active-service.js";
+import ru_text from "../../../ru_text.js";
+import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
 const activeRouter = new Composer();
 
@@ -244,4 +236,4 @@ activeRouter.on("message", async (ctx, next) => {
   }
 });
 
-module.exports = activeRouter;
+export default activeRouter;

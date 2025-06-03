@@ -1,5 +1,33 @@
-const { Composer } = require("telegraf");
-const { getUser } = require("./src/db/functions.js");
+import { Composer } from "telegraf";
+import { getUser } from "./src/db/functions.js";
+import itemsActions from "./src/modules/items-module/items-actions.js";
+import mineRouter from "./src/modules/mine-module/mine-router.js";
+import homeRouter from "./src/modules/home-module/home-router.js";
+import homeActions from "./src/modules/home-module/home-actions.js";
+import famActions from "./src/modules/fam-module/fam-actions.js";
+import caseAction from "./src/modules/case-module/case-action.js";
+import actionOnBuy from "./src/actions/actionOnBuy.js";
+import shopActions from "./src/actions/shopActions.js";
+import diceActions from "./src/modules/game-module/dice-actions.js";
+import vipChatActions from "./src/modules/vipChat-module/vipChat-actions.js";
+import famRouter from "./src/modules/fam-module/fam-router.js";
+import stoneRouter from "./src/modules/stone-module/stone-router.js";
+import commandsRouter from "./src/modules/commands-module/commands-router.js";
+import vipChatRouter from "./src/modules/vipChat-module/vipChat-router.js";
+import mainRouter from "./src/modules/main-module/main-router.js";
+import activeRouter from "./src/modules/active-module/active-router.js";
+import caseRouter from "./src/modules/case-module/case-router.js";
+import craftRouter from "./src/modules/craft-module/craft-router.js";
+import mefRouter from "./src/modules/mef-module/mef-router.js";
+import gemsRouter from "./src/modules/gems-module/gems-router.js";
+import keysRouter from "./src/modules/keys-module/keys-router.js";
+import itemsRouter from "./src/modules/items-module/items-router.js";
+import adminRouter from "./src/modules/admin-module/admin-router.js";
+import logsRouter from "./src/modules/logs-module/logs-router.js";
+import channelRouter from "./src/modules/channel-module/channel-router.js";
+import gameRouter from "./src/modules/game-module/game-router.js";
+import capchaRouter from "./src/modules/capcha-module/capcha-router.js";
+// import eventRouter from "./src/modules/event-module/event-router.js";
 
 const middleware = new Composer();
 
@@ -16,34 +44,34 @@ middleware.use(async (ctx, next) => {
     console.log(error);
   }
 });
-middleware.use(require("./src/modules/items-module/items-actions.js"));
-middleware.use(require("./src/modules/mine-module/mine-router.js"));
-middleware.use(require("./src/modules/home-module/home-router.js"));
-middleware.use(require("./src/modules/home-module/home-actions.js"));
-middleware.use(require("./src/modules/fam-module/fam-actions.js"));
-middleware.use(require("./src/modules/case-module/case-action.js"));
-middleware.use(require("./src/actions/actionOnBuy.js"));
-middleware.use(require("./src/actions/shopActions.js"));
-middleware.use(require("./src/modules/game-module/dice-actions.js"));
-middleware.use(require("./src/modules/vipChat-module/vipChat-actions.js"));
-middleware.use(require("./src/modules/fam-module/fam-router.js"));
-middleware.use(require("./src/modules/stone-module/stone-router.js"));
-middleware.use(require("./src/modules/commands-module/commands-router.js"));
-middleware.use(require("./src/modules/vipChat-module/vipChat-router.js"));
-middleware.use(require("./src/modules/main-module/main-router.js"));
-middleware.use(require("./src/modules/active-module/active-router.js"));
-middleware.use(require("./src/modules/case-module/case-router.js"));
-middleware.use(require("./src/modules/craft-module/craft-router.js"));
-middleware.use(require("./src/modules/mef-module/mef-router.js"));
-middleware.use(require("./src/modules/gems-module/gems-router.js"));
-middleware.use(require("./src/modules/keys-module/keys-router.js"));
-middleware.use(require("./src/modules/items-module/items-router.js"));
-middleware.use(require("./src/modules/admin-module/admin-router.js"));
-middleware.use(require("./src/modules/logs-module/logs-router.js"));
-middleware.use(require("./src/modules/channel-module/channel-router.js"));
-middleware.use(require("./src/modules/game-module/game-router.js"));
-middleware.use(require("./src/modules/capcha-module/capcha-router.js"));
-// middleware.use(require("./src/modules/event-module/event-router.js"));
+middleware.use(itemsActions);
+middleware.use(mineRouter);
+middleware.use(homeRouter);
+middleware.use(homeActions);
+middleware.use(famActions);
+middleware.use(caseAction);
+middleware.use(actionOnBuy);
+middleware.use(shopActions);
+middleware.use(diceActions);
+middleware.use(vipChatActions);
+middleware.use(famRouter);
+middleware.use(stoneRouter);
+middleware.use(commandsRouter);
+middleware.use(vipChatRouter);
+middleware.use(mainRouter);
+middleware.use(activeRouter);
+middleware.use(caseRouter);
+middleware.use(craftRouter);
+middleware.use(mefRouter);
+middleware.use(gemsRouter);
+middleware.use(keysRouter);
+middleware.use(itemsRouter);
+middleware.use(adminRouter);
+middleware.use(logsRouter);
+middleware.use(channelRouter);
+middleware.use(gameRouter);
+middleware.use(capchaRouter);
+// middleware.use(eventRouter);
 
 middleware.use(async (ctx) => {
   try {
@@ -54,4 +82,4 @@ middleware.use(async (ctx) => {
   }
 });
 
-module.exports = middleware;
+export default middleware;

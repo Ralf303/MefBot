@@ -1,17 +1,17 @@
-const { syncUserCaseToDb } = require("../../../db/functions");
-const { Item, User } = require("../../../db/models");
-const {
+import { syncUserCaseToDb } from "../../../db/functions.js";
+import { Item, User } from "../../../db/models.js";
+import {
   getRandomInt,
   calculateMiningAmount,
   sleep,
-} = require("../../../utils/helpers");
-const {
+} from "../../../utils/helpers.js";
+import {
   getUserCase,
-} = require("../../case-module/case-utils/case-tool-service");
-const cases = require("../../case-module/cases");
-const { userFerma } = require("../../mef-module/ferma");
-const { createItem, checkItem } = require("./item-tool-service");
-const CronJob = require("cron").CronJob;
+} from "../../case-module/case-utils/case-tool-service.js";
+import cases from "../../case-module/cases.js";
+import { userFerma } from "../../mef-module/ferma.js";
+import { createItem, checkItem } from "./item-tool-service.js";
+import { CronJob } from "cron";
 
 class ItemService {
   async changeLook(bot) {
@@ -454,4 +454,4 @@ class ItemService {
   }
 }
 
-module.exports = new ItemService();
+export default new ItemService();

@@ -1,10 +1,8 @@
-const { Op } = require("sequelize");
-const {
-  getUserCase,
-} = require("../modules/case-module/case-utils/case-tool-service.js");
-const redisServise = require("../services/redis-servise.js");
-const sequelize = require("./config.js");
-const { User, Case, Chat, Family, Bafs } = require("./models");
+import { Op } from "sequelize";
+import { getUserCase } from "../modules/case-module/case-utils/case-tool-service.js";
+import redisServise from "../services/redis-servise.js";
+import sequelize from "./config.js";
+import { User, Case, Chat, Family, Bafs } from "./models.js";
 
 const getUser = async (chatId, firstName, username) => {
   try {
@@ -145,7 +143,7 @@ const getTopChats = async () => {
   }
 };
 
-module.exports = {
+export {
   connectToDb,
   getUser,
   getChat,

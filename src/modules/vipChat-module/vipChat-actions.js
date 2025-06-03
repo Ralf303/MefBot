@@ -1,5 +1,5 @@
-const { Composer } = require("telegraf");
-const { getChat, getUser } = require("../../db/functions");
+import { Composer } from "telegraf";
+import { getChat, getUser } from "../../db/functions.js";
 
 const vipChatActions = new Composer();
 
@@ -30,4 +30,4 @@ vipChatActions.action(/vipChat(\d+)/, async (ctx) => {
   }
 });
 
-module.exports = vipChatActions;
+export default vipChatActions;

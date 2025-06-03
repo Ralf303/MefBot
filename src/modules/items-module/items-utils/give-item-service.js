@@ -1,6 +1,5 @@
-const { User, Item } = require("../../../db/models.js");
-
-const { loseLog, giveResoursesLog } = require("../../logs-module/globalLogs");
+import { User, Item } from "../../../db/models.js";
+import { loseLog, giveResoursesLog } from "../../logs-module/globalLogs.js";
 
 const giveItem = async (sender, id, ctx) => {
   try {
@@ -74,4 +73,4 @@ const giveItem = async (sender, id, ctx) => {
   }
 };
 
-module.exports = { giveItem };
+export { giveItem };

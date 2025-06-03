@@ -1,9 +1,9 @@
-const { Item } = require("../../db/models");
-const items = require("../items-module/items");
-const craftItems = require("./crafts");
-const { resiveLog } = require("../logs-module/globalLogs");
-const { checkItem } = require("../items-module/items-utils/item-tool-service");
-const { getFamilyByUserId } = require("../fam-module/fam-service");
+import { Item } from "../../db/models.js";
+import items from "../items-module/items.js";
+import craftItems from "./crafts.js";
+import { resiveLog } from "../logs-module/globalLogs.js";
+import { checkItem } from "../items-module/items-utils/item-tool-service.js";
+import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
 class CrafService {
   async #countItemsByItemName(user, itemName) {
@@ -133,4 +133,4 @@ class CrafService {
   }
 }
 
-module.exports = new CrafService();
+export default new CrafService();

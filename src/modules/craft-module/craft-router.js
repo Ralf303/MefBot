@@ -1,8 +1,8 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
 
-const { getUser } = require("../../db/functions.js");
-const craftService = require("./craft-service.js");
+import { getUser } from "../../db/functions.js";
+import craftService from "./craft-service.js";
 
 const craftRouter = new Composer();
 
@@ -27,4 +27,4 @@ craftRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = craftRouter;
+export default craftRouter;

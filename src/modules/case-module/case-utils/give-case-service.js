@@ -1,8 +1,8 @@
-const { User } = require("../../../db/models");
-const cases = require("../cases");
-const { giveResoursesLog, loseLog } = require("../../logs-module/globalLogs");
-const { getUserCase } = require("./case-tool-service");
-const { syncUserCaseToDb, getUser } = require("../../../db/functions");
+import { User } from "../../../db/models.js";
+import cases from "../cases.js";
+import { giveResoursesLog, loseLog } from "../../logs-module/globalLogs.js";
+import { getUserCase } from "./case-tool-service.js";
+import { syncUserCaseToDb, getUser } from "../../../db/functions.js";
 
 const giveCase = async (sender, id, count, ctx) => {
   try {
@@ -109,7 +109,4 @@ const giveDonateCase = async (sender, id, count, ctx) => {
   }
 };
 
-module.exports = {
-  giveCase,
-  giveDonateCase,
-};
+export { giveCase, giveDonateCase };

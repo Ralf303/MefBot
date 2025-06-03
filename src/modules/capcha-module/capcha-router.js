@@ -1,21 +1,12 @@
-const { Composer } = require("telegraf");
-require("dotenv").config({
-  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
-});
-
-const { getRandomInt } = require("../../utils/helpers.js");
-const { getUser } = require("../../db/functions.js");
-const { resiveLog } = require("../logs-module/globalLogs.js");
-const {
-  checkItem,
-  createItem,
-} = require("../items-module/items-utils/item-tool-service.js");
-const redisServise = require("../../services/redis-servise.js");
-const { getFamilyByUserId } = require("../fam-module/fam-service.js");
+import { Composer } from "telegraf";
+import { getRandomInt } from "../../utils/helpers.js";
+import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import redisServise from "../../services/redis-servise.js";
+import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
 const capchaRouter = new Composer();
 
-capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
+capchaRouter.hears(/^\d{6}$/, async (ctx, next) => {
   try {
     const capcha = ctx.match[1];
     const isCapchaInRedis = await redisServise.get(capcha);
@@ -67,4 +58,4 @@ capchaRouter.hears(/^(\d{6})$/, async (ctx, next) => {
   }
 });
 
-module.exports = capchaRouter;
+export default capchaRouter;

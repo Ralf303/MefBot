@@ -1,8 +1,8 @@
-const { getVipChats } = require("../../db/functions");
-const { sleep } = require("../../utils/helpers");
-
-const CronJob = require("cron").CronJob;
-require("dotenv").config({
+import { getVipChats } from "../../db/functions.js";
+import { sleep } from "../../utils/helpers.js";
+import { CronJob } from "cron";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 
@@ -55,4 +55,4 @@ function mainCronService(bot) {
   );
 }
 
-module.exports = { mainCronService };
+export { mainCronService };

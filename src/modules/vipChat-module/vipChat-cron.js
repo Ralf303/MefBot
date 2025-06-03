@@ -1,11 +1,11 @@
-const CronJob = require("cron").CronJob;
-require("dotenv").config({
+import { CronJob } from "cron";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-
-const { getVipChats, updateChatTime } = require("../../db/functions.js");
-const { Chat } = require("../../db/models.js");
-const { sleep } = require("../../utils/helpers.js");
+import { getVipChats, updateChatTime } from "../../db/functions.js";
+import { Chat } from "../../db/models.js";
+import { sleep } from "../../utils/helpers.js";
 
 function vipCron(bot) {
   new CronJob(
@@ -49,4 +49,4 @@ function vipCron(bot) {
   );
 }
 
-module.exports = { vipCron };
+export { vipCron };

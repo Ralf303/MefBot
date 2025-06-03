@@ -1,17 +1,20 @@
-const { Case } = require("../../../db/models");
-const cases = require("../cases");
-const items = require("../../items-module/items");
-const { resiveLog, loseLog } = require("../../logs-module/globalLogs");
-const { getRandomInt } = require("../../../utils/helpers");
-const { getUserCase } = require("./case-tool-service");
-const {
+import cases from "../cases.js";
+import items from "../../items-module/items.js";
+import { resiveLog } from "../../logs-module/globalLogs.js";
+import { getRandomInt } from "../../../utils/helpers.js";
+import { getUserCase } from "./case-tool-service.js";
+import {
   createItem,
   checkItem,
-} = require("../../items-module/items-utils/item-tool-service");
-const redisServise = require("../../../services/redis-servise");
-const { syncUserCaseToDb } = require("../../../db/functions");
-const { Keyboard, Key } = require("telegram-keyboard");
-const { getFamilyByUserId } = require("../../fam-module/fam-service");
+} from "../../items-module/items-utils/item-tool-service.js";
+import redisServise from "../../../services/redis-servise.js";
+import { syncUserCaseToDb } from "../../../db/functions.js";
+import { Keyboard } from "telegram-keyboard";
+import { getFamilyByUserId } from "../../fam-module/fam-service.js";
+import dotenv from "dotenv";
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
+});
 
 const openDonateCase = async (user, ctx) => {
   try {
@@ -299,4 +302,4 @@ const openCase = async (user, id, ctx, count = 1) => {
   }
 };
 
-module.exports = { openCase, buyCase, openDonateCase };
+export { openCase, buyCase, openDonateCase };

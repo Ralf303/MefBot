@@ -1,7 +1,7 @@
-const { Composer } = require("telegraf");
-const items = require("../items-module/items");
-const { separateNumber } = require("../../utils/helpers");
-const { getUser } = require("../../db/functions");
+import { Composer } from "telegraf";
+import items from "../items-module/items.js";
+import { separateNumber } from "../../utils/helpers.js";
+import { getUser } from "../../db/functions.js";
 
 const eventRouter = new Composer();
 
@@ -74,4 +74,4 @@ eventRouter.hears(/^нг магазин*$/i, async (ctx) => {
   }
 });
 
-module.exports = eventRouter;
+export default eventRouter;

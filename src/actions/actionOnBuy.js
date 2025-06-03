@@ -1,5 +1,5 @@
-const { Composer } = require("telegraf");
-const { getUser } = require("../db/functions");
+import { Composer } from "telegraf";
+import { getUser } from "../db/functions.js";
 const compose = new Composer();
 
 compose.action("timeapp", async (ctx) => {
@@ -72,4 +72,4 @@ compose.action("slotapp", async (ctx) => {
     await ctx.reply("Недостаточно старок😢");
   }
 });
-module.exports = compose;
+export default compose;

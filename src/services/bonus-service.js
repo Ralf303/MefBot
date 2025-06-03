@@ -1,17 +1,14 @@
-const { Keyboard, Key } = require("telegram-keyboard");
-require("dotenv").config({
+import { Keyboard, Key } from "telegram-keyboard";
+import { User, Bonus, Item } from "../db/models.js";
+import { getRandomInt } from "../utils/helpers.js";
+import items from "../modules/items-module/items.js";
+import jwtService from "./jwt-service.js";
+import { blendImages } from "../modules/items-module/items-utils/blend-items-service.js";
+import { checkItem } from "../modules/items-module/items-utils/item-tool-service.js";
+import dotenv from "dotenv";
+dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
-const { User, Bonus, Item } = require("../db/models");
-const { getRandomInt } = require("../utils/helpers");
-const items = require("../modules/items-module/items");
-const jwtService = require("./jwt-service");
-const {
-  blendImages,
-} = require("../modules/items-module/items-utils/blend-items-service");
-const {
-  checkItem,
-} = require("../modules/items-module/items-utils/item-tool-service");
 
 class BonusService {
   #chatId = Number(process.env.CHANNEL_ID);
@@ -178,4 +175,4 @@ class BonusService {
   }
 }
 
-module.exports = new BonusService();
+export default new BonusService();

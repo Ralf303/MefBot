@@ -1,7 +1,6 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
-
-const gemsService = require("./gems-service.js");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import gemsService from "./gems-service.js";
 
 const gemsRouter = new Composer();
 
@@ -36,4 +35,4 @@ gemsRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = gemsRouter;
+export default gemsRouter;

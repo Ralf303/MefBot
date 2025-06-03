@@ -1,10 +1,10 @@
-const { Composer } = require("telegraf");
-const { message } = require("telegraf/filters");
+import { Composer } from "telegraf";
+import { message } from "telegraf/filters";
+import ru_text from "../../../ru_text.js";
+import { User } from "../../db/models.js";
+import { separateNumber } from "../../utils/helpers.js";
 
 const mainRouter = new Composer();
-const ru_text = require("../../../ru_text");
-const { User } = require("../../db/models");
-const { separateNumber } = require("../../utils/helpers");
 
 mainRouter.on(message("text"), async (ctx, next) => {
   try {
@@ -70,4 +70,4 @@ mainRouter.on(message("text"), async (ctx, next) => {
   }
 });
 
-module.exports = mainRouter;
+export default mainRouter;

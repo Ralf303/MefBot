@@ -1,10 +1,9 @@
-const sequelize = require("sequelize");
-const CronJob = require("cron").CronJob;
-const { User, Item } = require("../../db/models");
-const { loseLog, giveResoursesLog } = require("../logs-module/globalLogs");
-const { getRandomInt, separateNumber } = require("../../utils/helpers");
-const { checkItem } = require("../items-module/items-utils/item-tool-service");
-const { getUser } = require("../../db/functions.js");
+import sequelize from "sequelize";
+import { CronJob } from "cron";
+import { User, Item } from "../../db/models.js";
+import { getRandomInt, separateNumber } from "../../utils/helpers.js";
+import { checkItem } from "../items-module/items-utils/item-tool-service.js";
+import { getUser } from "../../db/functions.js";
 
 class GemService {
   async giveGems(ctx) {
@@ -120,4 +119,4 @@ class GemService {
   }
 }
 
-module.exports = new GemService();
+export default new GemService();

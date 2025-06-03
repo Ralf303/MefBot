@@ -1,7 +1,7 @@
-const { Scenes } = require("telegraf");
-const { getUser } = require("../db/functions");
-const { Key, Keyboard } = require("telegram-keyboard");
-const { saveAction, separateNumber } = require("../utils/helpers");
+import { Scenes } from "telegraf";
+import { getUser } from "../db/functions.js";
+import { Key, Keyboard } from "telegram-keyboard";
+import { saveAction, separateNumber } from "../utils/helpers.js";
 
 const diceScene = new Scenes.BaseScene("diceScene");
 
@@ -52,4 +52,4 @@ diceScene.hears(/^([1-9]\d*)$/, async (ctx) => {
   }
 });
 
-module.exports = diceScene;
+export default diceScene;

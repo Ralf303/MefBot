@@ -1,12 +1,13 @@
-const { Router } = require("express");
+import { Router } from "express";
 
-const {
+import {
   getHomeImg,
   getHomeById,
   getHomeByUserId,
-} = require("../modules/home-module/home-service");
-const { getUser } = require("../db/functions");
-const { Home } = require("../db/models");
+} from "../modules/home-module/home-service.js";
+import { getUser } from "../db/functions.js";
+import { Home } from "../db/models.js";
+
 const homeApi = new Router();
 
 homeApi.get("/homeCount", async (req, res) => {
@@ -67,4 +68,4 @@ homeApi.post("/buyHome", async (req, res) => {
   }
 });
 
-module.exports = homeApi;
+export default homeApi;

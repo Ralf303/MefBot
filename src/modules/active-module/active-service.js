@@ -1,4 +1,4 @@
-const { Active, User } = require("../../db/models");
+import { Active, User } from "../../db/models.js";
 
 class ActiveService {
   async updateUserActivity(userId, chatId) {
@@ -103,4 +103,4 @@ class ActiveService {
   }
 }
 
-module.exports = new ActiveService();
+export default new ActiveService();
