@@ -11,9 +11,9 @@ function getRandomInt(min, max) {
 }
 
 function generateCapcha() {
-  let length = 6,
-    charset = "1234567890";
-  res = "";
+  const length = 6;
+  const charset = "1234567890";
+  let res = "";
 
   for (let i = 0, n = charset.length; i < length; i++) {
     res += charset.charAt(Math.floor(Math.random() * n));
@@ -303,5 +303,5 @@ export {
   shopGenerator,
   checkAction,
   saveAction,
-  daysRemaining
+  daysRemaining,
 };

@@ -1,6 +1,9 @@
 import { Composer } from "telegraf";
 import { getRandomInt } from "../../utils/helpers.js";
-import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import {
+  checkItem,
+  createItem,
+} from "../items-module/items-utils/item-tool-service.js";
 import redisServise from "../../services/redis-servise.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
@@ -8,10 +11,10 @@ const capchaRouter = new Composer();
 
 capchaRouter.hears(/^\d{6}$/, async (ctx, next) => {
   try {
-    const capcha = ctx.match[1];
-    const isCapchaInRedis = await redisServise.get(capcha);
+    const capcha = ctx.match;
+    const isCapchaInRedis = await redisServise.get(String(capcha));
     if (isCapchaInRedis == ctx.chat.id) {
-      await redisServise.delete(capcha);
+      await redisServise.delete(String(capcha));
 
       let randommef = getRandomInt(500, 1000);
 
