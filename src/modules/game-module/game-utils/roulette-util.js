@@ -11,4 +11,4 @@ const rightCalback = [
   "нечет",
 ];
 
-export default{ rightCalback };
+export default rightCalback;
