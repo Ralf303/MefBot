@@ -27,6 +27,7 @@ import logsRouter from "./src/modules/logs-module/logs-router.js";
 import channelRouter from "./src/modules/channel-module/channel-router.js";
 import gameRouter from "./src/modules/game-module/game-router.js";
 import capchaRouter from "./src/modules/capcha-module/capcha-router.js";
+import donateRouter from "./src/modules/donate-module/donate-router.js";
 // import eventRouter from "./src/modules/event-module/event-router.js";
 
 const middleware = new Composer();
@@ -71,6 +72,7 @@ middleware.use(logsRouter);
 middleware.use(channelRouter);
 middleware.use(gameRouter);
 middleware.use(capchaRouter);
+middleware.use(donateRouter);
 // middleware.use(eventRouter);
 
 middleware.use(async (ctx) => {

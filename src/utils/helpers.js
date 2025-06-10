@@ -143,9 +143,7 @@ async function shopGenerator(id, ctx) {
       if (items[item].class === "low") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>] Цена: ${separateNumber(
-          items[item].price
-        )} старок\n`;
+        }[<code>${item}</code>]: ${separateNumber(items[item].price)} старок\n`;
       }
     }
   }
@@ -157,9 +155,7 @@ async function shopGenerator(id, ctx) {
       if (items[item].class === "middle") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>] Цена: ${separateNumber(
-          items[item].price
-        )} старок\n`;
+        }[<code>${item}</code>]: ${separateNumber(items[item].price)} старок\n`;
       }
     }
   }
@@ -171,9 +167,7 @@ async function shopGenerator(id, ctx) {
       if (items[item].class === "elite") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>] Цена: ${separateNumber(
-          items[item].price
-        )} старок\n`;
+        }[<code>${item}</code>]: ${separateNumber(items[item].price)} старок\n`;
       }
     }
   }
@@ -185,18 +179,15 @@ async function shopGenerator(id, ctx) {
       if (items[item].class === "donate") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>] Цена: ${separateNumber(
-          items[item].price
-        )} голд\n`;
+        }[<code>${item}</code>]: ${separateNumber(items[item].price)} 🟡\n`;
       }
     }
 
     result +=
-      "• Донат кейс Цена: 25 голды\n• 1000 старок Цена: 1 голда\n• 20 точильных камней Цена: 50 голды\n\n❗️ 1 RUB = 1 Голд❗️\n";
+      "• Донат кейс: 25 🟡\n• 10.000 старок: 1 🟡\n• 20 точильных камней: 50 🟡\n\n 1 ⭐️ = 1 🟡\n";
     await ctx.replyWithHTML(
       result +
-        "\nДля пополнения голд => @ralfy" +
-        "\n\n📖Купить вещь id\n📖Купить старкейс донат\n📖Купить старки\n📖Донат купить камни\n📖Инфа id\n📖Инфа старкейс донат"
+        "\n📖Купить голд [кол-во]\n📖Инфа id\n📖Инфа старкейс донат\n📖Купить вещь id\n📖Купить старкейс донат [кол-во]\n📖Донат купить старки [кол-во]\n📖Донат купить камни [кол-во]"
     );
     return;
   }
@@ -208,10 +199,10 @@ async function shopGenerator(id, ctx) {
       .sort((a, b) => items[a].price - items[b].price);
 
     sorteditems.forEach((item) => {
-      result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} гемов\n`;
+      result += `• ${items[item].name}[<code>${item}</code>]: ${items[item].price} гемов\n`;
     });
     result +=
-      "• Охлаждающая жидкость Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
+      "• Охлаждающая жидкость: 100 гемов\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
     // 📖Купить охлаждение [кол-во]
     return await ctx.replyWithHTML(result);
   }
@@ -223,10 +214,10 @@ async function shopGenerator(id, ctx) {
       .sort((a, b) => items[a].price - items[b].price);
 
     sorteditems.forEach((item) => {
-      result += `• ${items[item].name}[<code>${item}</code>] Цена: ${items[item].price} семейных монет\n`;
+      result += `• ${items[item].name}[<code>${item}</code>]: ${items[item].price} семейных монет\n`;
     });
     result +=
-      "• Точильный камень Цена: 100\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]";
+      "• Точильный камень: 100 семейных монет\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]";
     return await ctx.replyWithHTML(
       result,
       Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])
@@ -303,5 +294,5 @@ export {
   shopGenerator,
   checkAction,
   saveAction,
-  daysRemaining
+  daysRemaining,
 };

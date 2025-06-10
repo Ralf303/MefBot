@@ -12,10 +12,7 @@ import {
 } from "./items-utils/items-functions.js";
 import ru_text from "../../../ru_text.js";
 import { wearItem } from "./items-utils/wear-item-service.js";
-import {
-  tryItem,
-  getWornItems,
-} from "./items-utils/blend-items-service.js";
+import { tryItem, getWornItems } from "./items-utils/blend-items-service.js";
 import { getItemInfo, checkId } from "./items-utils/item-tool-service.js";
 import { giveItem } from "./items-utils/give-item-service.js";
 import { home } from "../home-module/home.js";
@@ -119,10 +116,6 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       }
 
       await getWornItems(ctx.state.user, ctx);
-    }
-
-    if (word1 == "донат" || userMessage == "🤑 донат 🤑") {
-      await shopGenerator("4", ctx);
     }
 
     if (word1 == "купить") {

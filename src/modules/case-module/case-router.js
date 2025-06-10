@@ -112,7 +112,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
         } else {
           price += ` старок`;
         }
-        result += `${i}) ${cases[item].name} Цена: ${price}\n`;
+        result += `${i}) ${cases[item].name}: ${price}\n`;
         i++;
       }
       await ctx.reply(
