@@ -179,15 +179,15 @@ async function shopGenerator(id, ctx) {
       if (items[item].class === "donate") {
         result += `• ${
           items[item].name
-        }[<code>${item}</code>]: ${separateNumber(items[item].price)} 🟡\n`;
+        }[<code>${item}</code>]: ${separateNumber(items[item].price)} ✨\n`;
       }
     }
 
     result +=
-      "• Донат кейс: 25 🟡\n• 10.000 старок: 1 🟡\n• 20 точильных камней: 50 🟡\n\n 1 ⭐️ = 1 🟡\n";
+      "• Донат кейс: 25 ✨\n• 5.000 старок: 1 ✨\n• 1 точильный камень: 1 ✨\n\n 1 ⭐️ = 1 ✨\n";
     await ctx.replyWithHTML(
       result +
-        "\n📖Купить голд [кол-во]\n📖Инфа id\n📖Инфа старкейс донат\n📖Купить вещь id\n📖Купить старкейс донат [кол-во]\n📖Донат купить старки [кол-во]\n📖Донат купить камни [кол-во]"
+        "\n📖Купить искры [кол-во]\n📖Инфа id\n📖Купить вещь id\n📖Купить старкейс донат [кол-во]\n📖Донат купить старки [кол-во]\n📖Донат купить камни [кол-во]"
     );
     return;
   }

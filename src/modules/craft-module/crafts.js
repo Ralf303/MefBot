@@ -7,7 +7,7 @@ const craftItems = {
       { name: "Воздушный шар №2", quantity: 1 },
       { name: "Воздушный шар №3", quantity: 1 },
     ],
-    chance: 60,
+    chance: 50,
   },
 
   2: {

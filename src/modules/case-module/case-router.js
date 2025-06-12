@@ -31,6 +31,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
       let result = "Твои старкейсы:\n";
       let i = 1;
       for (const item in cases) {
+        if (cases[item].dbName == "donate") continue;
         result += `${i}) ${cases[item].name} - ${
           userCase[cases[item].dbName]
         } шт.\n`;
@@ -40,7 +41,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
         result +
           "\n💰Донат кейс - " +
           userCase.donate +
-          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать старкейс id\n📖Передать старкейс донат"
+          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать старкейс id [кол-во]\n📖Передать старкейс донат [кол-во]"
       );
     }
 
@@ -64,13 +65,14 @@ caseRouter.on(message("text"), async (ctx, next) => {
       );
     }
 
-    if (word1 == "купить") {
-      const id = Number(word3);
+    if (word1 == "купить" && word2 == "старкейс") {
       const count =
         isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
 
-      if (word2 == "старкейс" && !isNaN(id)) {
-        await buyCase(ctx.state.user, id, count, ctx);
+      if (word3 === "донат") {
+        await buyCase(ctx.state.user, "donate", count, ctx);
+      } else if (!isNaN(word3)) {
+        await buyCase(ctx.state.user, word3, count, ctx);
       }
     }
 
@@ -87,9 +89,7 @@ caseRouter.on(message("text"), async (ctx, next) => {
 
       if (word2 === "донат") {
         await openDonateCase(ctx.state.user, ctx);
-      }
-
-      if (!isNaN(id)) {
+      } else if (!isNaN(id)) {
         await openCase(ctx.state.user, id, ctx, count);
       } else if (word1 == "открыть") {
         await ctx.reply(
@@ -104,6 +104,8 @@ caseRouter.on(message("text"), async (ctx, next) => {
       let result = "Доступные кейсы:\n";
       let i = 1;
       for (const item in cases) {
+        if (cases[item].dbName == "donate") continue;
+
         let price = cases[item].price;
         if (cases[item].class == "gem") {
           price += ` гемов`;
@@ -116,7 +118,8 @@ caseRouter.on(message("text"), async (ctx, next) => {
         i++;
       }
       await ctx.reply(
-        result + "\n📖Купить старкейс id [кол-во]\n📖Инфа старкейс id"
+        result +
+          "💰Донат кейс: 25 искр💰\n\n📖Купить старкейс id [кол-во]\n📖Купить старкейс донат [кол-во]\n📖Инфа старкейс id\n📖Инфа старкейс донат"
       );
     } else if (userMessage == "старкейсы") {
       await ctx.reply(ru_text.no_case_in_chat);

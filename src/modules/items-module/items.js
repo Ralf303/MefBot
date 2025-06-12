@@ -21,7 +21,7 @@ const items = {
     bodyPart: "extra",
     src: "img/ball_1.png",
     price: 100,
-    canBuy: false,
+    canBuy: true,
     class: "donate",
   },
 
@@ -66,7 +66,7 @@ const items = {
     bodyPart: "extra",
     src: "img/ball_2.png",
     price: 100,
-    canBuy: false,
+    canBuy: true,
     class: "donate",
   },
 
@@ -75,7 +75,7 @@ const items = {
     bodyPart: "extra",
     src: "img/ball_3.png",
     price: 100,
-    canBuy: false,
+    canBuy: true,
     class: "donate",
   },
 
@@ -498,7 +498,7 @@ const items = {
     bodyPart: "left",
     src: "img/grabli.png",
     price: 125,
-    canBuy: false,
+    canBuy: true,
     class: "donate",
     info: "Умножает сбор старок в пять раз когда надеты на пабло.",
   },

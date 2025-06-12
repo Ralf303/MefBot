@@ -65,6 +65,13 @@ const cases = {
       88, 89, 50, 51, 52, 53, 54, 55, 87, 79, 77, 80, 81, 82, 83,
     ],
   },
+
+  donate: {
+    name: "Донат кейс",
+    dbName: "donate",
+    price: 25,
+    class: "donate",
+  },
 };
 
 export default cases;

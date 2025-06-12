@@ -1,6 +1,5 @@
 import { User } from "../../../db/models.js";
 import cases from "../cases.js";
-import { giveResoursesLog, loseLog } from "../../logs-module/globalLogs.js";
 import { getUserCase } from "./case-tool-service.js";
 import { syncUserCaseToDb, getUser } from "../../../db/functions.js";
 
@@ -66,7 +65,6 @@ const giveDonateCase = async (sender, id, count, ctx) => {
 
     const receiverChatId = message.from.id;
 
-    // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
       await ctx.reply("Зачем боту кейсы🧐");
       return;
@@ -97,13 +95,14 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     receiverCase.donate += count;
 
     await ctx.reply(
-      `Ты успешно передал(а) ${count} донаткейсов @${receiver.username}`
+      `Ты успешно передал(а) ${count} донат кейсов <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      {
+        parse_mode: "HTML",
+      }
     );
 
     await senderCase.save();
     await receiverCase.save();
-    await loseLog(sender, `донат кейс`, "передача другому юзеру");
-    await giveResoursesLog(sender, receiver, `донат кейс`, `${count}`);
   } catch (error) {
     console.log(error);
   }

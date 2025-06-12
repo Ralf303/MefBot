@@ -68,7 +68,7 @@ mefRouter.on(message("text"), async (ctx, next) => {
           // separateNumber(ctx.state.user.coin) +
           "\nСемейные монеты: " +
           separateNumber(ctx.state.user.famMoney) +
-          "\nГолд: " +
+          "\nИскр: " +
           separateNumber(ctx.state.user.donate)
         //+ "\n❄️ Снежинки: " +
         // separateNumber(ctx.state.user.snows)

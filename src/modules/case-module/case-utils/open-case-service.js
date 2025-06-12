@@ -184,51 +184,55 @@ const open = async (user, ctx, box, luck) => {
 //ФУНКЦИЯ ПОКУПКИ ЛЮБОГО КЕЙСА
 const buyCase = async (user, id, count, ctx) => {
   const needCase = cases[id];
+  if (!needCase) return ctx.reply(`Такого старкейса нет😥`);
+
   await syncUserCaseToDb(user.id);
   const userCase = await getUserCase(user.id);
 
-  if (needCase) {
-    let price = needCase.price;
-    if (!isNaN(count) && count > 0) {
-      price *= count;
-    } else {
-      count = 1;
-    }
+  count = !isNaN(count) && count > 0 ? Number(count) : 1;
+  const totalPrice = needCase.price * count;
 
-    if (
-      user.balance < price &&
-      needCase.class !== "gem" &&
-      needCase.class !== "fam"
-    ) {
-      await ctx.reply(`У тебя недостаточно старок 😥`);
-      return;
-    } else if (needCase.class !== "gem") {
-      user.balance -= price;
-    }
+  const cls = needCase.class;
 
-    if (user.gems < price && needCase.class === "gem") {
-      await ctx.reply(`У тебя недостаточно гемов 😥`);
-      return;
-    } else if (needCase.class === "gem") {
-      user.gems -= price;
-    }
-
-    if (user.famMoney < price && needCase.class === "fam") {
-      await ctx.reply(`У тебя недостаточно семейных монет 😥`);
-      return;
-    } else if (needCase.class === "fam") {
-      user.famMoney -= price;
-    }
-    userCase[needCase.dbName] += Number(count);
-    await userCase.save();
-    await user.save();
-
-    await ctx.reply(
-      `Успешно куплен ${needCase.name} в количестве ${count} за ${price}`
-    );
-  } else {
-    await ctx.reply(`Такого старкейса нет😥`);
+  if (
+    cls !== "gem" &&
+    cls !== "fam" &&
+    cls !== "donate" &&
+    user.balance < totalPrice
+  ) {
+    return ctx.reply(`У тебя недостаточно старок 😥`);
   }
+  if (cls === "gem" && user.gems < totalPrice) {
+    return ctx.reply(`У тебя недостаточно гемов 😥`);
+  }
+  if (cls === "fam" && user.famMoney < totalPrice) {
+    return ctx.reply(`У тебя недостаточно семейных монет 😥`);
+  }
+  if (cls === "donate" && user.donate < totalPrice) {
+    return ctx.reply(`У тебя недостаточно искр 😥`);
+  }
+
+  switch (cls) {
+    case "gem":
+      user.gems -= totalPrice;
+      break;
+    case "fam":
+      user.famMoney -= totalPrice;
+      break;
+    case "donate":
+      user.donate -= totalPrice;
+      break;
+    default:
+      user.balance -= totalPrice;
+  }
+
+  userCase[needCase.dbName] += count;
+
+  await Promise.all([userCase.save(), user.save()]);
+
+  return ctx.reply(
+    `Успешно куплен ${needCase.name} в количестве ${count} за ${totalPrice}`
+  );
 };
 
 /*****************************************************************************************************/
@@ -239,10 +243,7 @@ const buyCase = async (user, id, count, ctx) => {
 const openCase = async (user, id, ctx, count = 1) => {
   try {
     const needCase = cases[id];
-    if (!needCase) {
-      await ctx.reply("Такого старкейса нет😥");
-      return;
-    }
+    if (!needCase) return ctx.reply("Такого старкейса нет😥");
 
     const caseName = needCase.dbName;
     let userCase = await redisServise.get(user.id + "cases");
@@ -255,50 +256,40 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     if (userCase[caseName] < count) {
-      return await ctx.reply("Недостаточно старкейсов😥");
+      return ctx.reply("Недостаточно старкейсов😥");
     }
 
-    let caseCounte = 1;
-    const isYesMan = await checkItem(user.id, "Йес-мэн");
+    let maxCount = 1;
+    const [isYesMan, fam] = await Promise.all([
+      checkItem(user.id, "Йес-мэн"),
+      getFamilyByUserId(user.chatId),
+    ]);
 
-    if (isYesMan) {
-      caseCounte += 2;
-    }
+    if (isYesMan) maxCount += 2;
+    if (fam) maxCount += fam.Baf.case;
 
-    const fam = await getFamilyByUserId(user.chatId);
-
-    if (fam) {
-      caseCounte += fam.Baf.case;
-    }
-
-    if (caseCounte < Number(count)) {
-      await ctx.reply("Ты не можешь открыть столько за раз😥");
-      return;
+    if (count > maxCount) {
+      return ctx.reply("Ты не можешь открыть столько за раз😥");
     }
 
     userCase[caseName] -= count;
     await redisServise.set(user.id + "cases", JSON.stringify(userCase));
-    let results = [];
+
     let luck = 0;
     const pupsItem = await checkItem(user.id, "Пупс «Удача»");
+    if (pupsItem) luck += 500;
+    if (fam) luck += fam.Baf.luck * 200;
 
-    if (pupsItem) {
-      luck += 500;
-    }
+    const results = await Promise.all(
+      Array.from({ length: count }, () => open(user, ctx, needCase, luck))
+    );
 
-    if (fam) {
-      luck += fam.Baf.luck * 200;
-    }
-
-    for (let i = 0; i < count; i++) {
-      const result = await open(user, ctx, needCase, luck);
-      results.push("• " + result);
-    }
+    const formatted = results.map((res) => `• ${res}`).join("\n");
     await ctx.reply(
-      `Ты открыл ${count} старкейса и получил(а):\n\n${results.join("\n")}`
+      `Ты открыл ${count} старкейса и получил(а):\n\n${formatted}`
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 

@@ -28,13 +28,14 @@ import channelRouter from "./src/modules/channel-module/channel-router.js";
 import gameRouter from "./src/modules/game-module/game-router.js";
 import capchaRouter from "./src/modules/capcha-module/capcha-router.js";
 import donateRouter from "./src/modules/donate-module/donate-router.js";
+import donatAction from "./src/modules/donate-module/donate-action.js";
 // import eventRouter from "./src/modules/event-module/event-router.js";
 
 const middleware = new Composer();
 
 middleware.use(async (ctx, next) => {
   try {
-    if (ctx.chat.type === "channel") return next();
+    if (ctx.chat?.type === "channel" || ctx.preCheckoutQuery) return next();
     ctx.state.user = await getUser(
       ctx.from.id,
       ctx.from.first_name,
@@ -73,6 +74,7 @@ middleware.use(channelRouter);
 middleware.use(gameRouter);
 middleware.use(capchaRouter);
 middleware.use(donateRouter);
+middleware.use(donatAction);
 // middleware.use(eventRouter);
 
 middleware.use(async (ctx) => {

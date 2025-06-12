@@ -1,6 +1,5 @@
 import { Item, User } from "../../../db/models.js";
 import items from "../items.js";
-import { loseLog } from "../../logs-module/globalLogs.js";
 import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
 import { checkItem } from "./item-tool-service.js";
 import { getUser } from "../../../db/functions.js";
@@ -12,41 +11,15 @@ dotenv.config({
 
 const buyItem = async (user, itemInfo, ctx, status) => {
   if (user.slots < user.fullSlots) {
-    await ctx.reply("Недостаточно слотов😥");
-    return;
+    return ctx.reply("Недостаточно слотов😥");
   }
 
   if (!itemInfo.canBuy && status) {
-    await ctx.reply("Эту вещь нельзя купить😥");
-    return;
+    return ctx.reply("Эту вещь нельзя купить😥");
   }
 
-  if (
-    user.balance < itemInfo.price &&
-    status &&
-    itemInfo.class !== "gem" &&
-    itemInfo.class !== "fam"
-  ) {
-    await ctx.reply("Недостаточно старок 😢");
-    return;
-  } else if (status && itemInfo.class !== "gem" && itemInfo.class !== "fam") {
-    user.balance -= itemInfo.price;
-  }
-
-  if (user.gems < itemInfo.price && status && itemInfo.class === "gem") {
-    await ctx.reply("Недостаточно гемов 😢");
-    return;
-  } else if (status && itemInfo.class === "gem") {
-    user.gems -= itemInfo.price;
-  }
-
-  if (user.famMoney < itemInfo.price && status && itemInfo.class === "fam") {
-    await ctx.reply("Недостаточно семейных монет 😢");
-    return;
-  } else if (status && itemInfo.class === "fam") {
-    user.famMoney -= itemInfo.price;
-  }
-
+  const cls = itemInfo.class;
+  const price = itemInfo.price;
   // if (user.snows < itemInfo.price && status && itemInfo.class === "event") {
   //   await ctx.reply("Недостаточно снежинок 😢");
   //   return;
@@ -54,7 +27,37 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   //   user.snows -= itemInfo.price;
   // }
 
+  if (status) {
+    if (!["gem", "fam", "donate"].includes(cls) && user.balance < price) {
+      return ctx.reply("Недостаточно старок 😢");
+    }
+    if (cls === "gem" && user.gems < price) {
+      return ctx.reply("Недостаточно гемов 😢");
+    }
+    if (cls === "fam" && user.famMoney < price) {
+      return ctx.reply("Недостаточно семейных монет 😢");
+    }
+    if (cls === "donate" && user.donate < price) {
+      return ctx.reply("Недостаточно искр 😢");
+    }
+
+    switch (cls) {
+      case "gem":
+        user.gems -= price;
+        break;
+      case "fam":
+        user.famMoney -= price;
+        break;
+      case "donate":
+        user.donate -= price;
+        break;
+      default:
+        user.balance -= price;
+    }
+  }
+
   await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
+
   const item = await Item.create({
     src: itemInfo.src,
     itemName: itemInfo.name,
@@ -66,33 +69,32 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   await user.addItem(item);
   await user.save();
   await item.save();
+
   await ctx.replyWithHTML(
     `Ты купил(а): ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
   );
 
-  const chance = getRandomInt(0, 100);
-
-  if (chance === 5) {
-    const itemInfo = items[125];
-    const item = await Item.create({
-      src: itemInfo.src,
-      itemName: itemInfo.name,
-      bodyPart: itemInfo.bodyPart,
+  if (getRandomInt(0, 100) === 5) {
+    const luckItemInfo = items[125];
+    const luckItem = await Item.create({
+      src: luckItemInfo.src,
+      itemName: luckItemInfo.name,
+      bodyPart: luckItemInfo.bodyPart,
       isWorn: false,
-      price: itemInfo.price,
+      price: luckItemInfo.price,
     });
 
     await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
-
-    await user.addItem(item);
+    await user.addItem(luckItem);
     await user.save();
-    await item.save();
+    await luckItem.save();
+
     await ctx.replyWithHTML(
-      `❗️Ты испытал удачу и получил ${itemInfo.name}❗️`
+      `❗️Ты испытал удачу и получил ${luckItemInfo.name}❗️`
     );
     await ctx.telegram.sendMessage(
       process.env.CHAT_ID,
-      `❗️@${user.username} испытал удачу и получил ${itemInfo.name}❗️`
+      `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу и получил ${luckItemInfo.name}❗️`
     );
   }
 };
@@ -116,7 +118,6 @@ const deleteItem = async (user, id) => {
     cashBack = item.price / 2;
   }
 
-  await loseLog(user, `${item.itemName}[${item.id}]`, `Удаление`);
   user.balance += cashBack;
   user.fullSlots--;
   await item.destroy();
