@@ -71,7 +71,7 @@ function famCron(bot) {
             const rang = await getRang(user.userId, fam1.id);
             const itemLvl = await getItemsLvl(realUser.id);
 
-            realUser.famMoney += (rang + itemLvl) * 15;
+            realUser.famMoney += rang * itemLvl * 15;
             await realUser.save();
           }
 
@@ -92,7 +92,7 @@ function famCron(bot) {
             const rang = await getRang(user.userId, fam2.id);
             const itemLvl = await getItemsLvl(realUser.id);
 
-            realUser.famMoney += (rang + itemLvl) * 10;
+            realUser.famMoney += rang * itemLvl * 10;
             await realUser.save();
           }
 
@@ -112,7 +112,7 @@ function famCron(bot) {
             const realUser = await getUser(user.userId);
             const rang = await getRang(user.userId, fam3.id);
             const itemLvl = await getItemsLvl(realUser.id);
-            realUser.famMoney += (rang + itemLvl) * 5;
+            realUser.famMoney += rang * itemLvl * 5;
             await realUser.save();
           }
 
