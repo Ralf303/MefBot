@@ -16,7 +16,7 @@ homeRouter.on(message("text"), async (ctx, next) => {
       const { tax } = isHome;
 
       if (tax === 0) {
-        await ctx.reply("Ты уже все оплатил 👍");
+        return await ctx.reply("Ты уже все оплатил 👍");
       }
 
       if (balance < tax) {

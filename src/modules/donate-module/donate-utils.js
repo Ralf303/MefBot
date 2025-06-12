@@ -1,37 +1,60 @@
-import { getUser } from "../../db/functions.js";
+import { checkUserByUsername, getUser } from "../../db/functions.js";
 import { separateNumber } from "../../utils/helpers.js";
 
 const giveDonate = async (ctx) => {
   const chatId = ctx.from.id;
-  const message = ctx.message.reply_to_message;
-
-  if (!message) {
-    return;
-  }
-
-  const receiverChatId = message.from.id;
-  const amount = parseInt(ctx.message.text.split(" ")[2]);
+  const replyMessage = ctx.message.reply_to_message;
+  const textParts = ctx.message.text.split(" ");
+  const amount = parseInt(textParts[2]);
 
   if (isNaN(amount) || amount <= 0) {
+    await ctx.reply("Укажи корректную сумму для передачи.");
     return;
   }
 
-  if (message.from.is_bot) {
-    await ctx.reply("Зачем боту искры🧐");
-    return;
+  let receiver = null;
+  let transferredViaUsername = false;
+
+  if (replyMessage) {
+    if (replyMessage.from.is_bot) {
+      await ctx.reply("Зачем боту искры🧐");
+      return;
+    }
+
+    receiver = await getUser(replyMessage.from.id);
+  } else {
+    const usernamePart = textParts.find((part) => part.startsWith("@"));
+    if (!usernamePart) {
+      await ctx.reply("Сделай реплай на сообщение или укажи @username.");
+      return;
+    }
+
+    const username = usernamePart.replace("@", "").toLowerCase();
+    receiver = await checkUserByUsername(username);
+
+    if (!receiver) {
+      await ctx.reply("Пользователь с таким username не найден.");
+      return;
+    }
+
+    if (receiver.chatId === chatId) {
+      await ctx.reply("Иди нахуй, так нельзя🖕");
+      return;
+    }
+
+    transferredViaUsername = true;
   }
 
   try {
     const sender = await getUser(chatId);
-    let receiver = await getUser(receiverChatId);
 
     if (sender.donate < amount) {
       await ctx.reply("Недостаточно искр🥲");
       return;
     }
 
-    if (sender.id === receiver.id) {
-      await ctx.reply(`Иди нахуй, так нельзя🖕`);
+    if (receiver.chatId === sender.chatId) {
+      await ctx.reply("Иди нахуй, так нельзя🖕");
       return;
     }
 
@@ -44,6 +67,7 @@ const giveDonate = async (ctx) => {
     receiver.donate += amount;
     await sender.save();
     await receiver.save();
+
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(
         amount
@@ -52,8 +76,21 @@ const giveDonate = async (ctx) => {
       }</a>`,
       { parse_mode: "HTML" }
     );
+
+    if (transferredViaUsername) {
+      try {
+        await ctx.telegram.sendMessage(
+          receiver.chatId,
+          `Тебе передали ${separateNumber(amount)} искр от ${
+            ctx.from.first_name
+          }`
+        );
+      } catch (err) {
+        console.log("Не удалось отправить сообщение получателю:", err.message);
+      }
+    }
   } catch (error) {
-    console.log(error);
+    console.log("Ошибка при передаче искр:", error);
     await ctx.reply("Ошибка при выполнении операции.");
   }
 };

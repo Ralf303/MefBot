@@ -11,9 +11,8 @@ const giveItem = async (sender, id, ctx) => {
 
     const receiverChatId = message.from.id;
 
-    // проверяем, что отправитель не является ботом
     if (message.from.is_bot) {
-      await ctx.reply("Зачем боту предметы🧐");
+      await ctx.reply("Зачем боту вещи🧐");
       return;
     }
 

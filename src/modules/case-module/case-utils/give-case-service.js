@@ -1,110 +1,127 @@
-import { User } from "../../../db/models.js";
 import cases from "../cases.js";
 import { getUserCase } from "./case-tool-service.js";
-import { syncUserCaseToDb, getUser } from "../../../db/functions.js";
+import { syncUserCaseToDb } from "../../../db/functions.js";
+import { resolveReceiver } from "../../../utils/helpers.js";
 
 const giveCase = async (sender, id, count, ctx) => {
   try {
-    const message = ctx.message.reply_to_message;
     const intCount = Number(count);
-    if (!message) {
-      return;
-    }
-
-    const receiverChatId = message.from.id;
-    if (message.from.is_bot) {
-      await ctx.reply("Зачем боту кейсы🧐");
-      return;
-    }
-
-    const receiver = await getUser(receiverChatId);
-    const receiverCase = await getUserCase(receiver.id);
-    await syncUserCaseToDb(sender.id);
-    await syncUserCaseToDb(receiver.id);
-    const senderCase = await getUserCase(sender.id);
     const needCase = cases[id];
-
     if (!needCase) {
       await ctx.reply("Такого кейса нет😥");
       return;
     }
 
-    const caseCount = senderCase[needCase.dbName];
-
-    if (intCount > caseCount) {
-      await ctx.reply(`У тебя не хватает ${needCase.name}📦`);
-      return;
+    let resolved;
+    try {
+      resolved = await resolveReceiver(ctx);
+    } catch (e) {
+      switch (e.message) {
+        case "BOT_REJECT":
+          return ctx.reply("Зачем боту кейсы🧐");
+        case "NO_TARGET":
+          return ctx.reply("Сделай реплай на сообщение или укажи @username.");
+        case "NOT_FOUND":
+          return ctx.reply("Пользователь с таким username не найден.");
+        case "SELF_TRANSFER":
+          return ctx.reply("Иди нахуй, так нельзя🖕");
+        default:
+          throw e;
+      }
     }
 
-    if (sender.id === receiver.id) {
-      await ctx.reply(`Иди нахуй, так нельзя🖕`);
-      return;
+    const { receiver, transferredViaUsername } = resolved;
+    await syncUserCaseToDb(sender.id);
+    await syncUserCaseToDb(receiver.id);
+    const senderCase = await getUserCase(sender.id);
+    const receiverCase = await getUserCase(receiver.id);
+
+    const have = senderCase[needCase.dbName] || 0;
+    if (intCount > have) {
+      return ctx.reply(`У тебя не хватает ${needCase.name}📦`);
     }
 
     senderCase[needCase.dbName] -= intCount;
     receiverCase[needCase.dbName] += intCount;
-
-    await ctx.replyWithHTML(
-      `Ты успешно передал(а) ${intCount} ${needCase.name}[${id}] <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`
-    );
-
     await senderCase.save();
     await receiverCase.save();
+
+    await ctx.replyWithHTML(
+      `Ты успешно передал(а) ${intCount} ${needCase.name} ` +
+        `<a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`
+    );
+
+    if (transferredViaUsername) {
+      try {
+        await ctx.telegram.sendMessage(
+          receiver.chatId,
+          `Тебе передали ${intCount} ${needCase.name} от ${ctx.from.first_name}`
+        );
+      } catch (err) {
+        console.log("Не удалось отправить личку:", err.message);
+      }
+    }
   } catch (error) {
-    console.log(error);
+    console.error("giveCase error:", error);
   }
 };
 
 const giveDonateCase = async (sender, id, count, ctx) => {
   try {
-    const message = ctx.message.reply_to_message;
-    const senderCase = await getUserCase(sender.id);
-    if (!message) {
-      return;
+    const intCount = Number(count);
+    if (id !== "донат") {
+      return ctx.reply("Такого кейса нет😥");
     }
 
-    const receiverChatId = message.from.id;
-
-    if (message.from.is_bot) {
-      await ctx.reply("Зачем боту кейсы🧐");
-      return;
-    }
-
-    const receiver = await User.findOne({
-      where: { chatId: receiverChatId },
-    });
-    const receiverCase = await getUserCase(receiver.id);
-    const needCase = id;
-
-    if (needCase !== "донат") {
-      await ctx.reply("Такого кейса нет😥");
-      return;
-    }
-
-    if (count > senderCase.donate) {
-      await ctx.reply(`У тебя не хватает кейсов донат кейсов📦`);
-      return;
-    }
-
-    if (sender.id === receiver.id) {
-      await ctx.reply(`Иди нахуй, так нельзя🖕`);
-      return;
-    }
-
-    senderCase.donate -= count;
-    receiverCase.donate += count;
-
-    await ctx.reply(
-      `Ты успешно передал(а) ${count} донат кейсов <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
-      {
-        parse_mode: "HTML",
+    let resolved;
+    try {
+      resolved = await resolveReceiver(ctx);
+    } catch (e) {
+      switch (e.message) {
+        case "BOT_REJECT":
+          return ctx.reply("Зачем боту кейсы🧐");
+        case "NO_TARGET":
+          return ctx.reply("Сделай реплай на сообщение или укажи @username.");
+        case "NOT_FOUND":
+          return ctx.reply("Пользователь с таким username не найден.");
+        case "SELF_TRANSFER":
+          return ctx.reply("Иди нахуй, так нельзя🖕");
+        default:
+          throw e;
       }
-    );
+    }
 
+    const { receiver, transferredViaUsername } = resolved;
+    const senderCase = await getUserCase(sender.id);
+    const receiverCase = await getUserCase(receiver.id);
+
+    if (intCount > senderCase.donate) {
+      return ctx.reply(`У тебя не хватает кейсов донат кейсов📦`);
+    }
+
+    senderCase.donate -= intCount;
+    receiverCase.donate += intCount;
     await senderCase.save();
     await receiverCase.save();
+
+    await ctx.reply(
+      `Ты успешно передал(а) ${intCount} донат кейсов ` +
+        `<a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
+      { parse_mode: "HTML" }
+    );
+
+    if (transferredViaUsername) {
+      try {
+        await ctx.telegram.sendMessage(
+          receiver.chatId,
+          `Тебе передали ${intCount} донат кейсов от ${ctx.from.first_name}`
+        );
+      } catch (err) {
+        console.log("Не удалось отправить личку:", err.message);
+      }
+    }
   } catch (error) {
-    console.log(error);
+    console.error("giveDonateCase error:", error);
   }
 };
 
