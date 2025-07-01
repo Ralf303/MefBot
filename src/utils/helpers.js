@@ -290,6 +290,15 @@ async function resolveReceiver(ctx) {
       throw new Error("BOT_REJECT");
     }
     const user = await getUser(reply.from.id);
+
+    if (!user) {
+      throw new Error("NOT_FOUND");
+    }
+
+    if (user.chatId == chatId) {
+      throw new Error("SELF_TRANSFER");
+    }
+
     return { receiver: user, transferredViaUsername: false };
   }
 
@@ -303,7 +312,8 @@ async function resolveReceiver(ctx) {
   if (!user) {
     throw new Error("NOT_FOUND");
   }
-  if (user.chatId === chatId) {
+
+  if (user.chatId == chatId) {
     throw new Error("SELF_TRANSFER");
   }
   return { receiver: user, transferredViaUsername: true };
