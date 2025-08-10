@@ -4,6 +4,7 @@ import {
   getHomeImg,
   getHomeById,
   getHomeByUserId,
+  getAllHomesWithImgs,
 } from "../modules/home-module/home-service.js";
 import { getUser } from "../db/functions.js";
 import { Home } from "../db/models.js";
@@ -25,6 +26,17 @@ homeApi.get("/getHome", async (req, res) => {
   try {
     const { id } = req.query;
     const homesWithImages = await getHomeImg(id);
+
+    return res.json(homesWithImages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
+homeApi.get("/getHomes", async (req, res) => {
+  try {
+    const homesWithImages = await getAllHomesWithImgs();
 
     return res.json(homesWithImages);
   } catch (error) {

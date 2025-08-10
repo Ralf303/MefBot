@@ -22,9 +22,11 @@ const getHomeById = async (id) => {
 
 const getHomeImg = async (homeId) => {
   const house = await Home.findOne({ where: { id: homeId }, include: "user" });
+
   if (!house) {
     throw new Error(`Дом с ID ${homeId} не найден`);
   }
+
   const homeData = house.toJSON();
   const imgPath = home[house.homeId]?.src;
 
@@ -49,6 +51,47 @@ const getHomeImg = async (homeId) => {
     }
   }
   return homeData;
+};
+
+const getAllHomesWithImgs = async () => {
+  const houses = await Home.findAll({ include: "user" });
+
+  const results = await Promise.all(
+    houses.map(async (house) => {
+      const homeData = house.toJSON();
+
+      const imgInfo = home[house.homeId]?.src;
+
+      if (!imgInfo) {
+        homeData.imgSrc = null;
+        return homeData;
+      }
+
+      const imgPath = imgInfo.src;
+
+      if (!house.userId) {
+        if (imgPath) {
+          const imgBuffer = fs.readFileSync(imgPath);
+          homeData.imgSrc = imgBuffer.toString("base64");
+        } else {
+          homeData.imgSrc = null;
+        }
+      } else {
+        const redisKey = `pablo_${house.userId}_${imgPath}`;
+        let cachedImage = await redisService.get(redisKey);
+        if (cachedImage) {
+          homeData.imgSrc = cachedImage;
+        } else {
+          const generatedImage = await generateHomeImg(house.user, imgInfo);
+          homeData.imgSrc = generatedImage;
+        }
+      }
+
+      return homeData;
+    })
+  );
+
+  return results;
 };
 
 const generateHomeImg = async (user, home) => {
@@ -135,4 +178,10 @@ const sellHome = async (user, price, replyMessage, ctx) => {
   }
 };
 
-export { getHomeByUserId, getHomeImg, sellHome, getHomeById };
+export {
+  getHomeByUserId,
+  getHomeImg,
+  sellHome,
+  getHomeById,
+  getAllHomesWithImgs,
+};
