@@ -1,6 +1,6 @@
 import { Op } from "sequelize";
 import { getUserCase } from "../modules/case-module/case-utils/case-tool-service.js";
-import redisServise from "../services/redis-servise.js";
+import redisService from "../services/redis-service.js";
 import sequelize from "./config.js";
 import { User, Case, Chat, Family, Bafs } from "./models.js";
 
@@ -109,7 +109,7 @@ const connectToDb = async () => {
 
 const syncUserCaseToDb = async (userId) => {
   try {
-    const userCaseRedis = await redisServise.get(userId + "cases");
+    const userCaseRedis = await redisService.get(userId + "cases");
 
     if (userCaseRedis) {
       const userCase = JSON.parse(userCaseRedis);
@@ -122,7 +122,7 @@ const syncUserCaseToDb = async (userId) => {
 
       await userCaseDb.save();
 
-      await redisServise.delete(userId + "cases");
+      await redisService.delete(userId + "cases");
     }
   } catch (error) {
     console.log(error);

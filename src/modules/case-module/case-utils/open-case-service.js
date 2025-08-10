@@ -7,7 +7,7 @@ import {
   createItem,
   checkItem,
 } from "../../items-module/items-utils/item-tool-service.js";
-import redisServise from "../../../services/redis-servise.js";
+import redisService from "../../../services/redis-service.js";
 import { syncUserCaseToDb } from "../../../db/functions.js";
 import { Keyboard } from "telegram-keyboard";
 import { getFamilyByUserId } from "../../fam-module/fam-service.js";
@@ -246,11 +246,11 @@ const openCase = async (user, id, ctx, count = 1) => {
     if (!needCase) return ctx.reply("Такого старкейса нет😥");
 
     const caseName = needCase.dbName;
-    let userCase = await redisServise.get(user.id + "cases");
+    let userCase = await redisService.get(user.id + "cases");
 
     if (!userCase) {
       userCase = await getUserCase(user.id);
-      await redisServise.set(user.id + "cases", JSON.stringify(userCase));
+      await redisService.set(user.id + "cases", JSON.stringify(userCase));
     } else {
       userCase = JSON.parse(userCase);
     }
@@ -273,7 +273,7 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     userCase[caseName] -= count;
-    await redisServise.set(user.id + "cases", JSON.stringify(userCase));
+    await redisService.set(user.id + "cases", JSON.stringify(userCase));
 
     let luck = 0;
     const pupsItem = await checkItem(user.id, "Пупс «Удача»");

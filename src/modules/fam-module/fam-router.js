@@ -19,7 +19,7 @@ import {
   checkUserByUsername,
   getUser,
 } from "../../db/functions.js";
-import redisServise from "../../services/redis-servise.js";
+import redisService from "../../services/redis-service.js";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 
 const famModule = new Composer();
@@ -266,7 +266,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
       const userFam = await getFamilyByUserId(userChatId);
       if (userFam)
         return await ctx.reply("У этого пользователя уже есть семья");
-      const isInvaited = await redisServise.get(
+      const isInvaited = await redisService.get(
         `invite:${ctx.message.reply_to_message.from.id}`
       );
       if (isInvaited)
@@ -284,7 +284,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
             { parse_mode: "HTML" }
           );
         });
-      await redisServise.setInvite(
+      await redisService.setInvite(
         ctx.message.reply_to_message.from.id,
         fam.id
       );
@@ -304,7 +304,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
       const userFam = await getFamilyByUserId(user.chatId);
       if (userFam)
         return await ctx.reply("У этого пользователя уже есть семья");
-      const isInvaited = await redisServise.get(`invite:${user.chatId}`);
+      const isInvaited = await redisService.get(`invite:${user.chatId}`);
       if (isInvaited)
         return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
       await ctx.telegram
@@ -320,7 +320,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
           );
         });
 
-      await redisServise.setInvite(user.chatId, fam.id);
+      await redisService.setInvite(user.chatId, fam.id);
       await ctx.reply("Заявка успешно отправлена ✅");
     }
 
@@ -335,14 +335,14 @@ famModule.hears(/^семья принять/i, async (ctx, next) => {
     const fam = await getFamilyByUserId(ctx.from.id);
     if (fam)
       return await ctx.reply("У тебя уже есть семья, зачем тебе вторая 🤔");
-    const famId = await redisServise.get(`invite:${ctx.from.id}`);
+    const famId = await redisService.get(`invite:${ctx.from.id}`);
     if (!famId) return await ctx.reply("У тебя нет приглашений в семью 🥲");
     const newFam = await getFamilyByFamId(famId);
     if (newFam.fullSlots >= newFam.slots)
       return await ctx.reply("В семье недостаточно мест 🥲");
     await addUserToFamily(ctx.from.id, famId);
     newFam.fullSlots += 1;
-    await redisServise.delete(`invite:${ctx.from.id}`);
+    await redisService.delete(`invite:${ctx.from.id}`);
     await newFam.save();
     await ctx.reply(
       `Ты успешно принял приглашение!\n\nДобро пожаловать в «${newFam.name}»`
@@ -355,9 +355,9 @@ famModule.hears(/^семья принять/i, async (ctx, next) => {
 
 famModule.hears(/^семья отклонить/i, async (ctx, next) => {
   try {
-    const famId = await redisServise.get(`invite:${ctx.from.id}`);
+    const famId = await redisService.get(`invite:${ctx.from.id}`);
     if (!famId) return await ctx.reply("У тебя нет приглашений в семью 🥲");
-    await redisServise.delete(`invite:${ctx.from.id}`);
+    await redisService.delete(`invite:${ctx.from.id}`);
     await ctx.reply("Ты успешно отклонил приглашение");
     return next();
   } catch (error) {

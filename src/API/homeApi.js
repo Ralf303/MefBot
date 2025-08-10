@@ -23,9 +23,6 @@ homeApi.get("/homeCount", async (req, res) => {
 
 homeApi.get("/getHomes", async (req, res) => {
   try {
-    console.log(`Запрос на получение домов поступил`);
-    const startTime = new Date().getTime();
-
     const { id } = req.query;
     const homesWithImages = await getHomeImg(id);
 

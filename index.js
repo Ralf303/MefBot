@@ -23,7 +23,7 @@ import { buyPrefix, changePrefix } from "./src/scenes/prefix-scene.js";
 import { rouletteScene } from "./src/scenes/roulette-scene.js";
 import itemCronService from "./src/modules/items-module/items-utils/item-cron-service.js";
 import captureGenerator from "./src/modules/capcha-module/capcha-generator.js";
-import redisServise from "./src/services/redis-servise.js";
+import redisService from "./src/services/redis-service.js";
 import { activePrize } from "./src/modules/active-module/active-prize-service.js";
 import { vipCron } from "./src/modules/vipChat-module/vipChat-cron.js";
 import { mainCronService } from "./src/modules/main-module/main-cron-service.js";
@@ -71,7 +71,7 @@ const start = async () => {
     keysService.giveAllKeys();
     gemsService.giveAllGems();
     itemCronService.changeLook(bot);
-    await redisServise.connect();
+    await redisService.connect();
     app.use(usersItemRouter);
     app.use(homeApi);
     if (process.env.WEB_HOOK_URL) {

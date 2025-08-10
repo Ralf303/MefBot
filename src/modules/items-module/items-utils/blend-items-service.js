@@ -1,7 +1,7 @@
 import Jimp from "jimp";
 import { Item } from "../../../db/models.js";
 import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
-import redisServise from "../../../services/redis-servise.js";
+import redisService from "../../../services/redis-service.js";
 
 async function blendImages(imagePaths, backgroundPath) {
   const bg = await Jimp.read(backgroundPath);
@@ -32,8 +32,8 @@ const getWornItems = async (user, ctx, home, dbHome) => {
     const homeKey = home ? `${home.src}` : "default";
     const redisKey = `pablo_${user.id}_${homeKey}`;
     const srcKey = `src_${user.id}`;
-    let buffer = await redisServise.get(redisKey);
-    let srcInRedis = await redisServise.get(srcKey);
+    let buffer = await redisService.get(redisKey);
+    let srcInRedis = await redisService.get(srcKey);
     const items = await Item.findAll({
       where: {
         userId: user.id,
@@ -87,8 +87,8 @@ const getWornItems = async (user, ctx, home, dbHome) => {
         buffer = await blendImages(src, mainBg);
       }
 
-      await redisServise.set(redisKey, buffer.toString("base64"));
-      await redisServise.set(srcKey, JSON.stringify(src));
+      await redisService.set(redisKey, buffer.toString("base64"));
+      await redisService.set(srcKey, JSON.stringify(src));
     } else {
       buffer = Buffer.from(buffer, "base64");
     }

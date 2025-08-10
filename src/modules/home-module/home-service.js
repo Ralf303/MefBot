@@ -5,7 +5,7 @@ import {
   blendImages,
   overlayImage,
 } from "../items-module/items-utils/blend-items-service.js";
-import redisServise from "../../services/redis-servise.js";
+import redisService from "../../services/redis-service.js";
 import { getUser } from "../../db/functions.js";
 import { Keyboard, Key } from "telegram-keyboard";
 import { separateNumber, getRandomInt } from "../../utils/helpers.js";
@@ -27,6 +27,7 @@ const getHomeImg = async (homeId) => {
   }
   const homeData = house.toJSON();
   const imgPath = home[house.homeId]?.src;
+
   if (!house.userId) {
     if (imgPath) {
       const imgBuffer = fs.readFileSync(imgPath);
@@ -36,7 +37,7 @@ const getHomeImg = async (homeId) => {
     }
   } else {
     const redisKey = `pablo_${house.userId}_${home[house.homeId].src}`;
-    let cachedImage = await redisServise.get(redisKey);
+    let cachedImage = await redisService.get(redisKey);
     if (cachedImage) {
       homeData.imgSrc = cachedImage;
     } else {
@@ -67,7 +68,7 @@ const generateHomeImg = async (user, home) => {
     buffer = await overlayImage(buffer, home);
 
     const base64Image = buffer.toString("base64");
-    await redisServise.set(redisKey, base64Image);
+    await redisService.set(redisKey, base64Image);
 
     return base64Image;
   } catch (error) {
