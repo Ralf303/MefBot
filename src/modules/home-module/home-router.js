@@ -69,6 +69,13 @@ homeRouter.on(message("text"), async (ctx, next) => {
       }
     }
 
+    if (word1 == "удалить" && word2 == "дом") {
+      isHome.userId = null;
+      await isHome.save();
+      await ctx.reply("Ты успешно продал свой дом");
+      return next();
+    }
+
     await isHome.save();
     return next();
   } catch (e) {

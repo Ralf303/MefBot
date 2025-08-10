@@ -21,7 +21,7 @@ homeApi.get("/homeCount", async (req, res) => {
   }
 });
 
-homeApi.get("/getHomes", async (req, res) => {
+homeApi.get("/getHome", async (req, res) => {
   try {
     const { id } = req.query;
     const homesWithImages = await getHomeImg(id);
