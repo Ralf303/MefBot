@@ -62,22 +62,17 @@ const getAllHomesWithImgs = async () => {
 
       const imgInfo = home[house.id]?.src;
 
-      if (!imgInfo) {
-        homeData.imgSrc = null;
-        return homeData;
-      }
-
-      const imgPath = imgInfo.src;
+      console.log(`Processing home ID: ${house.id}, Image Info:`, imgInfo);
 
       if (!house.userId) {
-        if (imgPath) {
-          const imgBuffer = fs.readFileSync(imgPath);
+        if (imgInfo) {
+          const imgBuffer = fs.readFileSync(imgInfo);
           homeData.imgSrc = imgBuffer.toString("base64");
         } else {
           homeData.imgSrc = null;
         }
       } else {
-        const redisKey = `pablo_${house.userId}_${imgPath}`;
+        const redisKey = `pablo_${house.userId}_${imgInfo}`;
         let cachedImage = await redisService.get(redisKey);
         if (cachedImage) {
           homeData.imgSrc = cachedImage;
