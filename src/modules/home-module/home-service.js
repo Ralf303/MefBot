@@ -60,7 +60,7 @@ const getAllHomesWithImgs = async () => {
     houses.map(async (house) => {
       const homeData = house.toJSON();
 
-      const imgInfo = home[house.homeId]?.src;
+      const imgInfo = home[house.id]?.src;
 
       if (!imgInfo) {
         homeData.imgSrc = null;
