@@ -114,7 +114,7 @@ homeApi.post("/buyHome", async (req, res) => {
     home.userId = user.id;
     await home.save();
     await user.save();
-    return res.json({ message: "success" });
+    return res.json({ message: "success", homeData: home });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
