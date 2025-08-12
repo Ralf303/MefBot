@@ -7,44 +7,51 @@ class RedisService {
   constructor() {
     if (process.env.REDIS_PASSWORD) {
       this.client = createClient({
-        host: "127.0.0.1",
-        port: 6379,
+        socket: { host: "127.0.0.1", port: 6379 },
         password: process.env.REDIS_PASSWORD,
       });
     } else {
       this.client = createClient({
-        host: "127.0.0.1",
-        port: 6379,
+        socket: { host: "127.0.0.1", port: 6379 },
       });
     }
   }
 
   async connect() {
-    await this.client.connect();
+    if (!this.client.isOpen) {
+      await this.client.connect();
+    }
   }
 
   async disconnect() {
-    await this.client.disconnect();
+    if (this.client.isOpen) {
+      await this.client.disconnect();
+    }
   }
 
-  async set(key, value) {
-    await this.client.set(key, value, {
-      EX: 86400,
-    });
+  async set(key, value, ttl = 86400) {
+    await this.client.set(key, value, { EX: ttl });
   }
 
   async get(key) {
-    const value = await this.client.get(key);
-    return value;
+    return await this.client.get(key);
   }
 
   async delete(key) {
-    this.client.del(key);
+    await this.client.del(key);
   }
 
   async setInvite(key, value) {
-    await this.client.set(`invite:${key}`, value, {
-      EX: 900,
+    await this.client.set(`invite:${key}`, value, { EX: 900 });
+  }
+
+  async setBuffer(key, buffer, ttl = 86400) {
+    await this.client.set(key, buffer, { EX: ttl });
+  }
+
+  async getBuffer(key) {
+    return await this.client.sendCommand(["GET", key], {
+      returnBuffers: true,
     });
   }
 }

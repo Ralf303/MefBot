@@ -62,8 +62,6 @@ const getAllHomesWithImgs = async () => {
 
       const imgInfo = home[house.id]?.src;
 
-      console.log(`Processing home ID: ${house.id}, Image Info:`, imgInfo);
-
       if (!house.userId) {
         if (imgInfo) {
           const imgBuffer = fs.readFileSync(imgInfo);
@@ -98,6 +96,13 @@ const generateHomeImg = async (user, home) => {
         isWorn: true,
       },
     });
+    console.log(
+      `Generating home image for user ${JSON.stringify(
+        user,
+        null,
+        2
+      )} with home ${JSON.stringify(home, null, 2)}`
+    );
 
     const src = items.map((item) => `${item.src}`);
 
@@ -179,4 +184,5 @@ export {
   sellHome,
   getHomeById,
   getAllHomesWithImgs,
+  generateHomeImg,
 };
