@@ -91,30 +91,30 @@ homeApi.get("/homeImage/:id", async (req, res) => {
 
 homeApi.post("/buyHome", async (req, res) => {
   try {
-    const { homeId, userId, price } = req.body;
+    const { homeId, userId } = req.body;
     const user = await getUser(userId);
+    const home = await getHomeById(homeId);
+    const { price } = home;
 
     if (user.balance < price) {
-      return res.json({ message: "money" });
+      return res.json({ status: "dontMoney" });
     }
 
-    const home = await getHomeById(homeId);
-
     if (home.userId) {
-      return res.json({ message: "home" });
+      return res.json({ status: "oneHomeOnly" });
     }
 
     const myHome = await getHomeByUserId(user.id);
 
     if (myHome) {
-      return res.json({ message: "myHome" });
+      return res.json({ status: "homeBusy" });
     }
 
     user.balance -= price;
     home.userId = user.id;
     await home.save();
     await user.save();
-    return res.json({ message: "success", homeData: home });
+    return res.json({ status: "success", homeData: home });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
