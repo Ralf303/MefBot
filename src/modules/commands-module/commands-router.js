@@ -5,7 +5,7 @@ import { Item } from "../../db/models.js";
 import bonusService from "../../services/bonus-service.js";
 import { Sequelize } from "sequelize";
 import ru_text from "../../../ru_text.js";
-import addServise from "../../services/add-servise.js";
+import addService from "../../services/add-service.js";
 import mainButton from "../../utils/keyboard.js";
 
 const commandRouter = new Composer();
@@ -28,7 +28,7 @@ commandRouter.start(async (ctx) => {
       }
 
       if (value.includes("add_")) {
-        addServise.take(user, ctx, value.slice(4));
+        addService.take(user, ctx, value.slice(4));
         return;
       }
     } else {

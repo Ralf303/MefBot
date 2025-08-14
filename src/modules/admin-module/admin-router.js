@@ -6,7 +6,7 @@ import { getUser } from "../../db/functions.js";
 import { User, Roles, Logs, Home } from "../../db/models.js";
 import { generatePassword } from "../../utils/helpers.js";
 import { adminList, adminTriggers } from "./admins.js";
-import addServise from "../../services/add-servise.js";
+import addService from "../../services/add-service.js";
 import { getUserCase } from "../case-module/case-utils/case-tool-service.js";
 
 const adminRouter = new Composer();
@@ -39,11 +39,11 @@ adminRouter.on(message("text"), async (ctx, next) => {
       }
 
       if (userMessage == "раздача конец") {
-        addServise.end(ctx);
+        addService.end(ctx);
       }
 
       if (userMessage == "раздача количество") {
-        const count = await addServise.count();
+        const count = await addService.count();
         await ctx.reply(`Юзеров в раздаче ${count}`);
       }
 

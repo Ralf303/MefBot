@@ -2,7 +2,7 @@ import { Composer } from "telegraf";
 import { channelPost } from "telegraf/filters";
 import bonusService from "../../services/bonus-service.js";
 import { adminChannels } from "../admin-module/admins.js";
-import addServise from "../../services/add-servise.js";
+import addService from "../../services/add-service.js";
 
 const channelRouter = new Composer();
 
@@ -24,7 +24,7 @@ channelRouter.on(channelPost("text"), async (ctx, next) => {
     }
 
     if (word1 === "реклама" && word2) {
-      addServise.send(ctx, word2, word3, word4);
+      addService.send(ctx, word2, word3, word4);
     }
     return next();
   } catch (error) {

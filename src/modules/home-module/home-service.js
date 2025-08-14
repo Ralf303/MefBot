@@ -5,7 +5,7 @@ import {
   blendImages,
   overlayImage,
 } from "../items-module/items-utils/blend-items-service.js";
-import redisServise from "../../services/redis-servise.js";
+import redisService from "../../services/redis-service.js";
 import { getUser } from "../../db/functions.js";
 import { Keyboard, Key } from "telegram-keyboard";
 import { separateNumber, getRandomInt } from "../../utils/helpers.js";
@@ -22,11 +22,14 @@ const getHomeById = async (id) => {
 
 const getHomeImg = async (homeId) => {
   const house = await Home.findOne({ where: { id: homeId }, include: "user" });
+
   if (!house) {
     throw new Error(`Дом с ID ${homeId} не найден`);
   }
+
   const homeData = house.toJSON();
   const imgPath = home[house.homeId]?.src;
+
   if (!house.userId) {
     if (imgPath) {
       const imgBuffer = fs.readFileSync(imgPath);
@@ -36,7 +39,7 @@ const getHomeImg = async (homeId) => {
     }
   } else {
     const redisKey = `pablo_${house.userId}_${home[house.homeId].src}`;
-    let cachedImage = await redisServise.get(redisKey);
+    let cachedImage = await redisService.get(redisKey);
     if (cachedImage) {
       homeData.imgSrc = cachedImage;
     } else {
@@ -50,6 +53,40 @@ const getHomeImg = async (homeId) => {
   return homeData;
 };
 
+const getAllHomesWithImgs = async () => {
+  const houses = await Home.findAll({ include: "user" });
+
+  const results = await Promise.all(
+    houses.map(async (house) => {
+      const homeData = house.toJSON();
+
+      const imgInfo = home[house.id]?.src;
+
+      if (!house.userId) {
+        if (imgInfo) {
+          const imgBuffer = fs.readFileSync(imgInfo);
+          homeData.imgSrc = imgBuffer.toString("base64");
+        } else {
+          homeData.imgSrc = null;
+        }
+      } else {
+        const redisKey = `pablo_${house.userId}_${imgInfo}`;
+        let cachedImage = await redisService.get(redisKey);
+        if (cachedImage) {
+          homeData.imgSrc = cachedImage;
+        } else {
+          const generatedImage = await generateHomeImg(house.user, imgInfo);
+          homeData.imgSrc = generatedImage;
+        }
+      }
+
+      return homeData;
+    })
+  );
+
+  return results;
+};
+
 const generateHomeImg = async (user, home) => {
   try {
     const redisKey = `pablo_${user.id}_${home.src}`;
@@ -59,6 +96,13 @@ const generateHomeImg = async (user, home) => {
         isWorn: true,
       },
     });
+    console.log(
+      `Generating home image for user ${JSON.stringify(
+        user,
+        null,
+        2
+      )} with home ${JSON.stringify(home, null, 2)}`
+    );
 
     const src = items.map((item) => `${item.src}`);
 
@@ -67,7 +111,7 @@ const generateHomeImg = async (user, home) => {
     buffer = await overlayImage(buffer, home);
 
     const base64Image = buffer.toString("base64");
-    await redisServise.set(redisKey, base64Image);
+    await redisService.set(redisKey, base64Image);
 
     return base64Image;
   } catch (error) {
@@ -134,4 +178,11 @@ const sellHome = async (user, price, replyMessage, ctx) => {
   }
 };
 
-export { getHomeByUserId, getHomeImg, sellHome, getHomeById };
+export {
+  getHomeByUserId,
+  getHomeImg,
+  sellHome,
+  getHomeById,
+  getAllHomesWithImgs,
+  generateHomeImg,
+};

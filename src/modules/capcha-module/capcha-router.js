@@ -4,7 +4,7 @@ import {
   checkItem,
   createItem,
 } from "../items-module/items-utils/item-tool-service.js";
-import redisServise from "../../services/redis-servise.js";
+import redisService from "../../services/redis-service.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
 const capchaRouter = new Composer();
@@ -12,9 +12,10 @@ const capchaRouter = new Composer();
 capchaRouter.hears(/^\d{6}$/, async (ctx, next) => {
   try {
     const capcha = ctx.match;
-    const isCapchaInRedis = await redisServise.get(String(capcha));
+    const isCapchaInRedis = await redisService.get(String(capcha));
+
     if (isCapchaInRedis == ctx.chat.id) {
-      await redisServise.delete(String(capcha));
+      await redisService.delete(String(capcha));
 
       let randommef = getRandomInt(500, 1000);
 
@@ -55,6 +56,7 @@ capchaRouter.hears(/^\d{6}$/, async (ctx, next) => {
         reply_to_message_id: ctx.message.message_id,
       });
     }
+
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);

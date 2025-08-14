@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import { getVipChats } from "../../db/functions.js";
-import redisServise from "../../services/redis-servise.js";
+import redisService from "../../services/redis-service.js";
 import { sleep, generateCapcha } from "../../utils/helpers.js";
 
 async function captureGenerator(bot) {
@@ -11,9 +11,10 @@ async function captureGenerator(bot) {
       for (const chatId of vipChats) {
         try {
           const capture = generateCapcha();
+          await redisService.set(capture, chatId.chatId);
+          await sleep(200);
           await bot.telegram.sendMessage(chatId.chatId, "СтарКапча " + capture);
-          await redisServise.set(capture, chatId.chatId);
-          await sleep(100);
+          await sleep(300);
         } catch (error) {
           continue;
         }

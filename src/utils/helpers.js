@@ -2,7 +2,7 @@ import { Keyboard, Key } from "telegram-keyboard";
 import { User } from "../db/models.js";
 import { getFamilyByUserId } from "../modules/fam-module/fam-service.js";
 import items from "../modules/items-module/items.js";
-import redisServise from "../services/redis-servise.js";
+import redisService from "../services/redis-service.js";
 import { checkUserByUsername, getUser } from "../db/functions.js";
 
 function getRandomInt(min, max) {
@@ -232,7 +232,7 @@ async function shopGenerator(id, ctx) {
 async function checkAction(id, ctx) {
   try {
     const queryId = ctx?.update?.callback_query?.message?.message_id;
-    const value = await redisServise.get(String(id));
+    const value = await redisService.get(String(id));
 
     if (String(value) === String(queryId)) {
       return;
@@ -247,7 +247,7 @@ async function checkAction(id, ctx) {
 async function saveAction(id, message) {
   try {
     const messageId = message?.message_id;
-    await redisServise.set(String(id), String(messageId));
+    await redisService.set(String(id), String(messageId));
   } catch (error) {
     throw error;
   }
