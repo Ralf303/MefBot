@@ -76,6 +76,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
 
   if (getRandomInt(0, 100) === 5) {
     const luckItemInfo = items[125];
+
     const luckItem = await Item.create({
       src: luckItemInfo.src,
       itemName: luckItemInfo.name,
@@ -91,10 +92,6 @@ const buyItem = async (user, itemInfo, ctx, status) => {
 
     await ctx.replyWithHTML(
       `❗️Ты испытал удачу и получил ${luckItemInfo.name}❗️`
-    );
-    await ctx.telegram.sendMessage(
-      process.env.CHAT_ID,
-      `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу и получил ${luckItemInfo.name}❗️`
     );
   }
 };
@@ -122,7 +119,7 @@ const deleteItem = async (user, id) => {
   user.fullSlots--;
   await item.destroy();
   await user.save();
-  return `Успешно удалена вещь ${item.itemName}[${item.id}]\nВы получили ${cashBack}`;
+  return `Успешно удалена вещь ${item.itemName}[${item.id}]\nТы получил ${cashBack}`;
 };
 
 const removeItem = async (user, id, ctx) => {
@@ -144,7 +141,6 @@ const removeItem = async (user, id, ctx) => {
       return;
     }
 
-    // снимаем указанный предмет
     item.isWorn = false;
     await item.save();
 

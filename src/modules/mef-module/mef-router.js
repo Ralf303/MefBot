@@ -31,7 +31,8 @@ mefRouter.on(message("text"), async (ctx, next) => {
           ctx.from.id,
           "Выбери что хочешь купить:",
           Keyboard.inline([
-            ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
+            ["Улучшения", "Вещи", "Майнинг"],
+            [Key.callback("🤑Донат🤑", 4)],
             [Key.callback("Закрыть", "dell")],
           ])
         );
@@ -64,8 +65,8 @@ mefRouter.on(message("text"), async (ctx, next) => {
           separateNumber(ctx.state.user.balance) +
           "\nГемы: " +
           separateNumber(ctx.state.user.gems) +
-          // "\nБиткоины: " +
-          // separateNumber(ctx.state.user.coin) +
+          "\nBTC: " +
+          separateNumber(ctx.state.user.coin) +
           "\nСемейные монеты: " +
           separateNumber(ctx.state.user.famMoney) +
           "\nИскр: " +

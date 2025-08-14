@@ -4,7 +4,10 @@ import { message } from "telegraf/filters";
 import { getUser, getChat } from "../../db/functions.js";
 import { User, Active, Chat } from "../../db/models.js";
 import { getRandomInt, sleep } from "../../utils/helpers.js";
-import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import {
+  checkItem,
+  createItem,
+} from "../items-module/items-utils/item-tool-service.js";
 import activeService from "./active-service.js";
 import ru_text from "../../../ru_text.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
@@ -75,7 +78,7 @@ activeRouter.on(message("new_chat_members"), async (ctx, next) => {
         await fromUser.save();
         await ctx.telegram.sendMessage(
           fromUser.chatId,
-          `За приглашение юзера вы получили ${sum}`
+          `За приглашение юзера ты получил ${sum}`
         );
       }
       await sleep(100);

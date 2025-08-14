@@ -1,13 +1,7 @@
 import { syncUserCaseToDb } from "../../../db/functions.js";
 import { Item, User } from "../../../db/models.js";
-import {
-  getRandomInt,
-  calculateMiningAmount,
-  sleep,
-} from "../../../utils/helpers.js";
-import {
-  getUserCase,
-} from "../../case-module/case-utils/case-tool-service.js";
+import { getRandomInt, sleep } from "../../../utils/helpers.js";
+import { getUserCase } from "../../case-module/case-utils/case-tool-service.js";
 import cases from "../../case-module/cases.js";
 import { userFerma } from "../../mef-module/ferma.js";
 import { createItem, checkItem } from "./item-tool-service.js";
@@ -340,15 +334,11 @@ class ItemService {
           for (const drone of drones) {
             try {
               const user = await User.findOne({ where: { id: drone.userId } });
-              let minedAmount = calculateMiningAmount(user.balance);
+              const hasPup = await checkItem(user.id, "Пупс «Ремонт»");
+              const randomAmount = getRandomInt(1, 3);
 
-              if (
-                (await checkItem(user.id, "Пупс «Ремонт»")) &&
-                minedAmount > 150000
-              ) {
-                minedAmount = 200000;
-              } else if (minedAmount > 150000) {
-                minedAmount = 150000;
+              if (hasPup) {
+                randomAmount += 2;
               }
 
               const chance = getRandomInt(0, 300);
@@ -366,9 +356,9 @@ class ItemService {
                 await item.save();
               }
 
-              user.balance += minedAmount;
+              user.coins += minedAmount;
               await user.save();
-              const message = `Я намайнил ${minedAmount} старок🤑`;
+              const message = `Я намайнил ${minedAmount} ₿🤑`;
               await bot.telegram.sendMessage(user.chatId, message);
               await sleep(200);
             } catch (error) {

@@ -29,6 +29,8 @@ import gameRouter from "./src/modules/game-module/game-router.js";
 import capchaRouter from "./src/modules/capcha-module/capcha-router.js";
 import donateRouter from "./src/modules/donate-module/donate-router.js";
 import donatAction from "./src/modules/donate-module/donate-action.js";
+import cardRouter from "./src/modules/card-module/card-router.js";
+import cardActions from "./src/modules/card-module/card-action.js";
 // import eventRouter from "./src/modules/event-module/event-router.js";
 
 const middleware = new Composer();
@@ -75,6 +77,8 @@ middleware.use(gameRouter);
 middleware.use(capchaRouter);
 middleware.use(donateRouter);
 middleware.use(donatAction);
+middleware.use(cardRouter);
+middleware.use(cardActions);
 // middleware.use(eventRouter);
 
 middleware.use(async (ctx) => {

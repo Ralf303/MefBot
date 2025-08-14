@@ -27,10 +27,6 @@ function separateNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-function calculateMiningAmount(balance) {
-  return Math.floor(balance * 0.1);
-}
-
 function generatePassword(length) {
   let charset =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -323,7 +319,6 @@ export {
   getRandomInt,
   generateCapcha,
   separateNumber,
-  calculateMiningAmount,
   generatePassword,
   formatTime,
   sleep,

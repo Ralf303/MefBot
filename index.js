@@ -35,6 +35,7 @@ import famCron from "./src/modules/fam-module/fam-cron-service.js";
 import homeCronService from "./src/modules/home-module/home-cron-service.js";
 import homeApi from "./src/API/homeApi.js";
 import middleware from "./middlewares.js";
+import mineService from "./src/modules/mine-module/mine-cron.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -70,6 +71,7 @@ const start = async () => {
     homeCronService();
     keysService.giveAllKeys();
     gemsService.giveAllGems();
+    mineService.mineCron();
     itemCronService.changeLook(bot);
     await redisServise.connect();
     app.use(usersItemRouter);

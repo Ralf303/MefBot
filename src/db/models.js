@@ -185,19 +185,45 @@ const Bafs = sequelize.define("Bafs", {
   case: { type: DataTypes.INTEGER, defaultValue: 0 },
 });
 
-Family.hasOne(Bafs, { foreignKey: "familyId" });
-Bafs.belongsTo(Family, { foreignKey: "familyId" });
+const Mining = sequelize.define("mining", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  freeze: { type: DataTypes.INTEGER, defaultValue: 0 },
+  coin: { type: DataTypes.INTEGER, defaultValue: 0 },
+  cards: { type: DataTypes.INTEGER, defaultValue: 0 },
+  currency: { type: DataTypes.INTEGER, defaultValue: 0 },
+});
+
+const Card = sequelize.define("card", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  lvl: { type: DataTypes.INTEGER, defaultValue: 1 },
+  fuel: { type: DataTypes.INTEGER, defaultValue: 0 },
+  balance: { type: DataTypes.INTEGER, defaultValue: 0 },
+});
+
 User.hasMany(FamMember, { foreignKey: "userId", sourceKey: "chatId" });
-FamMember.belongsTo(User, { foreignKey: "userId", targetKey: "chatId" });
 User.hasOne(Case);
 User.hasOne(Home);
-Home.belongsTo(User);
-Case.belongsTo(User);
+User.hasMany(Card, { as: "cards" });
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
+User.hasOne(Active, { foreignKey: "userId" });
+Bafs.belongsTo(Family, { foreignKey: "familyId" });
+Family.hasOne(Bafs, { foreignKey: "familyId" });
+FamMember.belongsTo(User, { foreignKey: "userId", targetKey: "chatId" });
+Home.belongsTo(User);
+Case.belongsTo(User);
 Active.belongsTo(User, { foreignKey: "userId" });
 Active.belongsTo(Chat, { foreignKey: "chatId" });
-User.hasOne(Active, { foreignKey: "userId" });
 Chat.hasOne(Active, { foreignKey: "chatId" });
 
 export {
@@ -214,4 +240,6 @@ export {
   Active,
   Chat,
   Home,
+  Mining,
+  Card,
 };

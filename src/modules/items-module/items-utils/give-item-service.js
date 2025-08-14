@@ -1,5 +1,4 @@
 import { User, Item } from "../../../db/models.js";
-import { loseLog, giveResoursesLog } from "../../logs-module/globalLogs.js";
 
 const giveItem = async (sender, id, ctx) => {
   try {
@@ -55,17 +54,6 @@ const giveItem = async (sender, id, ctx) => {
     await ctx.reply(
       `Ты успешно передал(а) ${item.itemName}[${item.id}](+${item.lvl}) <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
       { parse_mode: "HTML" }
-    );
-    await loseLog(
-      sender,
-      `${item.itemName}[${item.id}]`,
-      "передача другому юзеру"
-    );
-    await giveResoursesLog(
-      sender,
-      receiver,
-      `${item.itemName}[${item.id}]`,
-      "1"
     );
   } catch (error) {
     console.log(error);

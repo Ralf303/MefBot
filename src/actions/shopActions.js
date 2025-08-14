@@ -3,6 +3,7 @@ import { Composer } from "telegraf";
 import { getUser } from "../db/functions.js";
 import { shopGenerator } from "../utils/helpers.js";
 import text from "../../ru_text.js";
+import { getMineInfo } from "../modules/mine-module/mine-service.js";
 
 const shopActions = new Composer();
 
@@ -136,7 +137,8 @@ shopActions.action("menu", async (ctx) => {
     await ctx.reply(
       "Выбери что хочешь купить:",
       Keyboard.inline([
-        ["Улучшения", "Вещи", Key.callback("🤑Донат🤑", 4)],
+        ["Улучшения", "Вещи", "Майнинг"],
+        [Key.callback("🤑Донат🤑", 4)],
         [Key.callback("Закрыть", "dell")],
       ])
     );
@@ -145,11 +147,13 @@ shopActions.action("menu", async (ctx) => {
   }
 });
 
-shopActions.action("Видеокарты", async (ctx) => {
+shopActions.action("Майнинг", async (ctx) => {
   try {
     await ctx.deleteMessage();
+    const info = await getMineInfo();
+
     await ctx.reply(
-      "⛏️ Магазин видеокарт ⛏️\n\nВ наличии: 1 видеокарт\nЦена: 10.000 гемов\n\nℹ️ Каждый час в магазин завозится одна видеокарта\n\n📖 Купить видеокарту",
+      `⛏️Все для майнинга⛏️\n\nВидеокарта\nВ наличии: ${info.cards}шт\nЦена: 15.000 гемов\n\nОхлаждающая жидкость\nВ наличии: ${info.freeze}шт\nЦена: 250 гемов\n\nℹ️ Каждый час в магазин завозится одна видеокарта\n\n📖 Купить видеокарту\n📖 Купить охлаждайку`,
       Keyboard.inline([[Key.callback("🔙Назад", "menu")]])
     );
   } catch (error) {

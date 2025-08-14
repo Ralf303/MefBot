@@ -114,10 +114,10 @@ rouletteScene.on("callback_query", async (ctx) => {
         amount
       )} на (${bet}). ${
         winAmount > 0
-          ? `\n🥳 Поздравляем, вы выиграли ${winAmount}!\n\nБаланс: ${separateNumber(
+          ? `\n🥳 Поздравляем, ты выиграл ${winAmount}!\n\nБаланс: ${separateNumber(
               user.balance - amount + winAmount
             )}`
-          : `\n😔 Увы, вы проиграли. Попробуйте еще раз.\n\nБаланс: ${separateNumber(
+          : `\n😔 Увы, ты проиграл. Попробуйте еще раз.\n\nБаланс: ${separateNumber(
               user.balance - amount
             )}`
       }`;

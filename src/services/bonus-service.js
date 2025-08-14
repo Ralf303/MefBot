@@ -63,7 +63,7 @@ class BonusService {
     await user.save();
     await item.save();
     await ctx.replyWithHTML(
-      `Спасибо за участие в раздаче)\n\nВы получили:\n•${itemInfo.name}\n•${prize} старок\n\n📖<code>Надеть ${item.id}</code>`
+      `Спасибо за участие в раздаче)\n\nТы получил:\n•${itemInfo.name}\n•${prize} старок\n\n📖<code>Надеть ${item.id}</code>`
     );
   }
 

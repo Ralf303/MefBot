@@ -53,8 +53,7 @@ const openDonateCase = async (user, ctx) => {
 const open = async (user, ctx, box, luck) => {
   let result = ``;
   try {
-    let chance = getRandomInt(0, 6000);
-    chance -= luck;
+    let chance = getRandomInt(0, 6000 - luck);
 
     if (chance <= 499) {
       const win = getRandomInt(1, 250);
