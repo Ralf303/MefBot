@@ -208,6 +208,18 @@ const Card = sequelize.define("card", {
   lvl: { type: DataTypes.INTEGER, defaultValue: 1 },
   fuel: { type: DataTypes.INTEGER, defaultValue: 0 },
   balance: { type: DataTypes.INTEGER, defaultValue: 0 },
+  userId: { type: DataTypes.INTEGER },
+});
+
+const CardStand = sequelize.define("cardStand", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  userId: { type: DataTypes.INTEGER },
+  cardId: { type: DataTypes.INTEGER, unique: true, allowNull: true },
 });
 
 User.hasMany(FamMember, { foreignKey: "userId", sourceKey: "chatId" });
@@ -216,6 +228,12 @@ User.hasOne(Home);
 User.hasMany(Card, { as: "cards" });
 User.hasMany(Item, { as: "items" });
 User.hasOne(Roles, { as: "role" });
+User.hasMany(Card, { foreignKey: "userId" });
+User.hasMany(CardStand, { foreignKey: "userId" });
+Card.belongsTo(User, { foreignKey: "userId" });
+CardStand.belongsTo(User, { foreignKey: "userId" });
+CardStand.belongsTo(Card, { foreignKey: "cardId" });
+Card.hasOne(CardStand, { foreignKey: "cardId" });
 User.hasOne(Active, { foreignKey: "userId" });
 Bafs.belongsTo(Family, { foreignKey: "familyId" });
 Family.hasOne(Bafs, { foreignKey: "familyId" });
