@@ -26,6 +26,24 @@ class MineService {
       "Europe/Moscow"
     );
   }
+
+  async updateShop() {
+    new CronJob(
+      "* 5 * * *",
+      async () => {
+        try {
+          const mineInfo = await getMineInfo();
+          mineInfo.cards += 1;
+          await mineInfo.save();
+        } catch (error) {
+          console.error("Error updating mine info:", error);
+        }
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+  }
 }
 
 export default new MineService();

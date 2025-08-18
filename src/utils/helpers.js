@@ -198,9 +198,7 @@ async function shopGenerator(id, ctx) {
     sorteditems.forEach((item) => {
       result += `• ${items[item].name}[<code>${item}</code>]: ${items[item].price} гемов\n`;
     });
-    result +=
-      "• Охлаждающая жидкость: 100 гемов\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
-    // 📖Купить охлаждение [кол-во]
+    result += "\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n";
     return await ctx.replyWithHTML(result);
   }
 
@@ -214,7 +212,7 @@ async function shopGenerator(id, ctx) {
       result += `• ${items[item].name}[<code>${item}</code>]: ${items[item].price} семейных монет\n`;
     });
     result +=
-      "• Точильный камень: 100 семейных монет\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]";
+      "• Точильный камень: 50 семейных монет\n• Смазки для видеокарты: 200 семейных монет\n\n\n📖Инфа id\n📖Примерить id\n📖Купить вещь id\n📖Купить камни [кол-во]\n📖Купить смазки [кол-во]";
     return await ctx.replyWithHTML(
       result,
       Keyboard.inline([[Key.callback("🔙Назад", "Вещи")]])

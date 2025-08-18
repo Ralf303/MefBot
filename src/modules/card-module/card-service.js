@@ -1,7 +1,8 @@
 import { Key, Keyboard } from "telegram-keyboard";
 import { getUser } from "../../db/functions.js";
 import { Card, User } from "../../db/models.js";
-import { separateNumber } from "../../utils/helpers.js";
+import { getRandomInt, separateNumber } from "../../utils/helpers.js";
+import { getMineInfo } from "../mine-module/mine-service.js";
 
 const getInventory = async (user, ctx) => {
   const cards = await Card.findAll({ where: { userId: user.id } });
@@ -87,6 +88,15 @@ const buyCard = async (user) => {
     return "Недостаточно гемов🥲";
   }
 
+  const count = await getMineInfo();
+
+  if (count.cards <= 0) {
+    return "Видеокарты закончились🥲";
+  }
+
+  count.cards -= 1;
+  await count.save();
+
   const newCard = await Card.create({
     userId: user.id,
     lvl: 0,
@@ -157,4 +167,56 @@ const sellCard = async (user, id, price, replyMessage, ctx) => {
   }
 };
 
-export { getInventory, deleteCard, giveCard, buyCard, sellCard };
+const upgradeCard = async (user, itemId) => {
+  try {
+    const hasCard = await Card.findOne({
+      where: {
+        userId: user.id,
+        id: itemId,
+      },
+    });
+
+    if (!hasCard) {
+      return "У тебя нет этой видеокарты 😥";
+    }
+
+    if (user.oil === 0) {
+      return "У тебя не достаточно смазок для видеокарты 😥";
+    }
+
+    if (hasCard.lvl === 10) {
+      return "Эта видеокарта уже максимального уровня 💪";
+    }
+
+    const chance = getRandomInt(0, 100);
+
+    let percent = 100 - (hasCard.lvl + 1) * 10;
+
+    if (hasCard.lvl === 9) {
+      percent = 1;
+    }
+
+    if (hasCard.lvl === 0) {
+      percent = 90;
+    }
+
+    if (chance <= percent) {
+      hasCard.lvl += 1;
+      await hasCard.save();
+
+      user.oil -= 1;
+      await user.save();
+
+      return `Ты успешно улучшил Видеокарта[${hasCard.id}] до ${hasCard.lvl} уровня 🎉`;
+    } else {
+      user.oil -= 1;
+      await user.save();
+
+      return "Ты не смог улучшить видеокарту, смазка утеряна 😥";
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { getInventory, deleteCard, giveCard, buyCard, sellCard, upgradeCard };

@@ -72,6 +72,7 @@ const start = async () => {
     keysService.giveAllKeys();
     gemsService.giveAllGems();
     mineService.mineCron();
+    mineService.updateShop();
     itemCronService.changeLook(bot);
     await redisService.connect();
     app.use(usersItemRouter);

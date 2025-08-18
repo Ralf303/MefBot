@@ -134,7 +134,7 @@ const open = async (user, ctx, box, luck) => {
     }
 
     if (chance >= 2004 && chance <= 2006) {
-      const win = getRandomInt(1, 3);
+      const win = getRandomInt(1, 5);
       user.freeze += win;
       result += `${win} охлаждающих жидкостей ❄️`;
     }
@@ -143,12 +143,6 @@ const open = async (user, ctx, box, luck) => {
       const win = getRandomInt(1, 10);
       user.oil += win;
       result += `${win} смазок для видеокарты 🛢`;
-    }
-
-    if (chance >= 2004) {
-      const win = getRandomInt(22, 52);
-      user.balance += win;
-      result += `${win} старок⭐️`;
     }
 
     await user.save();

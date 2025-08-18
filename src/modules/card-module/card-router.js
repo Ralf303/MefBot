@@ -6,6 +6,7 @@ import {
   getInventory,
   giveCard,
   sellCard,
+  upgradeCard,
 } from "./card-service.js";
 
 const cardRouter = new Composer();
@@ -64,6 +65,23 @@ cardRouter.on(message("text"), async (ctx, next) => {
     return next();
   } catch (e) {
     await ctx.reply("Какая то ошибка, " + e);
+  }
+});
+
+cardRouter.hears(/^улучшить (?:видео)?карту.*$/i, async (ctx, next) => {
+  try {
+    const cardId = ctx.message.text.split(" ")[2];
+
+    if (!cardId) {
+      await ctx.reply("Укажи id видеокарты");
+      return;
+    }
+
+    const result = await upgradeCard(ctx.state.user, cardId);
+    await ctx.reply(result);
+    return next();
+  } catch (error) {
+    console.log(error);
   }
 });
 
