@@ -356,9 +356,9 @@ class ItemService {
                 await item.save();
               }
 
-              user.coins += minedAmount;
+              user.coins += randomAmount;
               await user.save();
-              const message = `Я намайнил ${minedAmount} ₿🤑`;
+              const message = `Я намайнил ${randomAmount} ₿🤑`;
               await bot.telegram.sendMessage(user.chatId, message);
               await sleep(200);
             } catch (error) {

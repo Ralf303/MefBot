@@ -1,5 +1,5 @@
 import { CronJob } from "cron";
-import { getMineInfo } from "./mine-service.js";
+import { getMineInfo, increaseCardBalances } from "./mine-service.js";
 import axios from "axios";
 
 class MineService {
@@ -33,10 +33,34 @@ class MineService {
       async () => {
         try {
           const mineInfo = await getMineInfo();
-          mineInfo.cards += 1;
+
+          if (mineInfo.cards < 100) {
+            mineInfo.cards += 1;
+          }
+
+          if (mineInfo.freeze < 100) {
+            mineInfo.freeze += 1;
+          }
+
           await mineInfo.save();
         } catch (error) {
           console.error("Error updating mine info:", error);
+        }
+      },
+      null,
+      true,
+      "Europe/Moscow"
+    );
+  }
+
+  async updateCardBalances() {
+    new CronJob(
+      "0 */1 * * * *",
+      async () => {
+        try {
+          await increaseCardBalances();
+        } catch (error) {
+          console.error("Error updating card balances:", error);
         }
       },
       null,

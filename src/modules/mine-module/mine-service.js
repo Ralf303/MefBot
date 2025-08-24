@@ -1,4 +1,5 @@
-import { Mining } from "../../db/models.js";
+import { Card, CardStand, Mining } from "../../db/models.js";
+import { Op } from "sequelize";
 
 const getMineInfo = async () => {
   const mineInfo = await Mining.findOne({
@@ -10,4 +11,21 @@ const getMineInfo = async () => {
   return mineInfo;
 };
 
-export { getMineInfo };
+async function increaseCardBalances() {
+  const stands = await CardStand.findAll({
+    where: {
+      cardId: { [Op.ne]: null },
+    },
+    include: [Card],
+  });
+
+  for (const stand of stands) {
+    const card = stand.card;
+    if (card && card.fuel > 0) {
+      card.balance += 0.5 * card.lvl;
+      await card.save();
+    }
+  }
+}
+
+export { getMineInfo, increaseCardBalances };

@@ -207,7 +207,7 @@ const Card = sequelize.define("card", {
   },
   lvl: { type: DataTypes.INTEGER, defaultValue: 1 },
   fuel: { type: DataTypes.INTEGER, defaultValue: 0 },
-  balance: { type: DataTypes.INTEGER, defaultValue: 0 },
+  balance: { type: DataTypes.FLOAT, defaultValue: 0 },
   userId: { type: DataTypes.INTEGER },
 });
 
@@ -260,4 +260,5 @@ export {
   Home,
   Mining,
   Card,
+  CardStand,
 };

@@ -32,6 +32,7 @@ import donatAction from "./src/modules/donate-module/donate-action.js";
 import cardRouter from "./src/modules/card-module/card-router.js";
 import cardActions from "./src/modules/card-module/card-action.js";
 import oilRouter from "./src/modules/oil-module/oil-router.js";
+import freezeRouter from "./src/modules/freeze-module/freeze-router.js";
 // import eventRouter from "./src/modules/event-module/event-router.js";
 
 const middleware = new Composer();
@@ -81,6 +82,7 @@ middleware.use(donatAction);
 middleware.use(cardRouter);
 middleware.use(cardActions);
 middleware.use(oilRouter);
+middleware.use(freezeRouter);
 // middleware.use(eventRouter);
 
 middleware.use(async (ctx) => {
