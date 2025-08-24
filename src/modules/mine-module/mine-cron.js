@@ -75,7 +75,7 @@ class MineService {
 
   async updateFreezeBalances() {
     new CronJob(
-      "0 0 /1 * * *",
+      "0 17 * * * *",
       async () => {
         try {
           await updateFreezeBalances();
