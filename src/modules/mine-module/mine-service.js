@@ -21,7 +21,13 @@ async function increaseCardBalances() {
 
   for (const stand of stands) {
     const card = stand.card;
-    if (card && card.fuel > 0) {
+
+    if (card && card.lvl === 0) {
+      card.balance += 0.5;
+      await card.save();
+    }
+
+    if (card && card.fuel > 0 && card.lvl > 0) {
       card.balance += 0.5 * card.lvl;
       await card.save();
     }
