@@ -55,7 +55,7 @@ class MineService {
 
   async updateCardBalances() {
     new CronJob(
-      "0 */1 * * * *",
+      "0 0 8 * * *",
       async () => {
         try {
           await increaseCardBalances();
