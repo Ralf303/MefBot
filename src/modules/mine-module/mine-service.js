@@ -28,4 +28,20 @@ async function increaseCardBalances() {
   }
 }
 
-export { getMineInfo, increaseCardBalances };
+async function updateFreezeBalances() {
+  const stands = await CardStand.findAll({
+    where: {
+      cardId: { [Op.ne]: null },
+    },
+    include: [Card],
+  });
+
+  for (const stand of stands) {
+    const card = stand.card;
+    if (card && card.fuel < 100) {
+      card.fuel -= 1;
+      await card.save();
+    }
+  }
+}
+export { getMineInfo, increaseCardBalances, updateFreezeBalances };

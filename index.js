@@ -74,6 +74,7 @@ const start = async () => {
     mineService.mineCron();
     mineService.updateShop();
     mineService.updateCardBalances();
+    mineService.updateFreezeBalances();
     itemCronService.changeLook(bot);
     await redisService.connect();
     app.use(usersItemRouter);
