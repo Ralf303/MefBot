@@ -44,7 +44,7 @@ async function updateFreezeBalances() {
 
   for (const stand of stands) {
     const card = stand.card;
-    if (card && card.fuel < 100) {
+    if (card && card.fuel > 0) {
       card.fuel -= 1;
       await card.save();
     }

@@ -1,6 +1,7 @@
 import { Composer } from "telegraf";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 import { getUser } from "../../db/functions.js";
+import { getMineInfo } from "../mine-module/mine-service.js";
 
 const freezeRouter = new Composer();
 
@@ -77,6 +78,15 @@ freezeRouter.hears(/^передать жидкости.*$/i, async (ctx, next) =
 freezeRouter.hears(/^купить жидкости.*$/i, async (ctx, next) => {
   try {
     let count = parseInt(ctx.message.text.split(" ")[2]);
+
+    const mineShop = await getMineInfo();
+
+    if (mineShop.cards <= 0) {
+      return "Охлаждающие жидкости закончились🥲";
+    }
+
+    mineShop.cards -= 1;
+    await mineShop.save();
 
     if (isNaN(count) || count <= 0) {
       count = 1;
