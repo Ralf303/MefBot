@@ -74,7 +74,7 @@ freezeRouter.hears(/^передать жидкости.*$/i, async (ctx, next) =
   }
 });
 
-freezeRouter.hears(/^купить смазки.*$/i, async (ctx, next) => {
+freezeRouter.hears(/^купить жидкости.*$/i, async (ctx, next) => {
   try {
     let count = parseInt(ctx.message.text.split(" ")[2]);
 
