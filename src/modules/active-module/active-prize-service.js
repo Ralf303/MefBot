@@ -2,7 +2,10 @@ import { CronJob } from "cron";
 import { getUser, getVipChats } from "../../db/functions.js";
 import { sleep, getRandomInt } from "../../utils/helpers.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
-import { checkItem, createItem } from "../items-module/items-utils/item-tool-service.js";
+import {
+  checkItem,
+  createItem,
+} from "../items-module/items-utils/item-tool-service.js";
 import activeService from "./active-service.js";
 
 function activePrize(bot) {
@@ -39,7 +42,7 @@ function activePrize(bot) {
                 (await checkItem(user.id, "Пупс «Красноречие»")) &&
                 active.day != 0
               ) {
-                prize += 1000;
+                prize *= 2;
               }
 
               const fam = await getFamilyByUserId(user.chatId);
@@ -113,7 +116,7 @@ function activePrize(bot) {
                 (await checkItem(user.id, "Пупс «Красноречие»")) &&
                 active.week != 0
               ) {
-                prize += 1000;
+                prize *= 2;
               }
 
               const fam = await getFamilyByUserId(user.chatId);
@@ -187,7 +190,7 @@ function activePrize(bot) {
                 (await checkItem(user.id, "Пупс «Красноречие»")) &&
                 active.month != 0
               ) {
-                prize += 1000;
+                prize *= 2;
               }
 
               const fam = await getFamilyByUserId(user.chatId);
