@@ -4,7 +4,6 @@ import { getRandomInt, sleep } from "../../../utils/helpers.js";
 import { getUserCase } from "../../case-module/case-utils/case-tool-service.js";
 import cases from "../../case-module/cases.js";
 import { userFerma } from "../../mef-module/ferma.js";
-import { createItem, checkItem } from "./item-tool-service.js";
 import { CronJob } from "cron";
 
 class ItemService {
@@ -314,58 +313,6 @@ class ItemService {
             },
           }
         );
-      },
-      null,
-      true,
-      "Europe/Moscow"
-    );
-
-    new CronJob(
-      "20 0 13 * * *",
-      async function () {
-        const drones = await Item.findAll({
-          where: {
-            itemName: "Дрон Майнер",
-            isWorn: true,
-          },
-        });
-
-        if (drones) {
-          for (const drone of drones) {
-            try {
-              const user = await User.findOne({ where: { id: drone.userId } });
-              const hasPup = await checkItem(user.id, "Пупс «Ремонт»");
-              const randomAmount = getRandomInt(1, 3);
-
-              if (hasPup) {
-                randomAmount += 2;
-              }
-
-              const chance = getRandomInt(0, 300);
-
-              if (chance === 1) {
-                const item = await createItem(126);
-
-                user.fullSlots++;
-                await user.addItem(item);
-                await bot.telegram.sendMessage(
-                  user.chatId,
-                  `❗️Ты испытал(а) удачу и получили ${item.itemName}❗️`,
-                  { parse_mode: "HTML" }
-                );
-                await item.save();
-              }
-
-              user.coin += randomAmount;
-              await user.save();
-              const message = `Я намайнил ${randomAmount} ₿🤑`;
-              await bot.telegram.sendMessage(user.chatId, message);
-              await sleep(200);
-            } catch (error) {
-              continue;
-            }
-          }
-        }
       },
       null,
       true,
