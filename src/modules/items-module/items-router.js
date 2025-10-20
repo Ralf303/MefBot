@@ -1,7 +1,5 @@
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
-
-import { shopGenerator } from "../../utils/helpers.js";
 import items from "./items.js";
 import {
   getInventory,

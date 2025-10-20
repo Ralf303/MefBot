@@ -1644,6 +1644,22 @@ const items = {
     canBuy: true,
     class: "event",
   },
+
+  181: {
+    name: "Нян Кэт",
+    src: "gif/cat.gif",
+    bodyPart: "extra",
+    price: 0,
+    canBuy: true,
+    class: "never",
+    animated: true,
+    anim: {
+      x: 520,
+      y: -40,
+      scale: 250,
+      fps: 30,
+    },
+  },
 };
 
 export default items;
