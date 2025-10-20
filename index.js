@@ -36,6 +36,7 @@ import homeCronService from "./src/modules/home-module/home-cron-service.js";
 import homeApi from "./src/API/homeApi.js";
 import middleware from "./middlewares.js";
 import mineService from "./src/modules/mine-module/mine-cron.js";
+import { startAnimsCleanupCron } from "./src/modules/items-module/items-utils/blend-items-service.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -66,6 +67,7 @@ const start = async () => {
     activePrize(bot);
     vipCron(bot);
     cronService(bot);
+    startAnimsCleanupCron();
     await captureGenerator(bot);
     famCron(bot);
     await homeCronService();
