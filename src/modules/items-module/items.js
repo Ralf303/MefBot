@@ -1646,12 +1646,13 @@ const items = {
   },
 
   181: {
-    name: "Нян Кэт📺",
+    name: "Нян Кэт 📺",
     src: "gif/cat.gif",
     bodyPart: "extra",
-    price: 0,
+    price: 50,
     canBuy: true,
-    class: "never",
+    class: "donate",
+    info: "Первый анимированный предмет",
     animated: true,
     anim: {
       x: 520,
