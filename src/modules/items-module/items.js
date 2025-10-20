@@ -1646,7 +1646,7 @@ const items = {
   },
 
   181: {
-    name: "Нян Кэт",
+    name: "Нян Кэт📺",
     src: "gif/cat.gif",
     bodyPart: "extra",
     price: 0,
