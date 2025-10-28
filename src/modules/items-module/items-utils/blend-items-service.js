@@ -33,13 +33,13 @@ async function removeFiles(paths) {
   }
 }
 
-function isAnimatedSrc(src) {
+export function isAnimatedSrc(src) {
   if (!src) return false;
   const ext = path.extname(src).toLowerCase();
   return ext === ".gif" || ext === ".webp" || ext === ".apng";
 }
 
-function isAnimatedItem(dbItem) {
+export function isAnimatedItem(dbItem) {
   const byExt = isAnimatedSrc(dbItem.src);
   let byConfig = false;
   try {
@@ -51,7 +51,7 @@ function isAnimatedItem(dbItem) {
   return byExt || byConfig;
 }
 
-function getAnimConfig(dbItem) {
+export function getAnimConfig(dbItem) {
   const conf = Object.values(itemsConfig).find(
     (v) => v?.name === dbItem.itemName
   );
