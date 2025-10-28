@@ -10,14 +10,18 @@ import { getRandomInt } from "../utils/helpers.js";
 import path from "path";
 import { getUser } from "../db/functions.js";
 import fs from "fs/promises";
+import util from "util";
+import { exec } from "child_process";
 
+const execAsync = util.promisify(exec);
 const usersItemRouter = new Router();
 
 usersItemRouter.get("/getPhoto", async (req, res) => {
   try {
     const userId = req.query.userId;
-    const user = await getUser(userId);
+    const format = (req.query.format || "mp4").toString().toLowerCase();
 
+    const user = await getUser(userId);
     const items = await Item.findAll({
       where: { userId: user.id, isWorn: true },
     });
@@ -69,15 +73,40 @@ usersItemRouter.get("/getPhoto", async (req, res) => {
       home: null,
     });
 
-    const videoBuffer = await fs.readFile(videoPath);
+    if (format === "gif") {
+      const gifPath = videoPath.replace(/\.mp4$/, ".gif");
+      await execAsync(`
+        ffmpeg -i "${videoPath}" -filter_complex "[0:v]split[x][z];[x]palettegen[p];[z][p]paletteuse" -f gif - | gifsicle --colors 256 --optimize=3 --transparent "#000000" > "${gifPath}"
+      `);
+      const gifBuffer = await fs.readFile(gifPath);
+      res.contentType("image/gif");
+      res.send(gifBuffer);
+      await fs.unlink(tmpPngPath).catch(() => {});
+      await fs.unlink(videoPath).catch(() => {});
+      await fs.unlink(gifPath).catch(() => {});
+      return;
+    }
 
+    if (format === "webm") {
+      const webmPath = videoPath.replace(/\.mp4$/, ".webm");
+      await execAsync(`
+        ffmpeg -i "${videoPath}" -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1M "${webmPath}"
+      `);
+      const webmBuffer = await fs.readFile(webmPath);
+      res.contentType("video/webm");
+      res.send(webmBuffer);
+      await fs.unlink(tmpPngPath).catch(() => {});
+      await fs.unlink(videoPath).catch(() => {});
+      await fs.unlink(webmPath).catch(() => {});
+      return;
+    }
+
+    const videoBuffer = await fs.readFile(videoPath);
     res.contentType("video/mp4");
     res.send(videoBuffer);
 
-    try {
-      await fs.unlink(tmpPngPath);
-      await fs.unlink(videoPath);
-    } catch {}
+    await fs.unlink(tmpPngPath).catch(() => {});
+    await fs.unlink(videoPath).catch(() => {});
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal error");
