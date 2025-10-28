@@ -147,13 +147,22 @@ export async function renderAnimatedVideo({
   animatedItems,
   home,
   durationSec = 3,
+  transparent = false, // новый флаг
 }) {
   await ensureAnimsDir();
+
+  // параметры кодека (в зависимости от прозрачности)
+  const isTransparent = Boolean(transparent);
+  const codec = isTransparent ? "libvpx-vp9" : "libx264";
+  const pixFmt = isTransparent ? "yuva420p" : "yuv420p";
+  const fileExt = isTransparent ? ".webm" : ".mp4";
+
   if (!home) {
     const baseVideo = path.join(
       ANIMS_DIR,
-      `base_${Date.now()}_${Math.random().toString(36).slice(2)}.mp4`
+      `base_${Date.now()}_${Math.random().toString(36).slice(2)}${fileExt}`
     );
+
     await execFfmpeg(
       [
         "-loop",
@@ -166,41 +175,53 @@ export async function renderAnimatedVideo({
         "30",
         "-an",
         "-c:v",
-        "libx264",
-        "-preset",
-        "veryfast",
-        "-profile:v",
-        "baseline",
-        "-level",
-        "3.0",
+        codec,
         "-pix_fmt",
-        "yuv420p",
-        "-movflags",
-        "+faststart",
+        pixFmt,
+        ...(isTransparent
+          ? ["-b:v", "1M"]
+          : [
+              "-preset",
+              "veryfast",
+              "-profile:v",
+              "baseline",
+              "-level",
+              "3.0",
+              "-movflags",
+              "+faststart",
+            ]),
         "-vf",
         "scale='min(720,iw)':'-2'",
         baseVideo,
       ],
       { timeoutMs: 15000, tag: "mkBaseVideo" }
     );
+
     try {
       await fs.unlink(charPngPath);
     } catch {}
+
     let currentVideo = baseVideo;
+
     for (let i = 0; i < animatedItems.length; i++) {
       const { src, x = 0, y = 0, scale = 256, fps = 30 } = animatedItems[i];
       const ext = path.extname(src).toLowerCase();
       const nextVideo = path.join(
         ANIMS_DIR,
-        `ovl_${i}_${Date.now()}_${Math.random().toString(36).slice(2)}.mp4`
+        `ovl_${i}_${Date.now()}_${Math.random()
+          .toString(36)
+          .slice(2)}${fileExt}`
       );
+
       const inputs = ["-i", currentVideo];
       if (ext === ".gif") inputs.push("-ignore_loop", "0");
       inputs.push("-i", src);
+
       const filter =
         `[1:v]fps=${fps},scale=${scale}:-1,setpts=PTS-STARTPTS[a];` +
         `[0:v][a]overlay=${x}:${y}:shortest=1[ov];` +
         `[ov]scale='min(720,iw)':'-2'[vout]`;
+
       await execFfmpeg(
         [
           ...inputs,
@@ -215,30 +236,38 @@ export async function renderAnimatedVideo({
           "30",
           "-an",
           "-c:v",
-          "libx264",
-          "-preset",
-          "veryfast",
-          "-profile:v",
-          "baseline",
-          "-level",
-          "3.0",
+          codec,
           "-pix_fmt",
-          "yuv420p",
-          "-movflags",
-          "+faststart",
-          "-crf",
-          "23",
+          pixFmt,
+          ...(isTransparent
+            ? ["-b:v", "1M"]
+            : [
+                "-preset",
+                "veryfast",
+                "-profile:v",
+                "baseline",
+                "-level",
+                "3.0",
+                "-movflags",
+                "+faststart",
+                "-crf",
+                "23",
+              ]),
           nextVideo,
         ],
         { timeoutMs: 25000, tag: `overlay-${i}` }
       );
+
       try {
         await fs.unlink(currentVideo);
       } catch {}
       currentVideo = nextVideo;
     }
+
     return currentVideo;
   }
+
+  // === дом присутствует ===
   const inputs = ["-loop", "1", "-t", String(durationSec), "-i", charPngPath];
   for (const anim of animatedItems) {
     const ext = path.extname(anim.src).toLowerCase();
@@ -246,9 +275,11 @@ export async function renderAnimatedVideo({
     inputs.push("-i", anim.src);
   }
   inputs.push("-loop", "1", "-t", String(durationSec), "-i", home.src);
+
   let filter = "";
   let last = "[0:v]";
   let streamIndex = 1;
+
   animatedItems.forEach((anim, i) => {
     const tagScaled = `[a${i}:scaled]`;
     const tagOver = `[a${i}:over]`;
@@ -261,13 +292,16 @@ export async function renderAnimatedVideo({
     last = tagOver;
     streamIndex += 1;
   });
+
   filter += `${last}scale=${home.scale}:-1[char_sized];`;
   filter += `[${streamIndex}:v][char_sized]overlay=${home.x}:${home.y}:shortest=1[ov];`;
   filter += `[ov]scale='min(720,iw)':'-2'[vout]`;
+
   const outPath = path.join(
     ANIMS_DIR,
-    `home_${Date.now()}_${Math.random().toString(36).slice(2)}.mp4`
+    `home_${Date.now()}_${Math.random().toString(36).slice(2)}${fileExt}`
   );
+
   await execFfmpeg(
     [
       ...inputs,
@@ -280,23 +314,28 @@ export async function renderAnimatedVideo({
       "30",
       "-an",
       "-c:v",
-      "libx264",
-      "-preset",
-      "veryfast",
-      "-profile:v",
-      "baseline",
-      "-level",
-      "3.0",
+      codec,
       "-pix_fmt",
-      "yuv420p",
-      "-movflags",
-      "+faststart",
-      "-crf",
-      "23",
+      pixFmt,
+      ...(isTransparent
+        ? ["-b:v", "1M"]
+        : [
+            "-preset",
+            "veryfast",
+            "-profile:v",
+            "baseline",
+            "-level",
+            "3.0",
+            "-movflags",
+            "+faststart",
+            "-crf",
+            "23",
+          ]),
       outPath,
     ],
     { timeoutMs: 30000, tag: "one-shot-home" }
   );
+
   try {
     await fs.unlink(charPngPath);
   } catch {}

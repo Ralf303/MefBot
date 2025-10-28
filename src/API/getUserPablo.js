@@ -10,16 +10,13 @@ import { getRandomInt } from "../utils/helpers.js";
 import path from "path";
 import { getUser } from "../db/functions.js";
 import fs from "fs/promises";
-import util from "util";
-import { exec } from "child_process";
 
-const execAsync = util.promisify(exec);
 const usersItemRouter = new Router();
 
 usersItemRouter.get("/getPhoto", async (req, res) => {
   try {
     const userId = req.query.userId;
-    const format = (req.query.format || "mp4").toString().toLowerCase();
+    const format = (req.query.format || "mp4").toString().toLowerCase(); // mp4|webm|gif
 
     const user = await getUser(userId);
     const items = await Item.findAll({
@@ -67,37 +64,41 @@ usersItemRouter.get("/getPhoto", async (req, res) => {
     await fs.mkdir(path.dirname(tmpPngPath), { recursive: true });
     await fs.writeFile(tmpPngPath, staticBuffer);
 
+    const transparent = format === "webm" || format === "gif";
+
     const videoPath = await renderAnimatedVideo({
       charPngPath: tmpPngPath,
       animatedItems: animated,
       home: null,
+      transparent,
     });
 
+    if (format === "webm") {
+      const buffer = await fs.readFile(videoPath);
+      res.contentType("video/webm");
+      res.send(buffer);
+      await fs.unlink(tmpPngPath).catch(() => {});
+      await fs.unlink(videoPath).catch(() => {});
+      return;
+    }
+
     if (format === "gif") {
-      const gifPath = videoPath.replace(/\.mp4$/, ".gif");
-      await execAsync(`
-        ffmpeg -i "${videoPath}" -filter_complex "[0:v]split[x][z];[x]palettegen[p];[z][p]paletteuse" -f gif - | gifsicle --colors 256 --optimize=3 --transparent "#000000" > "${gifPath}"
-      `);
+      const gifPath = videoPath.replace(/\.webm$|\.mp4$/, ".gif");
+      await execFfmpeg([
+        "-i",
+        videoPath,
+        "-filter_complex",
+        "[0:v]split[x][z];[x]palettegen[p];[z][p]paletteuse",
+        "-f",
+        "gif",
+        gifPath,
+      ]);
       const gifBuffer = await fs.readFile(gifPath);
       res.contentType("image/gif");
       res.send(gifBuffer);
       await fs.unlink(tmpPngPath).catch(() => {});
       await fs.unlink(videoPath).catch(() => {});
       await fs.unlink(gifPath).catch(() => {});
-      return;
-    }
-
-    if (format === "webm") {
-      const webmPath = videoPath.replace(/\.mp4$/, ".webm");
-      await execAsync(`
-        ffmpeg -i "${videoPath}" -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1M "${webmPath}"
-      `);
-      const webmBuffer = await fs.readFile(webmPath);
-      res.contentType("video/webm");
-      res.send(webmBuffer);
-      await fs.unlink(tmpPngPath).catch(() => {});
-      await fs.unlink(videoPath).catch(() => {});
-      await fs.unlink(webmPath).catch(() => {});
       return;
     }
 
