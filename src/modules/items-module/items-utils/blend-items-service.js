@@ -147,7 +147,7 @@ export async function renderAnimatedVideo({
   animatedItems,
   home,
   durationSec = 3,
-  transparent = false, // <- этот флаг будет true при вызове из API
+  transparent = false,
 }) {
   await ensureAnimsDir();
 
@@ -156,7 +156,6 @@ export async function renderAnimatedVideo({
   const pixFmt = isTransparent ? "yuva420p" : "yuv420p";
   const fileExt = isTransparent ? ".webm" : ".mp4";
 
-  // если это API-вызов (transparent=true), добавляем фон #15171a
   const colorFilter = isTransparent
     ? `color=c=0x15171aff:size=720x720:d=${durationSec}[bg];[bg][0:v]overlay=0:0:shortest=1[tmp];`
     : "";
@@ -195,7 +194,6 @@ export async function renderAnimatedVideo({
               "+faststart",
             ]),
         "-filter_complex",
-        // вставляем цветной фон только для API/webm
         `${colorFilter}${
           isTransparent ? "[tmp]" : "[0:v]"
         }scale='min(720,iw)':'-2',format=rgba[vout]`,
@@ -298,7 +296,6 @@ export async function renderAnimatedVideo({
     return currentVideo;
   }
 
-  // --- блок с home не трогаем ---
   const inputs = ["-loop", "1", "-t", String(durationSec), "-i", charPngPath];
   for (const anim of animatedItems) {
     const ext = path.extname(anim.src).toLowerCase();
