@@ -147,11 +147,10 @@ export async function renderAnimatedVideo({
   animatedItems,
   home,
   durationSec = 3,
-  transparent = false, // новый флаг
+  transparent = false,
 }) {
   await ensureAnimsDir();
 
-  // параметры кодека (в зависимости от прозрачности)
   const isTransparent = Boolean(transparent);
   const codec = isTransparent ? "libvpx-vp9" : "libx264";
   const pixFmt = isTransparent ? "yuva420p" : "yuv420p";
@@ -191,7 +190,7 @@ export async function renderAnimatedVideo({
               "+faststart",
             ]),
         "-vf",
-        "scale='min(720,iw)':'-2'",
+        "scale='min(720,iw)':'-2',format=rgba",
         baseVideo,
       ],
       { timeoutMs: 15000, tag: "mkBaseVideo" }
@@ -218,9 +217,9 @@ export async function renderAnimatedVideo({
       inputs.push("-i", src);
 
       const filter =
-        `[1:v]fps=${fps},scale=${scale}:-1,setpts=PTS-STARTPTS[a];` +
-        `[0:v][a]overlay=${x}:${y}:shortest=1[ov];` +
-        `[ov]scale='min(720,iw)':'-2'[vout]`;
+        `[1:v]fps=${fps},scale=${scale}:-1,format=rgba,setpts=PTS-STARTPTS[a];` +
+        `[0:v][a]overlay=${x}:${y}:shortest=1:format=auto[ov];` +
+        `[ov]scale='min(720,iw)':'-2',format=${pixFmt}[vout]`;
 
       await execFfmpeg(
         [
@@ -267,7 +266,6 @@ export async function renderAnimatedVideo({
     return currentVideo;
   }
 
-  // === дом присутствует ===
   const inputs = ["-loop", "1", "-t", String(durationSec), "-i", charPngPath];
   for (const anim of animatedItems) {
     const ext = path.extname(anim.src).toLowerCase();
@@ -287,15 +285,15 @@ export async function renderAnimatedVideo({
     const fps = anim.fps || 30;
     const x = anim.x || 0;
     const y = anim.y || 0;
-    filter += `[${streamIndex}:v]fps=${fps},scale=${scale}:-1,setpts=PTS-STARTPTS${tagScaled};`;
-    filter += `${last}${tagScaled}overlay=${x}:${y}:shortest=1${tagOver};`;
+    filter += `[${streamIndex}:v]fps=${fps},scale=${scale}:-1,format=rgba,setpts=PTS-STARTPTS${tagScaled};`;
+    filter += `${last}${tagScaled}overlay=${x}:${y}:shortest=1:format=auto${tagOver};`;
     last = tagOver;
     streamIndex += 1;
   });
 
   filter += `${last}scale=${home.scale}:-1[char_sized];`;
-  filter += `[${streamIndex}:v][char_sized]overlay=${home.x}:${home.y}:shortest=1[ov];`;
-  filter += `[ov]scale='min(720,iw)':'-2'[vout]`;
+  filter += `[${streamIndex}:v][char_sized]overlay=${home.x}:${home.y}:shortest=1:format=auto[ov];`;
+  filter += `[ov]scale='min(720,iw)':'-2',format=${pixFmt}[vout]`;
 
   const outPath = path.join(
     ANIMS_DIR,
