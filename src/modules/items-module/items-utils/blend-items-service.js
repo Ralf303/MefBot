@@ -142,7 +142,7 @@ export async function overlayImage(foregroundBufferOrPath, home) {
     .toBuffer();
 }
 
-async function renderAnimatedVideo({
+export async function renderAnimatedVideo({
   charPngPath,
   animatedItems,
   home,

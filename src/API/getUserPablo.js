@@ -3,6 +3,7 @@ import {
   blendImages,
   getAnimConfig,
   isAnimatedItem,
+  renderAnimatedVideo,
 } from "../modules/items-module/items-utils/blend-items-service.js";
 import { Item } from "../db/models.js";
 import { getRandomInt } from "../utils/helpers.js";
