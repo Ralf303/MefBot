@@ -147,7 +147,7 @@ export async function renderAnimatedVideo({
   animatedItems,
   home,
   durationSec = 3,
-  transparent = false,
+  transparent = false, // <- этот флаг будет true при вызове из API
 }) {
   await ensureAnimsDir();
 
@@ -155,6 +155,11 @@ export async function renderAnimatedVideo({
   const codec = isTransparent ? "libvpx-vp9" : "libx264";
   const pixFmt = isTransparent ? "yuva420p" : "yuv420p";
   const fileExt = isTransparent ? ".webm" : ".mp4";
+
+  // если это API-вызов (transparent=true), добавляем фон #15171a
+  const colorFilter = isTransparent
+    ? `color=c=0x15171aff:size=720x720:d=${durationSec}[bg];[bg][0:v]overlay=0:0:shortest=1[tmp];`
+    : "";
 
   if (!home) {
     const baseVideo = path.join(
@@ -189,8 +194,35 @@ export async function renderAnimatedVideo({
               "-movflags",
               "+faststart",
             ]),
-        "-vf",
-        "scale='min(720,iw)':'-2',format=rgba",
+        "-filter_complex",
+        // вставляем цветной фон только для API/webm
+        `${colorFilter}${
+          isTransparent ? "[tmp]" : "[0:v]"
+        }scale='min(720,iw)':'-2',format=rgba[vout]`,
+        "-map",
+        "[vout]",
+        "-shortest",
+        "-r",
+        "30",
+        "-an",
+        "-c:v",
+        codec,
+        "-pix_fmt",
+        pixFmt,
+        ...(isTransparent
+          ? ["-b:v", "1M"]
+          : [
+              "-preset",
+              "veryfast",
+              "-profile:v",
+              "baseline",
+              "-level",
+              "3.0",
+              "-movflags",
+              "+faststart",
+              "-crf",
+              "23",
+            ]),
         baseVideo,
       ],
       { timeoutMs: 15000, tag: "mkBaseVideo" }
@@ -266,6 +298,7 @@ export async function renderAnimatedVideo({
     return currentVideo;
   }
 
+  // --- блок с home не трогаем ---
   const inputs = ["-loop", "1", "-t", String(durationSec), "-i", charPngPath];
   for (const anim of animatedItems) {
     const ext = path.extname(anim.src).toLowerCase();
