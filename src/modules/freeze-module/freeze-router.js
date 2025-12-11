@@ -40,12 +40,12 @@ freezeRouter.hears(/^передать жидкости.*$/i, async (ctx, next) =
   try {
     const sender = await getUser(chatId);
 
-    if (sender.oil < amount) {
+    if (sender.freeze < amount) {
       return ctx.reply("Недостаточно охлаждающих жидкостей🥲");
     }
 
-    sender.oil -= amount;
-    receiver.oil += amount;
+    sender.freeze -= amount;
+    receiver.freeze += amount;
     await sender.save();
     await receiver.save();
 
