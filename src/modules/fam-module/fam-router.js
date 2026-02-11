@@ -24,6 +24,61 @@ import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 
 const famModule = new Composer();
 
+const parseChatIdArgument = (argument) => {
+  if (!argument) return null;
+
+  const text = argument.trim();
+
+  const openMessageMatch = text.match(/^tg:\/\/openmessage\?user_id=(\d+)$/i);
+  if (openMessageMatch) return openMessageMatch[1];
+
+  const prefixedIdMatch = text.match(/^id(\d+)$/i);
+  if (prefixedIdMatch) return prefixedIdMatch[1];
+
+  const plainIdMatch = text.match(/^@?(\d+)$/);
+  if (plainIdMatch) return plainIdMatch[1];
+
+  return null;
+};
+
+const resolveFamilyTargetUser = async (ctx) => {
+  const replyMessage = ctx.message.reply_to_message;
+  if (replyMessage) {
+    return {
+      chatId: String(replyMessage.from.id),
+      firstname: replyMessage.from.first_name || "Пользователь",
+    };
+  }
+
+  const argument = ctx.message.text.split(" ")[2];
+  if (!argument) {
+    return { error: "NO_TARGET" };
+  }
+
+  const chatId = parseChatIdArgument(argument);
+  if (chatId) {
+    const userById = await checkUserById(chatId);
+    if (!userById) return { error: "NOT_FOUND" };
+
+    return {
+      chatId: String(userById.chatId),
+      firstname: userById.firstname || "Пользователь",
+    };
+  }
+
+  if (argument.startsWith("@")) {
+    const userByUsername = await checkUserByUsername(argument.slice(1));
+    if (!userByUsername) return { error: "NOT_FOUND" };
+
+    return {
+      chatId: String(userByUsername.chatId),
+      firstname: userByUsername.firstname || "Пользователь",
+    };
+  }
+
+  return { error: "INVALID_TARGET" };
+};
+
 famModule.hears(/^семья$/i, async (ctx, next) => {
   try {
     await ctx.reply(ru_text.family);
@@ -253,7 +308,6 @@ famModule.hears(/^семья купить галочку/i, async (ctx, next) =>
 famModule.hears(/^семья пригласить/i, async (ctx, next) => {
   try {
     const fam = await getFamilyByUserId(ctx.from.id);
-    const argument = ctx.message.text.split(" ")[2];
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
     if (rang < 4)
@@ -261,68 +315,44 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
         "Только основатель или замы могут приглашать в семью 😢"
       );
 
-    if (ctx.message.reply_to_message) {
-      const userChatId = ctx.message.reply_to_message.from.id;
-      const userFam = await getFamilyByUserId(userChatId);
-      if (userFam)
-        return await ctx.reply("У этого пользователя уже есть семья");
-      const isInvaited = await redisService.get(
-        `invite:${ctx.message.reply_to_message.from.id}`
-      );
-      if (isInvaited)
-        return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
-
-      await ctx.telegram
-        .sendMessage(
-          userChatId,
-          `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-          { parse_mode: "HTML" }
-        )
-        .catch(async () => {
-          return await ctx.reply(
-            `<a href="tg://openmessage?user_id=${ctx.message.reply_to_message.from.id}">${ctx.message.reply_to_message.from.first_name}</a> Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-            { parse_mode: "HTML" }
-          );
-        });
-      await redisService.setInvite(
-        ctx.message.reply_to_message.from.id,
-        fam.id
-      );
-      return await ctx.reply("Заявка успешно отправлена ✅");
-    }
-
-    if (!argument) {
+    const target = await resolveFamilyTargetUser(ctx);
+    if (target.error === "NO_TARGET") {
       return await ctx.reply(
         "Укажи пользователя, которого хочешь пригласить в семью"
       );
     }
 
-    if (argument.includes("@") && argument.length >= 5) {
-      const user = await checkUserByUsername(argument.slice(1));
-      if (!user)
-        return await ctx.reply("Пользователя с таким именем не существует 😢");
-      const userFam = await getFamilyByUserId(user.chatId);
-      if (userFam)
-        return await ctx.reply("У этого пользователя уже есть семья");
-      const isInvaited = await redisService.get(`invite:${user.chatId}`);
-      if (isInvaited)
-        return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
-      await ctx.telegram
-        .sendMessage(
-          user.chatId,
-          `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-          { parse_mode: "HTML" }
-        )
-        .catch(async () => {
-          return await ctx.reply(
-            `<a href="tg://openmessage?user_id=${user.chatId}">${user.firstname}</a> Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
-            { parse_mode: "HTML" }
-          );
-        });
-
-      await redisService.setInvite(user.chatId, fam.id);
-      await ctx.reply("Заявка успешно отправлена ✅");
+    if (target.error === "NOT_FOUND") {
+      return await ctx.reply("Пользователь не найден 😢");
     }
+
+    if (target.error === "INVALID_TARGET") {
+      return await ctx.reply(
+        "Укажи @username или chat id (пример: @7060305917 / 7060305917 / tg://openmessage?user_id=7060305917 / id7060305917)"
+      );
+    }
+
+    const userFam = await getFamilyByUserId(target.chatId);
+    if (userFam) return await ctx.reply("У этого пользователя уже есть семья");
+    const isInvaited = await redisService.get(`invite:${target.chatId}`);
+    if (isInvaited)
+      return await ctx.reply("Юзеру уже отправляли заявку, попробуй позже");
+
+    await ctx.telegram
+      .sendMessage(
+        target.chatId,
+        `Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+        { parse_mode: "HTML" }
+      )
+      .catch(async () => {
+        return await ctx.reply(
+          `<a href="tg://openmessage?user_id=${target.chatId}">${target.firstname}</a> Семья «${fam.name}» хочет видеть в рядах своих родственников\n\nВведи:\n📖<code>Семья принять</code>\n📖<code>Семья отклонить</code>`,
+          { parse_mode: "HTML" }
+        );
+      });
+
+    await redisService.setInvite(target.chatId, fam.id);
+    await ctx.reply("Заявка успешно отправлена ✅");
 
     return next();
   } catch (error) {
@@ -367,7 +397,6 @@ famModule.hears(/^семья отклонить/i, async (ctx, next) => {
 
 famModule.hears(/^семья кик/i, async (ctx, next) => {
   try {
-    const argument = ctx.message.text.split(" ")[2];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
@@ -376,46 +405,35 @@ famModule.hears(/^семья кик/i, async (ctx, next) => {
         "Только основатель или замы могут кикать из семьи 😢"
       );
 
-    if (ctx.message.reply_to_message) {
-      const userChatId = ctx.message.reply_to_message.from.id;
-      const userFam = await getFamilyByUserId(userChatId);
-      if (!userFam || userFam.id != fam.id)
-        return await ctx.reply("Этот пользователь не из вашей семьи");
-
-      const userRang = await getRang(userChatId, fam.id);
-      if (userRang > 3) {
-        return await ctx.reply("5 или 4 ранги нельзя кикать ❌");
-      }
-      await removeUserFromFamily(userChatId, fam.id);
-      fam.fullSlots -= 1;
-      await fam.save();
-      await ctx.reply("Пользователь успешно кикнут из семьи ❌");
-      return next();
-    }
-
-    if (!argument) {
+    const target = await resolveFamilyTargetUser(ctx);
+    if (target.error === "NO_TARGET") {
       return await ctx.reply(
         "Укажи пользователя, которого хочешь кикнуть из семьи"
       );
     }
 
-    if (argument.includes("@") && argument.length >= 5) {
-      const user = await checkUserByUsername(argument.slice(1));
-      if (!user)
-        return await ctx.reply("Пользователя с таким именем не существует 😢");
-      const userFam = await getFamilyByUserId(user.chatId);
-      if (!userFam || userFam.id != fam.id)
-        return await ctx.reply("Этот пользователь не из вашей семьи");
-
-      const userRang = await getRang(user.chatId, fam.id);
-      if (userRang > 3) {
-        return await ctx.reply("5 или 4 ранги нельзя кикать ❌");
-      }
-      await removeUserFromFamily(user.chatId, fam.id);
-      fam.fullSlots -= 1;
-      await fam.save();
-      await ctx.reply("Пользователь успешно кикнут из семьи ✅");
+    if (target.error === "NOT_FOUND") {
+      return await ctx.reply("Пользователь не найден 😢");
     }
+
+    if (target.error === "INVALID_TARGET") {
+      return await ctx.reply(
+        "Укажи @username или chat id (пример: @7060305917 / 7060305917 / tg://openmessage?user_id=7060305917 / id7060305917)"
+      );
+    }
+
+    const userFam = await getFamilyByUserId(target.chatId);
+    if (!userFam || userFam.id != fam.id)
+      return await ctx.reply("Этот пользователь не из вашей семьи");
+
+    const userRang = await getRang(target.chatId, fam.id);
+    if (userRang > 3) {
+      return await ctx.reply("5 или 4 ранги нельзя кикать ❌");
+    }
+    await removeUserFromFamily(target.chatId, fam.id);
+    fam.fullSlots -= 1;
+    await fam.save();
+    await ctx.reply("Пользователь успешно кикнут из семьи ✅");
 
     return next();
   } catch (error) {
@@ -523,7 +541,6 @@ famModule.hears(/^семья повысить/i, async (ctx, next) => {
 
 famModule.hears(/^семья понизить/i, async (ctx, next) => {
   try {
-    const argument = ctx.message.text.split(" ")[2];
     const fam = await getFamilyByUserId(ctx.from.id);
     if (!fam) return await ctx.reply("У тебя нет семьи 😢");
     const rang = await getRang(ctx.from.id, fam.id);
@@ -532,53 +549,41 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
         "Только основатель или замы могут повышать ранг 😢"
       );
 
-    if (ctx.message.reply_to_message) {
-      const userChatId = ctx.message.reply_to_message.from.id;
-      if (ctx.from.id === userChatId)
-        return await ctx.reply("Ты не можешь понизить себя 😢");
-      const userFam = await getFamilyByUserId(userChatId);
-      if (!userFam || userFam.id != fam.id)
-        return await ctx.reply("Этот пользователь не из вашей семьи 😳");
-
-      const userRang = await getRang(userChatId, fam.id);
-      if (userRang === 1) {
-        return await ctx.reply("Этот пользователь и так минимального ранга 😢");
-      }
-
-      if (rang === 4 && userRang >= 4) {
-        return await ctx.reply(
-          "Снимать и назначать заместителей может только основатель 😢"
-        );
-      }
-
-      await setRang(userChatId, fam.id, userRang - 1);
-      await ctx.reply("Пользователь успешно понижен ✅");
-      return next();
+    const target = await resolveFamilyTargetUser(ctx);
+    if (target.error === "NO_TARGET") {
+      return await ctx.reply(
+        "Укажи пользователя, которого хочешь понизить в ранге"
+      );
     }
 
-    if (argument.includes("@") && argument.length >= 5) {
-      const user = await checkUserByUsername(argument.slice(1));
-      if (!user)
-        return await ctx.reply("Пользователя с таким именем не существует 😢");
-      if (ctx.from.id == user.chatId)
-        return await ctx.reply("Ты не можешь понизить себя 😢");
-      const userFam = await getFamilyByUserId(user.chatId);
-      if (!userFam || userFam.id != fam.id)
-        return await ctx.reply("Этот пользователь не из вашей семьи 😳");
-
-      const userRang = await getRang(user.chatId, fam.id);
-      if (userRang === 1) {
-        return await ctx.reply("Этот пользователь и так минимального ранга 😢");
-      }
-
-      if (rang === 4 && userRang >= 4) {
-        return await ctx.reply(
-          "Снимать и назначать заместителей может только основатель 😢"
-        );
-      }
-      await setRang(user.chatId, fam.id, userRang - 1);
-      await ctx.reply("Пользователь успешно понижен ✅");
+    if (target.error === "NOT_FOUND") {
+      return await ctx.reply("Пользователь не найден 😢");
     }
+
+    if (target.error === "INVALID_TARGET") {
+      return await ctx.reply(
+        "Укажи @username или chat id (пример: @7060305917 / 7060305917 / tg://openmessage?user_id=7060305917 / id7060305917)"
+      );
+    }
+
+    if (ctx.from.id == target.chatId)
+      return await ctx.reply("Ты не можешь понизить себя 😢");
+    const userFam = await getFamilyByUserId(target.chatId);
+    if (!userFam || userFam.id != fam.id)
+      return await ctx.reply("Этот пользователь не из вашей семьи 😳");
+
+    const userRang = await getRang(target.chatId, fam.id);
+    if (userRang === 1) {
+      return await ctx.reply("Этот пользователь и так минимального ранга 😢");
+    }
+
+    if (rang === 4 && userRang >= 4) {
+      return await ctx.reply(
+        "Снимать и назначать заместителей может только основатель 😢"
+      );
+    }
+    await setRang(target.chatId, fam.id, userRang - 1);
+    await ctx.reply("Пользователь успешно понижен ✅");
 
     return next();
   } catch (error) {
