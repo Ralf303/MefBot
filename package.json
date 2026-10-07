@@ -3,7 +3,8 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "dev": "cross-env NODE_ENV=development nodemon index.js",
     "delete": "node ./scripts/deleteDataBase.js",
-    "test": "node --test"
+    "test": "node --test",
+    "admin": "cross-env NODE_ENV=production node src/admin/server.js"
   },
   "dependencies": {
     "axios": "^1.10.0",
