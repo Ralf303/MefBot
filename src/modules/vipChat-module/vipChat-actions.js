@@ -1,9 +1,10 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { getChat, getUser } from "../../db/functions.js";
 
 const vipChatActions = new Composer();
 
-vipChatActions.action(/vipChat(\d+)/, async (ctx) => {
+vipChatActions.action(/^vipChat(\d+)$/, async (ctx) => {
   try {
     const userId = ctx.match[1];
 
@@ -12,18 +13,16 @@ vipChatActions.action(/vipChat(\d+)/, async (ctx) => {
     }
 
     await ctx.deleteMessage();
-    const chat = await getChat(ctx.chat.id);
-    const user = await getUser(userId);
-
-    if (user.balance < 1000000) {
-      return await ctx.reply("Недостаточно старок для покупки випчата😢");
-    }
-
-    user.balance -= 1000000;
-    chat.vip = true;
-    chat.vipTime += 30;
-    await user.save();
-    await chat.save();
+    await withUserTransaction(ctx.state.user, async (user, transaction) => {
+      const chat = await getChat(ctx.chat.id);
+      await chat.reload({ transaction, lock: transaction.LOCK.UPDATE });
+      if (user.balance < 1000000) throw new Error("INSUFFICIENT_FUNDS");
+      user.balance -= 1000000;
+      chat.vip = true;
+      chat.vipTime += 30;
+      await user.save({ transaction });
+      await chat.save({ transaction });
+    });
     await ctx.reply("Готово! Випчат успешно продлен на 30 дней🤑");
   } catch (error) {
     console.log(error);

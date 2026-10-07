@@ -1,3 +1,4 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import ru_text from "../../../ru_text.js";
 import {
@@ -21,6 +22,7 @@ import {
 } from "../../db/functions.js";
 import redisService from "../../services/redis-service.js";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
+import economyService from "../../services/economy-service.js";
 
 const famModule = new Composer();
 
@@ -209,30 +211,36 @@ famModule.hears(/^семья процент.*$/i, async (ctx, next) => {
 famModule.hears(/^семья снять стар.*$/i, async (ctx, next) => {
   try {
     const amountText = ctx.message.text.split(" ")[3];
-    const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
-    const rang = await getRang(ctx.from.id, fam.id);
-    if (rang != 5)
-      return await ctx.reply("Только основатель может снимать старки 👑");
+    const result = await withUserTransaction(ctx.state.user, async (user) => {
+      const fam = await getFamilyByUserId(ctx.from.id);
+      if (!fam) return { error: "У тебя нет семьи 😢" };
+      const rang = await getRang(ctx.from.id, fam.id);
+      if (rang != 5)
+      return { error: "Только основатель может снимать старки 👑" };
 
-    let ammount;
-    if (
+      let ammount;
+      if (
       amountText.toLowerCase() === "все" ||
       amountText.toLowerCase() === "всё"
-    ) {
+      ) {
       ammount = fam.mef;
-    } else {
+      } else {
       ammount = Number(amountText);
-      if (isNaN(ammount) || ammount <= 0)
-        return await ctx.reply("Введи число больше 0");
-    }
+      if (!Number.isSafeInteger(ammount) || ammount <= 0)
+        return { error: "Введи число больше 0" };
+      }
 
-    if (fam.mef < ammount)
-      return await ctx.reply("В семье нет столько старок 😢");
+      if (fam.mef < ammount)
+      return { error: "В семье нет столько старок 😢" };
 
-    ctx.state.user.balance += ammount;
-    fam.mef -= ammount;
-    await fam.save();
+      user.balance += ammount;
+      fam.mef -= ammount;
+      await fam.save();
+      await user.save();
+      return { amount: ammount };
+    });
+    if (result.error) return ctx.reply(result.error);
+    const ammount = result.amount;
     await ctx.reply(`Ты успешно снял ${separateNumber(ammount)} старок ⭐️`);
     return next();
   } catch (error) {
@@ -243,30 +251,36 @@ famModule.hears(/^семья снять стар.*$/i, async (ctx, next) => {
 famModule.hears(/^семья снять монеты.*$/i, async (ctx, next) => {
   try {
     const amountText = ctx.message.text.split(" ")[3];
-    const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
-    const rang = await getRang(ctx.from.id, fam.id);
-    if (rang != 5)
-      return await ctx.reply("Только основатель может снимать монеты 👑");
+    const result = await withUserTransaction(ctx.state.user, async (user) => {
+      const fam = await getFamilyByUserId(ctx.from.id);
+      if (!fam) return { error: "У тебя нет семьи 😢" };
+      const rang = await getRang(ctx.from.id, fam.id);
+      if (rang != 5)
+      return { error: "Только основатель может снимать монеты 👑" };
 
-    let ammount;
-    if (
+      let ammount;
+      if (
       amountText.toLowerCase() === "все" ||
       amountText.toLowerCase() === "всё"
-    ) {
+      ) {
       ammount = fam.balance;
-    } else {
+      } else {
       ammount = Number(amountText);
-      if (isNaN(ammount) || ammount <= 0)
-        return await ctx.reply("Введи число больше 0");
-    }
+      if (!Number.isSafeInteger(ammount) || ammount <= 0)
+        return { error: "Введи число больше 0" };
+      }
 
-    if (fam.balance < ammount)
-      return await ctx.reply("В семье нет столько монет 😢");
+      if (fam.balance < ammount)
+      return { error: "В семье нет столько монет 😢" };
 
-    ctx.state.user.famMoney += ammount;
-    fam.balance -= ammount;
-    await fam.save();
+      user.famMoney += ammount;
+      fam.balance -= ammount;
+      await fam.save();
+      await user.save();
+      return { amount: ammount };
+    });
+    if (result.error) return ctx.reply(result.error);
+    const ammount = result.amount;
     await ctx.reply(`Ты успешно снял ${separateNumber(ammount)} монет 🪙`);
     return next();
   } catch (error) {
@@ -593,27 +607,33 @@ famModule.hears(/^семья понизить/i, async (ctx, next) => {
 famModule.hears(/^семья пополнить стар.*$/i, async (ctx, next) => {
   try {
     const amountText = ctx.message.text.split(" ")[3];
-    const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
+    const result = await withUserTransaction(ctx.state.user, async (user) => {
+      const fam = await getFamilyByUserId(ctx.from.id);
+      if (!fam) return { error: "У тебя нет семьи 😢" };
 
-    let ammount;
-    if (
+      let ammount;
+      if (
       amountText.toLowerCase() === "все" ||
       amountText.toLowerCase() === "всё"
-    ) {
-      ammount = ctx.state.user.balance;
-    } else {
+      ) {
+      ammount = user.balance;
+      } else {
       ammount = Number(amountText);
-      if (isNaN(ammount) || ammount <= 0)
-        return await ctx.reply("Введи число больше 0");
-    }
+      if (!Number.isSafeInteger(ammount) || ammount <= 0)
+        return { error: "Введи число больше 0" };
+      }
 
-    if (ctx.state.user.balance < ammount)
-      return await ctx.reply("У тебя нет столько старок 😢");
+      if (user.balance < ammount)
+      return { error: "У тебя нет столько старок 😢" };
 
-    ctx.state.user.balance -= ammount;
-    fam.mef += ammount;
-    await fam.save();
+      user.balance -= ammount;
+      fam.mef += ammount;
+      await fam.save();
+      await user.save();
+      return { amount: ammount };
+    });
+    if (result.error) return ctx.reply(result.error);
+    const ammount = result.amount;
     await ctx.reply(
       `Ты успешно пополнил баланс семьи на ${separateNumber(
         ammount
@@ -628,27 +648,33 @@ famModule.hears(/^семья пополнить стар.*$/i, async (ctx, next)
 famModule.hears(/^семья пополнить монеты.*$/i, async (ctx, next) => {
   try {
     const amountText = ctx.message.text.split(" ")[3];
-    const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
+    const result = await withUserTransaction(ctx.state.user, async (user) => {
+      const fam = await getFamilyByUserId(ctx.from.id);
+      if (!fam) return { error: "У тебя нет семьи 😢" };
 
-    let ammount;
-    if (
+      let ammount;
+      if (
       amountText.toLowerCase() === "все" ||
       amountText.toLowerCase() === "всё"
-    ) {
-      ammount = ctx.state.user.famMoney;
-    } else {
+      ) {
+      ammount = user.famMoney;
+      } else {
       ammount = Number(amountText);
-      if (isNaN(ammount) || ammount <= 0)
-        return await ctx.reply("Введи число больше 0");
-    }
+      if (!Number.isSafeInteger(ammount) || ammount <= 0)
+        return { error: "Введи число больше 0" };
+      }
 
-    if (ctx.state.user.famMoney < ammount)
-      return await ctx.reply("У тебя нет столько семейных монет 😢");
+      if (user.famMoney < ammount)
+      return { error: "У тебя нет столько семейных монет 😢" };
 
-    ctx.state.user.famMoney -= ammount;
-    fam.balance += ammount;
-    await fam.save();
+      user.famMoney -= ammount;
+      fam.balance += ammount;
+      await fam.save();
+      await user.save();
+      return { amount: ammount };
+    });
+    if (result.error) return ctx.reply(result.error);
+    const ammount = result.amount;
     await ctx.reply(
       `Ты успешно пополнил баланс семьи на ${separateNumber(
         ammount
@@ -674,121 +700,23 @@ famModule.hears(/^семья улучшения/i, async (ctx, next) => {
 });
 
 famModule.hears(/^семья купить улучшение.*$/i, async (ctx, next) => {
-  try {
-    const ammount = Number(ctx.message.text.split(" ")[3]);
+  const id = Number(ctx.message.text.split(" ")[3]);
+  const options = { 1: ["active", 5], 2: ["luck", 5], 3: ["craft", 5], 4: ["farm", 5], 5: ["capcha", 5], 6: ["invite", 5], 7: ["case", 2] };
+  if (!Number.isInteger(id) || !options[id]) return ctx.reply("Введи id улучшения от 1 до 7");
+  const message = await withUserTransaction(ctx.state.user, async (user) => {
     const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
-
-    if (isNaN(ammount) || ammount <= 0 || ammount > 7)
-      return await ctx.reply("Введи id улучшения");
-
-    if (ctx.state.user.balance < 1000000)
-      return await ctx.reply("У тебя нет столько старок 😢");
-
-    ctx.state.user.balance -= 1000000;
-
-    switch (ammount) {
-      case 1:
-        if (fam.Baf.active === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.active += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${
-            fam.Baf.active * 250
-          } старок к награде за актив 🎉`
-        );
-        break;
-
-      case 2:
-        if (fam.Baf.luck === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.luck += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${fam.Baf.luck} к удаче 🎉`
-        );
-        break;
-
-      case 3:
-        if (fam.Baf.craft === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.craft += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${fam.Baf.craft}% к успешному крафту 🎉`
-        );
-        break;
-
-      case 4:
-        if (fam.Baf.farm === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.farm += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${
-            fam.Baf.farm * 100
-          } старок к сбору фермы 🎉`
-        );
-        break;
-
-      case 5:
-        if (fam.Baf.capcha === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.capcha += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${
-            fam.Baf.capcha * 200
-          } старок за ввод капчи 🎉`
-        );
-        break;
-
-      case 6:
-        if (fam.Baf.invite === 5)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.invite += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи получают +${
-            fam.Baf.invite * 500
-          } старок за добавление новых юзеров в чат 🎉`
-        );
-        break;
-
-      case 7:
-        if (fam.Baf.case === 2)
-          return await ctx.reply(
-            "Это улучшение уже имеет максимальный уровень 💪"
-          );
-
-        fam.Baf.case += 1;
-        await ctx.reply(
-          `Готово, теперь участники семьи могут открывать за одно открытие на ${fam.Baf.case} кейса больше 🎉`
-        );
-        break;
-
-      default:
-        break;
-    }
-
+    if (!fam) return "У тебя нет семьи 😢";
+    const [field, maximum] = options[id];
+    if (fam.Baf[field] >= maximum) return "Улучшение уже имеет максимальный уровень 💪";
+    if (user.balance < 1000000) return "Недостаточно старок 😢";
+    user.balance -= 1000000;
+    fam.Baf[field]++;
     await fam.Baf.save();
-    return next();
-  } catch (error) {
-    console.log(error);
-  }
+    await user.save();
+    return "Улучшение куплено! Новый уровень: " + fam.Baf[field];
+  });
+  await ctx.reply(message);
+  return next();
 });
 
 famModule.hears(/^семья топ/i, async (ctx, next) => {
@@ -915,16 +843,18 @@ famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.famMoney < amount) {
       return ctx.reply("Недостаточно семейных монет 🥲");
     }
 
-    sender.famMoney -= amount;
-    receiver.famMoney += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "famMoney",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(amount)} семейных монет ` +

@@ -3,6 +3,7 @@ import { CronJob } from "cron";
 import { User } from "../../db/models.js";
 import { getUser } from "../../db/functions.js";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
+import economyService from "../../services/economy-service.js";
 
 class KeyService {
   async giveKeys(ctx) {
@@ -38,16 +39,18 @@ class KeyService {
     }
 
     try {
-      const sender = await getUser(chatId);
+      const sender = ctx.state.user || (await getUser(chatId));
 
       if (sender.chests < amount) {
         return ctx.reply("Недостаточно ключей🥲");
       }
 
-      sender.chests -= amount;
-      receiver.chests += amount;
-      await sender.save();
-      await receiver.save();
+      await economyService.transfer({
+        sender,
+        receiver,
+        currency: "chests",
+        amount,
+      });
 
       await ctx.reply(
         `Ты успешно передал(а) ${separateNumber(amount)} ключей ${

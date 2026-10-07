@@ -1,3 +1,6 @@
+import economyService from "../../services/economy-service.js";
+import { grantItem } from "../../services/reward-service.js";
+import { Family } from "../../db/models.js";
 import { CronJob } from "cron";
 import { getUser, getVipChats } from "../../db/functions.js";
 import { sleep, getRandomInt } from "../../utils/helpers.js";
@@ -28,9 +31,7 @@ function activePrize(bot) {
               let prize = (active.day *= 2);
 
               if (chance === 2) {
-                const item = await createItem(104);
-                user.fullSlots++;
-                await user.addItem(item);
+                const item = await grantItem(user, 104);
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -48,15 +49,11 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                if (fam.check) {
-                  fam.reputation += 200;
-                } else {
-                  fam.reputation += 100;
-                }
+                await Family.increment({ reputation: fam.check ? 200 : 100 }, { where: { id: fam.id } });
                 prize += fam.Baf.active * 250;
-                await fam.save();
+
               }
-              user.balance += prize;
+              await economyService.add({ user: user, currency: "balance", amount: prize });
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
@@ -102,9 +99,7 @@ function activePrize(bot) {
               let prize = (active.week *= 2);
 
               if (chance === 2) {
-                const item = await createItem(104);
-                user.fullSlots++;
-                await user.addItem(item);
+                const item = await grantItem(user, 104);
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -122,16 +117,12 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                if (fam.check) {
-                  fam.reputation += 600;
-                } else {
-                  fam.reputation += 300;
-                }
+                await Family.increment({ reputation: fam.check ? 600 : 300 }, { where: { id: fam.id } });
                 prize += fam.Baf.active * 250;
-                await fam.save();
+
               }
 
-              user.balance += prize;
+              await economyService.add({ user: user, currency: "balance", amount: prize });
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
@@ -176,9 +167,7 @@ function activePrize(bot) {
               let prize = (active.month *= 2);
 
               if (chance === 2) {
-                const item = await createItem(104);
-                user.fullSlots++;
-                await user.addItem(item);
+                const item = await grantItem(user, 104);
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -196,16 +185,12 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                if (fam.check) {
-                  fam.reputation += 1000;
-                } else {
-                  fam.reputation += 500;
-                }
+                await Family.increment({ reputation: fam.check ? 1000 : 500 }, { where: { id: fam.id } });
                 prize += fam.Baf.active * 250;
-                await fam.save();
+
               }
 
-              user.balance += prize;
+              await economyService.add({ user: user, currency: "balance", amount: prize });
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId

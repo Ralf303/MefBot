@@ -1,3 +1,6 @@
+import economyService from "../../services/economy-service.js";
+import { grantItem } from "../../services/reward-service.js";
+import { Family } from "../../db/models.js";
 import Sequelize, { Op } from "sequelize";
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
@@ -42,10 +45,7 @@ activeRouter.on(message("new_chat_members"), async (ctx, next) => {
         const chance = getRandomInt(0, 100);
 
         if (chance <= 10) {
-          const item = await createItem(106);
-
-          fromUser.fullSlots++;
-          await fromUser.addItem(item);
+          const item = await grantItem(fromUser, 106);
           await ctx.telegram.sendMessage(
             ctx.chat.id,
             `❗️@${fromUser.username} испытал удачу и получил ${item.itemName}❗️`
@@ -62,18 +62,14 @@ activeRouter.on(message("new_chat_members"), async (ctx, next) => {
         const fam = await getFamilyByUserId(fromUser.chatId);
 
         if (fam) {
-          if (fam.check) {
-            fam.reputation += 100;
-          } else {
-            fam.reputation += 50;
-          }
+          await Family.increment({ reputation: fam.check ? 100 : 50 }, { where: { id: fam.id } });
 
           sum += fam.Baf.invite * 500;
 
-          await fam.save();
+
         }
 
-        fromUser.balance += sum;
+        await economyService.add({ user: fromUser, currency: "balance", amount: sum });
         await invitedUser.save();
         await fromUser.save();
         await ctx.telegram.sendMessage(
@@ -224,14 +220,9 @@ activeRouter.on("message", async (ctx, next) => {
     const needType = ctx.chat.type !== "private";
     if (!needType) return next();
     const chatId = ctx.chat.id;
-    const chat = await Chat.findOrCreate({
-      where: { chatId },
-      defaults: { vip: false },
-    });
-
-    if (chat[0].vip) {
-      await activeService.updateUserActivity(ctx.state.user.id, chat[0].chatId);
-    }
+    const chat = ctx.state.chat || await getChat(chatId, ctx.chat.title);
+    ctx.state.chat = chat;
+    if (chat.vip) await activeService.updateUserActivity(ctx.state.user.id, chat.chatId);
 
     return next();
   } catch (error) {

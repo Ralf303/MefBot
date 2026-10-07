@@ -1,6 +1,7 @@
 import { Composer } from "telegraf";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 import { getUser } from "../../db/functions.js";
+import economyService from "../../services/economy-service.js";
 
 const oilRouter = new Composer();
 
@@ -37,16 +38,18 @@ oilRouter.hears(/^передать смазки.*$/i, async (ctx, next) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.oil < amount) {
       return ctx.reply("Недостаточно смазок для видеокарт🥲");
     }
 
-    sender.oil -= amount;
-    receiver.oil += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "oil",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(amount)} смазок для видеокарт ${
@@ -87,8 +90,13 @@ oilRouter.hears(/^купить смазки.*$/i, async (ctx, next) => {
       return;
     }
 
-    ctx.state.user.famMoney -= count * 200;
-    ctx.state.user.oil += count;
+    await economyService.exchange({
+      user: ctx.state.user,
+      spendCurrency: "famMoney",
+      receiveCurrency: "oil",
+      spendAmount: count * 200,
+      receiveAmount: count,
+    });
     await ctx.reply(
       `Ты успешно купил(а) ${count} смазок для видеокарт за ${
         count * 200

@@ -222,6 +222,28 @@ const CardStand = sequelize.define("cardStand", {
   cardId: { type: DataTypes.INTEGER, unique: true, allowNull: true },
 });
 
+const Payment = sequelize.define("payment", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    unique: true,
+    autoIncrement: true,
+  },
+  chargeId: { type: DataTypes.STRING, unique: true, allowNull: false },
+  userId: { type: DataTypes.INTEGER, allowNull: false },
+  amount: { type: DataTypes.INTEGER, allowNull: false },
+  payload: { type: DataTypes.STRING, allowNull: false },
+});
+
+const CaseCacheMigration = sequelize.define("caseCacheMigration", {
+  userId: { type: DataTypes.INTEGER, primaryKey: true },
+});
+
+const Giveaway = sequelize.define("giveaway", {
+  kind: { type: DataTypes.STRING, primaryKey: true },
+  token: { type: DataTypes.STRING, allowNull: false },
+});
+
 User.hasMany(FamMember, { foreignKey: "userId", sourceKey: "chatId" });
 User.hasOne(Case);
 User.hasOne(Home);
@@ -261,4 +283,7 @@ export {
   Mining,
   Card,
   CardStand,
+  Payment,
+  CaseCacheMigration,
+  Giveaway,
 };

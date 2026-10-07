@@ -1,8 +1,12 @@
+import { syncUserCaseToDb } from "../../../db/functions.js";
+import { currentTransaction } from "../../../db/config.js";
 import { Case } from "../../../db/models.js";
 import cases from "../cases.js";
 
 const getUserCase = async (id) => {
-  let cases = await Case.findOne({ where: { userId: id } });
+  await syncUserCaseToDb(id);
+  const transaction = currentTransaction();
+  let cases = await Case.findOne({ where: { userId: id }, ...(transaction ? { transaction, lock: transaction.LOCK.UPDATE } : {}) });
   return cases;
 };
 

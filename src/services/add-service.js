@@ -1,3 +1,4 @@
+import { withUserTransaction } from "./transaction-service.js";
 import dotenv from "dotenv";
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
@@ -44,10 +45,13 @@ class AddService {
       return;
     }
     await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
-    const token = jwtService.generateToken({
-      id: id,
-      channelId: channelId,
-    });
+    const token = jwtService.generateToken(
+      {
+        id: id,
+        channelId: channelId,
+      },
+      "add"
+    );
     const keyboard = {
       inline_keyboard: [
         [
@@ -70,22 +74,14 @@ class AddService {
   }
 
   async take(user, ctx, token) {
-    try {
-      const obj = jwtService.verifyToken(token);
-      const checkBonus = await Add.findOne({ where: { userId: user.chatId } });
-
-      if (checkBonus) {
-        return ctx.reply(ru_text.add_err);
-      }
-
-      if (!(await checkUserSub(ctx, obj.channelId, user.chatId))) {
-        return ctx.reply(ru_text.add_no_sub);
-      }
-      await this.#createAddInDb(user, obj);
-      await ctx.reply(ru_text.add_start);
-    } catch (error) {
-      console.log(error);
-    }
+    const obj = jwtService.verifyToken(token, "add");
+    if (!(await checkUserSub(ctx, obj.channelId, user.chatId))) return ctx.reply(ru_text.add_no_sub);
+    const created = await withUserTransaction(user, async (locked, transaction) => {
+      if (await Add.findOne({ where: { userId: locked.chatId }, transaction })) return false;
+      await Add.create({ userId: locked.chatId, channelId: obj.channelId, itemId: obj.id }, { transaction });
+      return true;
+    });
+    await ctx.reply(created ? ru_text.add_start : ru_text.add_err);
   }
 
   async end(bot) {
@@ -99,16 +95,20 @@ class AddService {
           });
 
           if (await checkUserSub(bot, bonus.channelId, user.chatId)) {
-            const item = await createItem(bonus.itemId);
-
-            user.fullSlots++;
-            await user.addItem(item);
-            const minedAmount = getRandomInt(1000, 10000);
-            user.balance += minedAmount;
-            await bonus.destroy();
-            await bonus.save();
-            await item.save();
-            await user.save();
+            const reward = await withUserTransaction(user, async (locked, transaction) => {
+              const record = await Add.findByPk(bonus.id, { transaction, lock: transaction.LOCK.UPDATE });
+              if (!record) return null;
+              const item = await createItem(record.itemId);
+              locked.fullSlots++;
+              await locked.addItem(item);
+              const minedAmount = getRandomInt(1000, 10000);
+              locked.balance += minedAmount;
+              await record.destroy({ transaction });
+              await locked.save({ transaction });
+              return { item, minedAmount };
+            });
+            if (!reward) continue;
+            const { item, minedAmount } = reward;
             const message = `❗️Спасибо за участие в разадче❗️\n\nТы получил(а):\n${minedAmount} старок🤑\n${item.itemName}[${item.id}]`;
             await bot.telegram.sendMessage(user.chatId, message);
             counter++;
@@ -124,7 +124,7 @@ class AddService {
         adminList[0],
         `Готово:)\n\nВ раздаче участвовало: ${
           bonuses.length
-        }\nУспешно: ${counter}\nОтписалось: ${(bonuses.length -= counter)}`
+        }\nУспешно: ${counter}\nОтписалось: ${(bonuses.length - counter)}`
       );
     }
   }

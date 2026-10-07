@@ -1,7 +1,8 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Item } from "../../db/models.js";
 import { getRandomInt } from "../../utils/helpers.js";
 
-const upgradeItem = async (user, itemId) => {
+const upgradeItemUnsafe = async (user, itemId) => {
   try {
     const hasItem = await Item.findOne({
       where: {
@@ -49,8 +50,9 @@ const upgradeItem = async (user, itemId) => {
       return "Ты не смог улучшить вещь, камень утерян 😥";
     }
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
+const upgradeItem = (user, ...args) => withUserTransaction(user, (locked) => upgradeItemUnsafe(locked, ...args));
 export { upgradeItem };

@@ -1,7 +1,9 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 import { getUser } from "../../db/functions.js";
 import { getMineInfo } from "../mine-module/mine-service.js";
+import economyService from "../../services/economy-service.js";
 
 const freezeRouter = new Composer();
 
@@ -38,16 +40,18 @@ freezeRouter.hears(/^передать жидкости.*$/i, async (ctx, next) =
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.freeze < amount) {
       return ctx.reply("Недостаточно охлаждающих жидкостей🥲");
     }
 
-    sender.freeze -= amount;
-    receiver.freeze += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "freeze",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(amount)} охлаждающих жидкостей ${
@@ -79,33 +83,58 @@ freezeRouter.hears(/^купить жидкости.*$/i, async (ctx, next) => {
   try {
     let count = parseInt(ctx.message.text.split(" ")[2]);
 
-    const mineShop = await getMineInfo();
-
-    if (mineShop.cards <= 0) {
-      return "Охлаждающие жидкости закончились🥲";
-    }
-
-    mineShop.cards -= 1;
-    await mineShop.save();
-
     if (isNaN(count) || count <= 0) {
       count = 1;
     }
 
-    if (ctx.state.user.gems < count * 250) {
+    const totalPrice = count * 250;
+    const mineShop = await getMineInfo();
+
+    if (mineShop.freeze < count) {
+      return ctx.reply("Охлаждающие жидкости закончились🥲");
+    }
+
+    if (ctx.state.user.gems < totalPrice) {
       await ctx.reply("Недостаточно гемов 😢");
       return;
     }
 
-    ctx.state.user.gems -= count * 250;
-    ctx.state.user.freeze += count;
+    await withUserTransaction(ctx.state.user, async (lockedUser, transaction) => {
+      const lockedMineShop = await mineShop.reload({
+        transaction,
+        lock: transaction.LOCK.UPDATE,
+      });
+
+      if (lockedMineShop.freeze < count) {
+        throw new Error("FREEZE_SOLD_OUT");
+      }
+
+      if (lockedUser.gems < totalPrice) {
+        throw new Error("NOT_ENOUGH_GEMS");
+      }
+
+      lockedMineShop.freeze -= count;
+      lockedUser.gems -= totalPrice;
+      lockedUser.freeze += count;
+
+      await lockedMineShop.save({ transaction });
+      await lockedUser.save({ transaction });
+
+
+    });
     await ctx.reply(
       `Ты успешно купил(а) ${count} охлаждающих жидкостей за ${
-        count * 200
+        count * 250
       } гемов`
     );
     return next();
   } catch (error) {
+    if (error.message === "FREEZE_SOLD_OUT") {
+      return ctx.reply("Охлаждающие жидкости закончились🥲");
+    }
+    if (error.message === "NOT_ENOUGH_GEMS") {
+      return ctx.reply("Недостаточно гемов 😢");
+    }
     console.log(error);
   }
 });

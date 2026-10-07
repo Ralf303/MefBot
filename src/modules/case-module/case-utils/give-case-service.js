@@ -1,3 +1,4 @@
+import { withUsersTransaction } from "../../../services/transaction-service.js";
 import cases from "../cases.js";
 import { getUserCase } from "./case-tool-service.js";
 import { syncUserCaseToDb } from "../../../db/functions.js";
@@ -6,6 +7,7 @@ import { resolveReceiver } from "../../../utils/helpers.js";
 const giveCase = async (sender, id, count, ctx) => {
   try {
     const intCount = Number(count);
+    if (!Number.isSafeInteger(intCount) || intCount <= 0) return ctx.reply("Укажи целое положительное количество");
     const needCase = cases[id];
     if (!needCase) {
       await ctx.reply("Такого кейса нет😥");
@@ -33,18 +35,21 @@ const giveCase = async (sender, id, count, ctx) => {
     const { receiver, transferredViaUsername } = resolved;
     await syncUserCaseToDb(sender.id);
     await syncUserCaseToDb(receiver.id);
-    const senderCase = await getUserCase(sender.id);
-    const receiverCase = await getUserCase(receiver.id);
+    const error = await withUsersTransaction([sender, receiver], async () => {
+      const senderCase = await getUserCase(sender.id);
+      const receiverCase = await getUserCase(receiver.id);
 
-    const have = senderCase[needCase.dbName] || 0;
-    if (intCount > have) {
-      return ctx.reply(`У тебя не хватает ${needCase.name}📦`);
-    }
+      const have = senderCase[needCase.dbName] || 0;
+      if (intCount > have) {
+      return `У тебя не хватает ${needCase.name}📦`;
+      }
 
-    senderCase[needCase.dbName] -= intCount;
-    receiverCase[needCase.dbName] += intCount;
-    await senderCase.save();
-    await receiverCase.save();
+      senderCase[needCase.dbName] -= intCount;
+      receiverCase[needCase.dbName] += intCount;
+      await senderCase.save();
+      await receiverCase.save();
+    });
+    if (error) return ctx.reply(error);
 
     await ctx.replyWithHTML(
       `Ты успешно передал(а) ${intCount} ${needCase.name} ` +
@@ -69,6 +74,7 @@ const giveCase = async (sender, id, count, ctx) => {
 const giveDonateCase = async (sender, id, count, ctx) => {
   try {
     const intCount = Number(count);
+    if (!Number.isSafeInteger(intCount) || intCount <= 0) return ctx.reply("Укажи целое положительное количество");
     if (id !== "донат") {
       return ctx.reply("Такого кейса нет😥");
     }
@@ -92,17 +98,20 @@ const giveDonateCase = async (sender, id, count, ctx) => {
     }
 
     const { receiver, transferredViaUsername } = resolved;
-    const senderCase = await getUserCase(sender.id);
-    const receiverCase = await getUserCase(receiver.id);
+    const error = await withUsersTransaction([sender, receiver], async () => {
+      const senderCase = await getUserCase(sender.id);
+      const receiverCase = await getUserCase(receiver.id);
 
-    if (intCount > senderCase.donate) {
-      return ctx.reply(`У тебя не хватает кейсов донат кейсов📦`);
-    }
+      if (intCount > senderCase.donate) {
+      return `У тебя не хватает кейсов донат кейсов📦`;
+      }
 
-    senderCase.donate -= intCount;
-    receiverCase.donate += intCount;
-    await senderCase.save();
-    await receiverCase.save();
+      senderCase.donate -= intCount;
+      receiverCase.donate += intCount;
+      await senderCase.save();
+      await receiverCase.save();
+    });
+    if (error) return ctx.reply(error);
 
     await ctx.reply(
       `Ты успешно передал(а) ${intCount} донат кейсов ` +

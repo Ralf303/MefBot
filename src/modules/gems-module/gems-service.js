@@ -8,6 +8,7 @@ import {
 } from "../../utils/helpers.js";
 import { checkItem } from "../items-module/items-utils/item-tool-service.js";
 import { getUser } from "../../db/functions.js";
+import economyService from "../../services/economy-service.js";
 
 class GemService {
   async giveGems(ctx) {
@@ -43,16 +44,18 @@ class GemService {
     }
 
     try {
-      const sender = await getUser(chatId);
+      const sender = ctx.state.user || (await getUser(chatId));
 
       if (sender.gems < amount) {
         return ctx.reply("Недостаточно гемов🥲");
       }
 
-      sender.gems -= amount;
-      receiver.gems += amount;
-      await sender.save();
-      await receiver.save();
+      await economyService.transfer({
+        sender,
+        receiver,
+        currency: "gems",
+        amount,
+      });
 
       await ctx.reply(
         `Ты успешно передал(а) ${separateNumber(amount)} гемов ${
@@ -129,9 +132,13 @@ class GemService {
       if (hasPups) {
         const mef = amount * getRandomInt(100, 500);
 
-        user.gems -= amount;
-        user.balance += mef;
-        await user.save();
+        await economyService.exchange({
+          user,
+          spendCurrency: "gems",
+          receiveCurrency: "balance",
+          spendAmount: amount,
+          receiveAmount: mef,
+        });
 
         return `Ты успешно синтезировал(а) ${amount} гемов в ${mef} старок🧪`;
       } else return "У тебя нет пупса науки🥲";

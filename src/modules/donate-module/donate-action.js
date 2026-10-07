@@ -1,5 +1,6 @@
 import { Composer } from "telegraf";
 import { separateNumber } from "../../utils/helpers.js";
+import economyService from "../../services/economy-service.js";
 
 const donatAction = new Composer();
 
@@ -26,15 +27,23 @@ donatAction.action(
       return;
     }
 
-    user.donate -= count;
-
     if (type === "stars") {
-      user.balance += count * 5000;
+      await economyService.exchange({
+        user,
+        spendCurrency: "donate",
+        receiveCurrency: "balance",
+        spendAmount: count,
+        receiveAmount: count * 5000,
+      });
     } else if (type === "stones") {
-      user.stones += count;
+      await economyService.exchange({
+        user,
+        spendCurrency: "donate",
+        receiveCurrency: "stones",
+        spendAmount: count,
+        receiveAmount: count,
+      });
     }
-
-    await user.save();
 
     try {
       await ctx.deleteMessage();

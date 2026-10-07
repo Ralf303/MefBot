@@ -1,3 +1,5 @@
+import economyService from "../../services/economy-service.js";
+import { Family } from "../../db/models.js";
 import { getUser } from "../../db/functions.js";
 import { getItemsLvl } from "../items-module/items-utils/items-functions.js";
 import {
@@ -31,17 +33,16 @@ function famCron(bot) {
             const itemLvl = await getItemsLvl(realUser.id);
 
             if (fam.check) {
-              realUser.famMoney += rang;
+              if (rang > 0) await economyService.add({ user: realUser, currency: "famMoney", amount: rang });
               itemsLvl += itemLvl * 2;
             } else {
               itemsLvl += itemLvl;
             }
 
-            await realUser.save();
+
           }
 
-          fam.reputation += itemsLvl;
-          fam.save();
+          await Family.increment({ reputation: itemsLvl }, { where: { id: fam.id } });
           itemsLvl = 0;
         }
       } catch (error) {
@@ -61,7 +62,7 @@ function famCron(bot) {
         let message = "🏆БИТВА СЕМЕЙ ЗАКОНЧЕНА🏆\n\n";
         await flushReputation();
         if (fam1) {
-          fam1.balance += fam1.fullSlots * 200;
+          await Family.increment({ balance: fam1.fullSlots * 200 }, { where: { id: fam1.id } });
 
           const famUsers = await getFamUsers(fam1.id);
           if (!famUsers) return;
@@ -71,18 +72,19 @@ function famCron(bot) {
             const rang = await getRang(user.userId, fam1.id);
             const itemLvl = await getItemsLvl(realUser.id);
 
-            realUser.famMoney += rang * itemLvl * 15;
-            await realUser.save();
+            const amount = rang * itemLvl * 15;
+            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+
           }
 
           message += `• Семья «${fam1.name}» получает ${
             fam1.fullSlots * 200
           } семейных монет\n\n`;
-          fam1.save();
+
         }
 
         if (fam2) {
-          fam2.balance += fam2.fullSlots * 150;
+          await Family.increment({ balance: fam2.fullSlots * 150 }, { where: { id: fam2.id } });
 
           const famUsers = await getFamUsers(fam2.id);
           if (!famUsers) return;
@@ -92,18 +94,19 @@ function famCron(bot) {
             const rang = await getRang(user.userId, fam2.id);
             const itemLvl = await getItemsLvl(realUser.id);
 
-            realUser.famMoney += rang * itemLvl * 10;
-            await realUser.save();
+            const amount = rang * itemLvl * 10;
+            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+
           }
 
           message += `• Семья «${fam2.name}» получает ${
             fam2.fullSlots * 150
           } семейных монет\n\n`;
-          fam2.save();
+
         }
 
         if (fam3) {
-          fam3.balance += fam3.fullSlots * 100;
+          await Family.increment({ balance: fam3.fullSlots * 100 }, { where: { id: fam3.id } });
 
           const famUsers = await getFamUsers(fam3.id);
           if (!famUsers) return;
@@ -112,14 +115,15 @@ function famCron(bot) {
             const realUser = await getUser(user.userId);
             const rang = await getRang(user.userId, fam3.id);
             const itemLvl = await getItemsLvl(realUser.id);
-            realUser.famMoney += rang * itemLvl * 5;
-            await realUser.save();
+            const amount = rang * itemLvl * 5;
+            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+
           }
 
           message += `• Семья «${fam3.name}» получает ${
             fam3.fullSlots * 100
           } семейных монет\n\n`;
-          fam3.save();
+
         }
 
         message +=

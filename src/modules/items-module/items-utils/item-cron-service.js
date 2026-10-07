@@ -1,3 +1,4 @@
+import { withUserTransaction } from "../../../services/transaction-service.js";
 import { syncUserCaseToDb } from "../../../db/functions.js";
 import { Item, User } from "../../../db/models.js";
 import { getRandomInt, sleep } from "../../../utils/helpers.js";
@@ -373,9 +374,11 @@ class ItemService {
               await syncUserCaseToDb(user.id);
               const userCase = await getUserCase(user.id);
 
-              userCase[needCase.dbName] += 1;
-              await userCase.save();
-              await user.save();
+              await withUserTransaction(user, async () => {
+                const currentCase = await getUserCase(user.id);
+                currentCase[needCase.dbName] += 1;
+                await currentCase.save();
+              });
 
               await sleep(200);
             } catch (error) {

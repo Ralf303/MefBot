@@ -1,3 +1,8 @@
+import sequelize from "../../db/config.js";
+import { Mining } from "../../db/models.js";
+import economyService from "../../services/economy-service.js";
+import { grantItem } from "../../services/reward-service.js";
+import { Family } from "../../db/models.js";
 import { CronJob } from "cron";
 import {
   getMineInfo,
@@ -25,8 +30,8 @@ class MineService {
 
           const { USD } = cryptPrice.data;
           const price = Math.trunc(USD);
-          mineInfo.currency = price;
-          await mineInfo.save();
+          if (!Number.isSafeInteger(price) || price <= 0) throw new Error("INVALID_EXCHANGE_RATE");
+          await Mining.update({ currency: price }, { where: { id: 1 } });
         } catch (error) {
           console.error("Error updating mine info:", error);
         }
@@ -42,15 +47,7 @@ class MineService {
         try {
           const mineInfo = await getMineInfo();
 
-          if (mineInfo.cards < 100) {
-            mineInfo.cards += 1;
-          }
-
-          if (mineInfo.freeze < 100) {
-            mineInfo.freeze += 1;
-          }
-
-          await mineInfo.save();
+          await Mining.update({ cards: sequelize.literal("LEAST(cards + 1, 100)"), freeze: sequelize.literal("LEAST(freeze + 1, 100)") }, { where: { id: 1 } });
         } catch (error) {
           console.error("Error updating mine info:", error);
         }
@@ -112,10 +109,7 @@ class MineService {
               const chance = getRandomInt(0, 300);
 
               if (chance === 1) {
-                const item = await createItem(126);
-
-                user.fullSlots++;
-                await user.addItem(item);
+                const item = await grantItem(user, 126);
                 await bot.telegram.sendMessage(
                   user.chatId,
                   `❗️Ты испытал(а) удачу и получили ${item.itemName}❗️`,
@@ -124,7 +118,7 @@ class MineService {
                 await item.save();
               }
 
-              user.coin += randomAmount;
+              await economyService.add({ user, currency: "coin", amount: randomAmount });
               await user.save();
               const message = `Я намайнил ${randomAmount} ₿🤑`;
               await bot.telegram.sendMessage(user.chatId, message);

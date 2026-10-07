@@ -1,9 +1,11 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Active, User } from "../../db/models.js";
 
 class ActiveService {
   async updateUserActivity(userId, chatId) {
     try {
-      const userActivity = await Active.findOne({
+      await withUserTransaction({ id: userId }, async () => {
+        const userActivity = await Active.findOne({
         where: { userId: userId, chatId: chatId },
       });
 
@@ -22,6 +24,7 @@ class ActiveService {
           month: 1,
         });
       }
+      });
     } catch (error) {
       console.error("Error updating user activity:", error);
     }

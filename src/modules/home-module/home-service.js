@@ -1,3 +1,4 @@
+import jwtService from "../../services/jwt-service.js";
 import fs from "fs";
 import { Home, Item } from "../../db/models.js";
 import { home } from "./home.js";
@@ -161,7 +162,7 @@ const sellHome = async (user, price, replyMessage, ctx) => {
         [
           Key.callback(
             "Принять",
-            `homeSell ${user.chatId} ${receiver.chatId} ${price}`
+            jwtService.generateTradeToken("home", { id: senderHome.id, senderId: user.chatId, receiverId: receiver.chatId, price })
           ),
         ],
         [Key.callback("Отмена", "cancel")],

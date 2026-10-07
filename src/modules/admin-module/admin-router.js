@@ -1,3 +1,5 @@
+import economyService from "../../services/economy-service.js";
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
 import items from "../items-module/items.js";
@@ -39,7 +41,7 @@ adminRouter.on(message("text"), async (ctx, next) => {
       }
 
       if (userMessage == "раздача конец") {
-        addService.end(ctx);
+        await addService.end(ctx);
       }
 
       if (userMessage == "раздача количество") {
@@ -52,25 +54,28 @@ adminRouter.on(message("text"), async (ctx, next) => {
         const itemInfo = items[id];
 
         if (word2 == "мани" && !isNaN(id)) {
-          ctx.state.user.balance += id;
+          await economyService.add({ user: ctx.state.user, currency: "balance", amount: id });
           await ctx.reply(`Успешно выдано ${id} старок`);
         }
 
         if (word2 == "гемы" && !isNaN(id)) {
-          ctx.state.user.gems += id;
+          await economyService.add({ user: ctx.state.user, currency: "gems", amount: id });
           await ctx.reply(`Успешно выдано ${id} гемов`);
         }
 
         if (word2 == "ключи" && !isNaN(id)) {
-          ctx.state.user.chests += id;
+          await economyService.add({ user: ctx.state.user, currency: "chests", amount: id });
           await ctx.reply(`Успешно выдано ${id} ключей`);
         }
 
         if (word2 == "кейс" && !isNaN(id)) {
-          const userCase = await getUserCase(ctx.state.user.id);
+          if (!Number.isSafeInteger(id) || id <= 0) return ctx.reply("Укажи целое положительное количество");
+          await withUserTransaction(ctx.state.user, async (user) => {
+          const userCase = await getUserCase(user.id);
           userCase.donate += id;
-          await ctx.reply(`Успешно выдано ${id} донат кейсов`);
           await userCase.save();
+          });
+          await ctx.reply(`Успешно выдано ${id} донат кейсов`);
         }
 
         if (word2 == "вещь" && itemInfo && !isNaN(id)) {

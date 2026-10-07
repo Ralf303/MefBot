@@ -18,17 +18,17 @@ commandRouter.start(async (ctx) => {
       const user = await getUser(id, first_name, username);
 
       if (/^\d+$/.test(value)) {
-        bonusService.takeBonus(user, ctx, value);
+        await bonusService.takeBonus(user, ctx, value);
         return;
       }
 
-      if (value.includes("event_")) {
-        bonusService.giveItem(user, ctx, value.slice(6));
+      if (value.startsWith("event_")) {
+        await bonusService.giveItem(user, ctx, value.slice(6));
         return;
       }
 
-      if (value.includes("add_")) {
-        addService.take(user, ctx, value.slice(4));
+      if (value.startsWith("add_")) {
+        await addService.take(user, ctx, value.slice(4));
         return;
       }
     } else {
@@ -49,6 +49,7 @@ commandRouter.start(async (ctx) => {
     }
   } catch (error) {
     console.log(error);
+    await ctx.reply("Не удалось обработать ссылку. Возможно, раздача закончилась или ссылка устарела.");
   }
 });
 
@@ -115,14 +116,14 @@ commandRouter.command("change", async (ctx) => {
       return;
     }
 
-    isItem.forEach(async (item) => {
+    for (const item of isItem) {
       if (item.src === "img/white_shalusha.png") {
         item.src = "img/black_shalusha.png";
       } else if (item.src === "img/black_shalusha.png") {
         item.src = "img/white_shalusha.png";
       }
       await item.save();
-    });
+    }
 
     return await ctx.reply("Шайлушай изменен");
   } catch (error) {

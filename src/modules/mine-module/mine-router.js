@@ -1,7 +1,9 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { getMineInfo } from "./mine-service.js";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 import { getUser } from "../../db/functions.js";
+import economyService from "../../services/economy-service.js";
 
 const mineRouter = new Composer();
 
@@ -28,29 +30,35 @@ mineRouter.hears(/^крипта купить.*$/i, async (ctx) => {
   const amountText = ctx.message.text.split(" ")[2];
   const amount = Number(amountText);
 
-  if (isNaN(amount) || amount <= 0) {
+  if (!Number.isSafeInteger(amount) || amount <= 0) {
     return ctx.reply("❌ Укажи корректное количество BTC для покупки");
   }
 
-  const user = ctx.state.user;
-  const mineInfo = await getMineInfo();
-  const price = mineInfo.currency || 0;
-  const totalCost = Math.floor(amount * price);
+  const result = await withUserTransaction(ctx.state.user, async (user, transaction) => {
+    const mineInfo = await getMineInfo();
+    await mineInfo.reload({ transaction, lock: transaction.LOCK.UPDATE });
+    const price = Number(mineInfo.currency);
+    if (!Number.isSafeInteger(price) || price <= 0) return { error: "Курс временно недоступен" };
+    const totalCost = Math.floor(amount * price);
 
-  if (user.balance < totalCost) {
-    return ctx.reply("Недостаточно старок😢");
-  }
+    if (user.balance < totalCost) {
+    return { error: "Недостаточно старок😢" };
+    }
 
-  if (mineInfo.coin < amount) {
-    return ctx.reply("❌ В банке недостаточно BTC");
-  }
+    if (mineInfo.coin < amount) {
+    return { error: "❌ В банке недостаточно BTC" };
+    }
 
-  user.balance -= totalCost;
-  user.coin += amount;
-  mineInfo.coin -= amount;
+    user.balance -= totalCost;
+    user.coin += amount;
+    mineInfo.coin -= amount;
 
-  await user.save();
-  await mineInfo.save();
+    await user.save();
+    await mineInfo.save();
+    return { total: totalCost };
+  });
+  if (result.error) return ctx.reply(result.error);
+  const totalCost = result.total;
 
   await ctx.replyWithHTML(
     `✅ Ты купил <b>${amount} BTC</b> за <b>${separateNumber(
@@ -63,26 +71,32 @@ mineRouter.hears(/^крипта продать.*$/i, async (ctx) => {
   const amountText = ctx.message.text.split(" ")[2];
   const amount = Number(amountText);
 
-  if (isNaN(amount) || amount <= 0) {
+  if (!Number.isSafeInteger(amount) || amount <= 0) {
     return ctx.reply("❌ Укажи корректное количество BTC");
   }
 
-  const user = ctx.state.user;
-  const mineInfo = await getMineInfo();
-  const price = mineInfo.currency || 0;
-  const bankBuyPrice = Math.trunc(price * 0.95);
-  const totalReceive = Math.floor(amount * bankBuyPrice);
+  const result = await withUserTransaction(ctx.state.user, async (user, transaction) => {
+    const mineInfo = await getMineInfo();
+    await mineInfo.reload({ transaction, lock: transaction.LOCK.UPDATE });
+    const price = Number(mineInfo.currency);
+    if (!Number.isSafeInteger(price) || price <= 0) return { error: "Курс временно недоступен" };
+    const bankBuyPrice = Math.trunc(price * 0.95);
+    const totalReceive = Math.floor(amount * bankBuyPrice);
 
-  if (user.coin < amount) {
-    return ctx.reply("Недостаточно BTC😢");
-  }
+    if (user.coin < amount) {
+    return { error: "Недостаточно BTC😢" };
+    }
 
-  user.coin -= amount;
-  user.balance += totalReceive;
-  mineInfo.coin += amount;
+    user.coin -= amount;
+    user.balance += totalReceive;
+    mineInfo.coin += amount;
 
-  await user.save();
-  await mineInfo.save();
+    await user.save();
+    await mineInfo.save();
+    return { total: totalReceive };
+  });
+  if (result.error) return ctx.reply(result.error);
+  const totalReceive = result.total;
 
   await ctx.replyWithHTML(
     `✅ Ты продал <b>${amount} BTC</b> и получил <b>${separateNumber(
@@ -124,16 +138,18 @@ mineRouter.hears(/^передать крипту.*$/i, async (ctx, next) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.coin < amount) {
       return ctx.reply("Недостаточно BTC 🥲");
     }
 
-    sender.coin -= amount;
-    receiver.coin += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "coin",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(amount)} ₿ ` +

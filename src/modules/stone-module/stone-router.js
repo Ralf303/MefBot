@@ -2,6 +2,7 @@ import { Composer } from "telegraf";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
 import { upgradeItem } from "./stone-service.js";
 import { getUser } from "../../db/functions.js";
+import economyService from "../../services/economy-service.js";
 
 const stoneRouter = new Composer();
 
@@ -72,16 +73,18 @@ stoneRouter.hears(/^передать камни.*$/i, async (ctx, next) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.stones < amount) {
       return ctx.reply("Недостаточно точильных камней🥲");
     }
 
-    sender.stones -= amount;
-    receiver.stones += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "stones",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(amount)} точильных камней ${
@@ -122,8 +125,13 @@ stoneRouter.hears(/^купить камни.*$/i, async (ctx, next) => {
       return;
     }
 
-    ctx.state.user.famMoney -= count * 50;
-    ctx.state.user.stones += count;
+    await economyService.exchange({
+      user: ctx.state.user,
+      spendCurrency: "famMoney",
+      receiveCurrency: "stones",
+      spendAmount: count * 50,
+      receiveAmount: count,
+    });
     await ctx.reply(
       `Ты успешно купил(а) ${count} точильных камней за ${
         count * 50

@@ -1,6 +1,8 @@
+import jwtService from "../../services/jwt-service.js";
+import { withUserTransaction, withUsersTransaction } from "../../services/transaction-service.js";
 import { Key, Keyboard } from "telegram-keyboard";
 import { getUser } from "../../db/functions.js";
-import { Card, User } from "../../db/models.js";
+import { Card, User, CardStand } from "../../db/models.js";
 import { getRandomInt, separateNumber } from "../../utils/helpers.js";
 import { getMineInfo } from "../mine-module/mine-service.js";
 
@@ -17,7 +19,7 @@ const getInventory = async (user, ctx) => {
   return ctx.replyWithHTML(`Твой инвентарь:\n\n${message}`);
 };
 
-const deleteCard = async (user, cardId) => {
+const deleteCardUnsafe = async (user, cardId) => {
   const card = await Card.findOne({ where: { id: cardId, userId: user.id } });
 
   if (!card) {
@@ -48,28 +50,15 @@ const giveCard = async (sender, cardId, ctx) => {
       return;
     }
 
-    const card = await Card.findOne({
-      where: {
-        id: cardId,
-        userId: sender.id,
-      },
+    if (Number(sender.id) === Number(receiver.id)) return ctx.reply("Нельзя передавать самому себе");
+    const card = await withUsersTransaction([sender, receiver], async ([lockedSender, lockedReceiver], transaction) => {
+      const asset = await Card.findOne({ where: { id: cardId, userId: lockedSender.id }, transaction, lock: transaction.LOCK.UPDATE });
+      if (!asset) throw new Error("CARD_NOT_FOUND");
+      await CardStand.update({ cardId: null }, { where: { cardId: asset.id }, transaction });
+      asset.userId = lockedReceiver.id;
+      await asset.save({ transaction });
+      return asset;
     });
-
-    if (!card) {
-      await ctx.reply("У тебя нет такой видеокарты 😥");
-      return;
-    }
-
-    if (sender.id === receiver.id) {
-      await ctx.reply("Иди нахуй, так нельзя🖕");
-      return;
-    }
-
-    card.userId = receiver.id;
-
-    await sender.save();
-    await receiver.save();
-    await card.save();
 
     await ctx.reply(
       `Ты передал(а) Видеокарта[${card.id}](${card.lvl}) <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
@@ -81,7 +70,7 @@ const giveCard = async (sender, cardId, ctx) => {
   }
 };
 
-const buyCard = async (user) => {
+const buyCardUnsafe = async (user, transaction) => {
   const price = 15000;
 
   if (user.gems < price) {
@@ -89,6 +78,7 @@ const buyCard = async (user) => {
   }
 
   const count = await getMineInfo();
+  await count.reload({ transaction, lock: transaction.LOCK.UPDATE });
 
   if (count.cards <= 0) {
     return "Видеокарты закончились🥲";
@@ -150,7 +140,7 @@ const sellCard = async (user, id, price, replyMessage, ctx) => {
         [
           Key.callback(
             "Принять",
-            `card_buy ${item.id} ${user.chatId} ${receiver.chatId} ${price}`
+            jwtService.generateTradeToken("card", { id: item.id, senderId: user.chatId, receiverId: receiver.chatId, price })
           ),
         ],
         [Key.callback("Отмена", "cancel")],
@@ -167,7 +157,7 @@ const sellCard = async (user, id, price, replyMessage, ctx) => {
   }
 };
 
-const upgradeCard = async (user, itemId) => {
+const upgradeCardUnsafe = async (user, itemId) => {
   try {
     const hasCard = await Card.findOne({
       where: {
@@ -215,8 +205,11 @@ const upgradeCard = async (user, itemId) => {
       return "Ты не смог улучшить видеокарту, смазка утеряна 😥";
     }
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
+const deleteCard = (user, id) => withUserTransaction(user, (locked) => deleteCardUnsafe(locked, id));
+const buyCard = (user) => withUserTransaction(user, (locked, transaction) => buyCardUnsafe(locked, transaction));
+const upgradeCard = (user, ...args) => withUserTransaction(user, (locked) => upgradeCardUnsafe(locked, ...args));
 export { getInventory, deleteCard, giveCard, buyCard, sellCard, upgradeCard };

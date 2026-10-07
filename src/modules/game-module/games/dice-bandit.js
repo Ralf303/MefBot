@@ -1,4 +1,4 @@
-import { gamesLog } from "../../logs-module/globalLogs.js";
+import economyService from "../../../services/economy-service.js";
 import { sleep, separateNumber } from "../../../utils/helpers.js";
 
 async function dice_bandit(stake, user, ctx) {
@@ -11,15 +11,23 @@ async function dice_bandit(stake, user, ctx) {
   let winAmount = 0;
   const previousBalance = user.balance;
 
-  user.balance -= stake;
-  const info = await ctx.telegram.sendDice(ctx.chat.id, { emoji: "🎰" });
+  stake = Number(stake);
+  await economyService.wager({ user, stake, winnings: 0 });
+  let info;
+  try {
+    info = await ctx.telegram.sendDice(ctx.chat.id, { emoji: "🎰" });
+  } catch (error) {
+    await economyService.add({ user, currency: "balance", amount: stake });
+    throw error;
+  }
   const dice = info.dice.value;
+  const multiplier = { 64: 15, 43: 10, 22: 8, 1: 5 }[dice] || 0;
+  if (multiplier) await economyService.add({ user, currency: "balance", amount: stake * multiplier });
   await sleep(2300);
 
   if (dice === 64) {
     winAmount = Number(stake) * 15;
-    user.balance += winAmount;
-    await user.save();
+
     return `🎉ДЖЕКПОТ🎉\nВыигрыш — ${separateNumber(
       winAmount
     )}\n\nСтавка — ${separateNumber(
@@ -29,7 +37,7 @@ async function dice_bandit(stake, user, ctx) {
 
   if (dice === 43) {
     winAmount = Number(stake) * 10;
-    user.balance += winAmount;
+
     return `🍋ЛИМОНЧИКИ🍋\nВыигрыш — ${separateNumber(
       winAmount
     )}\n\nСтавка — ${separateNumber(
@@ -39,8 +47,7 @@ async function dice_bandit(stake, user, ctx) {
 
   if (dice === 22) {
     winAmount = Number(stake) * 8;
-    user.balance += winAmount;
-    await user.save();
+
     return `🍒ЯГОДКИ🍒\nВыигрыш — ${separateNumber(
       winAmount
     )}\n\nСтавка — ${separateNumber(
@@ -50,8 +57,7 @@ async function dice_bandit(stake, user, ctx) {
 
   if (dice === 1) {
     winAmount = Number(stake) * 5;
-    user.balance += winAmount;
-    await user.save();
+
     return `🍸КОКТЕЛЬЧИК🍸\nВыигрыш — ${separateNumber(
       winAmount
     )}\n\nСтавка — ${separateNumber(
@@ -59,8 +65,7 @@ async function dice_bandit(stake, user, ctx) {
     )}\nБаланс — ${separateNumber(user.balance)}`;
   }
 
-  user.balance += winAmount;
-  await user.save();
+
   return `🎰К сожалению ты проиграл😢\nВыигрыш — ${separateNumber(
     winAmount
   )}\n\nСтавка — ${separateNumber(

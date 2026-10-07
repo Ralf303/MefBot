@@ -1,3 +1,4 @@
+import economyService from "../services/economy-service.js";
 import { Scenes } from "telegraf";
 import { getUser } from "../db/functions.js";
 import {
@@ -34,6 +35,7 @@ rouletteScene.hears(/^(\d+)$/, async (ctx) => {
 
     const amount = Number(ctx.match[1]);
 
+    if (!Number.isSafeInteger(amount) || amount <= 0) return ctx.reply("Укажи целую положительную ставку");
     if (balance < amount) {
       await ctx.reply("Недостаточно старок😢");
       return;
@@ -107,18 +109,20 @@ rouletteScene.on("callback_query", async (ctx) => {
         return;
       }
 
-      const winNumber = Math.floor(Math.random() * 36 + 1);
+      const winNumber = Math.floor(Math.random() * 37);
       const winColor = getWinColor(winNumber);
       const winAmount = getWinAmount(amount, bet, winNumber);
+      const previousBalance = user.balance;
+      await economyService.wager({ user, stake: amount, winnings: winAmount });
       const message = `Выпавшее число: ${winNumber} (${winColor}),\nТвоя ставка: ${separateNumber(
         amount
       )} на (${bet}). ${
         winAmount > 0
           ? `\n🥳 Поздравляем, ты выиграл ${winAmount}!\n\nБаланс: ${separateNumber(
-              user.balance - amount + winAmount
+              user.balance
             )}`
           : `\n😔 Увы, ты проиграл. Попробуйте еще раз.\n\nБаланс: ${separateNumber(
-              user.balance - amount
+              user.balance
             )}`
       }`;
 
@@ -151,11 +155,8 @@ rouletteScene.on("callback_query", async (ctx) => {
       );
 
       await saveAction(user.id, sendedMessage);
-      const previousBalance = user.balance;
-      user.balance -= amount;
-      user.balance += winAmount;
       await gamesLog(user, "рулетку", winAmount, previousBalance);
-      await user.save();
+
     } else {
       ctx.scene.leave();
       await ctx.answerCbQuery("Рулетка отменена.");

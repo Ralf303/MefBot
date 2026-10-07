@@ -1,5 +1,6 @@
 import { getUser } from "../../db/functions.js";
 import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
+import economyService from "../../services/economy-service.js";
 
 const giveStars = async (ctx) => {
   const chatId = ctx.from.id;
@@ -34,7 +35,7 @@ const giveStars = async (ctx) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.balance < amount) {
       return ctx.reply("Недостаточно старок🥲");
@@ -44,10 +45,13 @@ const giveStars = async (ctx) => {
       return ctx.reply("Минимальная сумма передачи 100 старок");
     }
 
-    sender.balance -= amount;
-    receiver.balance += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "balance",
+      amount,
+      minAmount: 100,
+    });
 
     await ctx.reply(
       `Ты успешно отсыпал(а) ${separateNumber(amount)} старок ` +

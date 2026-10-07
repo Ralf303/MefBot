@@ -1,4 +1,5 @@
 function getWinAmount(amount, bet, winNumber) {
+  if (winNumber === 0 && bet !== "0") return 0;
   switch (bet) {
     case "0":
       return amount * (winNumber === 0 ? 35 : 0);

@@ -1,3 +1,5 @@
+import jwtService from "../../../services/jwt-service.js";
+import { withUserOperation, withUserTransaction } from "../../../services/transaction-service.js";
 import { Item, User } from "../../../db/models.js";
 import items from "../items.js";
 import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
@@ -9,8 +11,8 @@ dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 
-const buyItem = async (user, itemInfo, ctx, status) => {
-  if (user.slots < user.fullSlots) {
+const buyItemUnsafe = async (user, itemInfo, ctx, status) => {
+  if (user.fullSlots >= user.slots) {
     return ctx.reply("Недостаточно слотов😥");
   }
 
@@ -56,7 +58,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     }
   }
 
-  await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
+  user.fullSlots++;
 
   const item = await Item.create({
     src: itemInfo.src,
@@ -74,7 +76,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
     `Ты купил(а): ${item.itemName}[${item.id}]\n\n📖<code>Надеть ${item.id}</code>`
   );
 
-  if (getRandomInt(0, 100) === 5) {
+  if (getRandomInt(0, 100) === 5 && user.fullSlots < user.slots) {
     const luckItemInfo = items[125];
 
     const luckItem = await Item.create({
@@ -85,7 +87,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
       price: luckItemInfo.price,
     });
 
-    await User.increment({ fullSlots: 1 }, { where: { id: user.id } });
+    user.fullSlots++;
     await user.addItem(luckItem);
     await user.save();
     await luckItem.save();
@@ -96,7 +98,7 @@ const buyItem = async (user, itemInfo, ctx, status) => {
   }
 };
 
-const deleteItem = async (user, id) => {
+const deleteItemUnsafe = async (user, id) => {
   const item = await Item.findOne({
     where: {
       id: id,
@@ -112,7 +114,7 @@ const deleteItem = async (user, id) => {
   if (havePups) {
     cashBack = item.price;
   } else {
-    cashBack = item.price / 2;
+    cashBack = Math.floor(item.price / 2);
   }
 
   user.balance += cashBack;
@@ -121,6 +123,9 @@ const deleteItem = async (user, id) => {
   await user.save();
   return `Успешно удалена вещь ${item.itemName}[${item.id}]\nТы получил ${cashBack}`;
 };
+
+const buyItem = (user, info, ctx, status) => withUserOperation(user, ctx, (locked, deferred) => buyItemUnsafe(locked, info, deferred, status));
+const deleteItem = (user, id) => withUserTransaction(user, (locked) => deleteItemUnsafe(locked, id));
 
 const removeItem = async (user, id, ctx) => {
   try {
@@ -273,7 +278,7 @@ const sellItem = async (user, id, price, replyMessage, ctx) => {
         [
           Key.callback(
             "Принять",
-            `sell ${item.id} ${user.chatId} ${receiver.chatId} ${price}`
+            jwtService.generateTradeToken("item", { id: item.id, senderId: user.chatId, receiverId: receiver.chatId, price })
           ),
         ],
         [Key.callback("Отмена", "cancel")],

@@ -1,3 +1,5 @@
+import { createLimiter, withKeyLock } from "../../../utils/concurrency.js";
+const limitRender = createLimiter(2);
 import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
@@ -115,6 +117,12 @@ function execFfmpeg(args, { timeoutMs = 30000, tag = "ffmpeg" } = {}) {
     p.stderr.on("data", (d) => {
       stderr += d.toString();
     });
+    p.on("error", (error) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      reject(error);
+    });
     p.on("close", (code) => {
       if (done) return;
       clearTimeout(timer);
@@ -129,7 +137,7 @@ export async function blendImages(imagePaths, backgroundPath) {
   const composites = imagePaths.map((p) => ({ input: p, left: 0, top: 0 }));
   return sharp(backgroundPath)
     .composite(composites)
-    .png({ compressionLevel: 9 })
+    .png({ compressionLevel: 6 })
     .toBuffer();
 }
 
@@ -138,11 +146,11 @@ export async function overlayImage(foregroundBufferOrPath, home) {
   const resized = await fg.resize({ width: home.scale }).png().toBuffer();
   return sharp(home.src)
     .composite([{ input: resized, left: home.x, top: home.y }])
-    .png({ compressionLevel: 9 })
+    .png({ compressionLevel: 6 })
     .toBuffer();
 }
 
-export async function renderAnimatedVideo({
+async function renderAnimatedVideoUnsafe({
   charPngPath,
   animatedItems,
   home,
@@ -370,7 +378,7 @@ export async function renderAnimatedVideo({
   return outPath;
 }
 
-export const getWornItems = async (user, ctx, home, dbHome) => {
+const getWornItemsUnsafe = async (user, ctx, home, dbHome) => {
   try {
     const homeKey = home ? `${home.src}` : "default";
     const redisKey = `pablo_${user.id}_${homeKey}`;
@@ -595,7 +603,7 @@ async function cleanupAnimsDir() {
     const files = await fs.readdir(ANIMS_DIR);
     const now = Date.now();
     for (const f of files) {
-      if (!/\.(mp4|png)$/i.test(f)) continue;
+      if (!/\.(mp4|webm|gif|png)$/i.test(f)) continue;
       const full = path.join(ANIMS_DIR, f);
       try {
         const stat = await fs.stat(full);
@@ -614,3 +622,6 @@ export function startAnimsCleanupCron() {
   job.start();
   return job;
 }
+
+export const renderAnimatedVideo = (options) => limitRender(() => renderAnimatedVideoUnsafe(options));
+export const getWornItems = (user, ...args) => withKeyLock(`render:${user.id}`, () => getWornItemsUnsafe(user, ...args));

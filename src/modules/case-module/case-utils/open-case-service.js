@@ -1,3 +1,4 @@
+import { withUserOperation } from "../../../services/transaction-service.js";
 import cases from "../cases.js";
 import items from "../../items-module/items.js";
 import { resiveLog } from "../../logs-module/globalLogs.js";
@@ -7,7 +8,6 @@ import {
   createItem,
   checkItem,
 } from "../../items-module/items-utils/item-tool-service.js";
-import redisService from "../../../services/redis-service.js";
 import { syncUserCaseToDb } from "../../../db/functions.js";
 import { Keyboard } from "telegram-keyboard";
 import { getFamilyByUserId } from "../../fam-module/fam-service.js";
@@ -16,10 +16,11 @@ dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 
-const openDonateCase = async (user, ctx) => {
+const openDonateCaseUnsafe = async (user, ctx) => {
   try {
+    await syncUserCaseToDb(user.id);
     const userCase = await getUserCase(user.id);
-    if (userCase.donate === 0) {
+    if (userCase.donate <= 0) {
       await ctx.reply(`Недостаточно старкейсов😥`);
       return;
     }
@@ -28,8 +29,8 @@ const openDonateCase = async (user, ctx) => {
     await userCase.save();
 
     let result = `${user.username} открыл Донат кейс и получил`;
-    const randomItem =
-      Math.floor(Math.random() * Object.keys(items).length) + 1;
+    const itemIds = Object.keys(items);
+    const randomItem = itemIds[Math.floor(Math.random() * itemIds.length)];
     const item = await createItem(randomItem);
 
     user.fullSlots++;
@@ -46,7 +47,7 @@ const openDonateCase = async (user, ctx) => {
       }
     );
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
@@ -148,8 +149,7 @@ const open = async (user, ctx, box, luck) => {
     await user.save();
     return result;
   } catch (error) {
-    console.log(error);
-    return result;
+    throw error;
   }
 };
 
@@ -175,7 +175,7 @@ const open = async (user, ctx, box, luck) => {
 /*****************************************************************************************************/
 /*****************************************************************************************************/
 //ФУНКЦИЯ ПОКУПКИ ЛЮБОГО КЕЙСА
-const buyCase = async (user, id, count, ctx) => {
+const buyCaseUnsafe = async (user, id, count, ctx) => {
   const needCase = cases[id];
   if (!needCase) return ctx.reply(`Такого старкейса нет😥`);
 
@@ -233,20 +233,14 @@ const buyCase = async (user, id, count, ctx) => {
 /*****************************************************************************************************/
 //ТУТ ФУНКЦИЯ ОТКРЫТИЯ КЕЙСА ОНА ВАЩЕ ВАЖНАЯ
 
-const openCase = async (user, id, ctx, count = 1) => {
+const openCaseUnsafe = async (user, id, ctx, count = 1) => {
   try {
     const needCase = cases[id];
     if (!needCase) return ctx.reply("Такого старкейса нет😥");
 
     const caseName = needCase.dbName;
-    let userCase = await redisService.get(user.id + "cases");
-
-    if (!userCase) {
-      userCase = await getUserCase(user.id);
-      await redisService.set(user.id + "cases", JSON.stringify(userCase));
-    } else {
-      userCase = JSON.parse(userCase);
-    }
+    await syncUserCaseToDb(user.id);
+    const userCase = await getUserCase(user.id);
 
     if (userCase[caseName] < count) {
       return ctx.reply("Недостаточно старкейсов😥");
@@ -266,24 +260,32 @@ const openCase = async (user, id, ctx, count = 1) => {
     }
 
     userCase[caseName] -= count;
-    await redisService.set(user.id + "cases", JSON.stringify(userCase));
+    await userCase.save();
 
     let luck = 0;
     const pupsItem = await checkItem(user.id, "Пупс «Удача»");
     if (pupsItem) luck += 500;
     if (fam) luck += fam.Baf.luck * 200;
 
-    const results = await Promise.all(
-      Array.from({ length: count }, () => open(user, ctx, needCase, luck))
-    );
+    const results = [];
+    for (let i = 0; i < count; i++) results.push(await open(user, ctx, needCase, luck));
 
     const formatted = results.map((res) => `• ${res}`).join("\n");
     await ctx.reply(
       `Ты открыл ${count} старкейса и получил(а):\n\n${formatted}`
     );
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 };
 
+const openCase = (user, id, ctx, count = 1) => {
+  if (!Number.isSafeInteger(Number(count)) || count <= 0) return ctx.reply("Укажи целое положительное количество");
+  return withUserOperation(user, ctx, (locked, deferred) => openCaseUnsafe(locked, id, deferred, Number(count)));
+};
+const buyCase = (user, id, count, ctx) => {
+  if (!Number.isSafeInteger(Number(count)) || count <= 0) return ctx.reply("Укажи целое положительное количество");
+  return withUserOperation(user, ctx, (locked, deferred) => buyCaseUnsafe(locked, id, Number(count), deferred));
+};
+const openDonateCase = (user, ctx) => withUserOperation(user, ctx, (locked, deferred) => openDonateCaseUnsafe(locked, deferred));
 export { openCase, buyCase, openDonateCase };

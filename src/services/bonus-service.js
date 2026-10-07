@@ -1,5 +1,7 @@
+import sequelize from "../db/config.js";
+import { withUserOperation } from "./transaction-service.js";
 import { Keyboard, Key } from "telegram-keyboard";
-import { User, Bonus, Item } from "../db/models.js";
+import { User, Bonus, Item, Giveaway } from "../db/models.js";
 import { getRandomInt } from "../utils/helpers.js";
 import items from "../modules/items-module/items.js";
 import jwtService from "./jwt-service.js";
@@ -27,10 +29,15 @@ class BonusService {
   }
 
   async giveItem(user, ctx, token) {
-    const tokenInfo = jwtService.verifyToken(token);
+    return withUserOperation(user, ctx, (locked, deferred) => this.giveItemUnsafe(locked, deferred, token));
+  }
+  async giveItemUnsafe(user, ctx, token) {
+    const tokenInfo = jwtService.verifyToken(token, "event");
+    const giveaway = await Giveaway.findByPk("event");
+    if (!giveaway || giveaway.token !== token) throw new Error("GIVEAWAY_EXPIRED");
     const itemInfo = items[tokenInfo.id];
 
-    if (user.slots < user.fullSlots) {
+    if (user.fullSlots >= user.slots) {
       await ctx.reply("Недостаточно слотов😥");
       return;
     }
@@ -84,8 +91,11 @@ class BonusService {
       return;
     }
     await ctx.telegram.deleteMessage(this.#chatId, ctx.channelPost.message_id);
-    await User.update({ takeBonus: 0 }, { where: {} });
-    const token = jwtService.generateToken({ id: id });
+    const token = jwtService.generateToken({ id: id }, "event");
+    await sequelize.transaction(async (transaction) => {
+      await User.update({ takeBonus: 0 }, { where: {}, transaction });
+      await Giveaway.upsert({ kind: "event", token }, { transaction });
+    });
     const keyboard = {
       inline_keyboard: [
         [
@@ -137,6 +147,9 @@ class BonusService {
   }
 
   async takeBonus(user, ctx, bonusId) {
+    return withUserOperation(user, ctx, (locked, deferred) => this.takeBonusUnsafe(locked, deferred, bonusId));
+  }
+  async takeBonusUnsafe(user, ctx, bonusId) {
     try {
       const bonus = await Bonus.findOne({ where: { id: bonusId } });
 
@@ -170,7 +183,7 @@ class BonusService {
       await user.save();
       await ctx.reply(`Бонус в размере ${prize} старок успешно получен`);
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 }

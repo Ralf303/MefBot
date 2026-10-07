@@ -1,3 +1,4 @@
+import sequelize from "../../db/config.js";
 import { CronJob } from "cron";
 import { Op } from "sequelize";
 import { Home } from "../../db/models.js";
@@ -7,28 +8,13 @@ async function homeCronService() {
     "0 0 * * * *",
     async function () {
       try {
-        const homes = await Home.findAll({
-          where: {
-            userId: {
-              [Op.ne]: null,
-            },
-          },
+        await Home.update({ userId: null, tax: 0, energy: 0 }, {
+          where: { userId: { [Op.ne]: null }, tax: { [Op.gte]: 35500 } },
         });
-
-        homes.forEach(async (home) => {
-          if (home.tax + 500 >= 36000) {
-            home.userId = null;
-            home.tax = 0;
-            home.energy = 0;
-            await home.save();
-          } else {
-            home.tax += 500;
-            if (home.energy != 10000) {
-              home.energy += 100;
-            }
-            await home.save();
-          }
-        });
+        await Home.update({
+          tax: sequelize.literal("tax + 500"),
+          energy: sequelize.literal("LEAST(energy + 100, 10000)"),
+        }, { where: { userId: { [Op.ne]: null }, tax: { [Op.lt]: 35500 } } });
       } catch (error) {
         console.log(error);
       }

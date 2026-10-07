@@ -1,3 +1,5 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
+import { Chat } from "../../db/models.js";
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
 import ru_text from "../../../ru_text.js";
@@ -11,6 +13,8 @@ const vipChatRouter = new Composer();
 vipChatRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
+    const commands = new Set(["топ чат", "чат топ", "топ чаты", "випчат", "инфа чат", "купить випчат", "+кейсы", "-кейсы", "+игры", "-игры"]);
+    if (!commands.has(userMessage) && !userMessage.startsWith("пожертвовать ")) return next();
 
     if (
       userMessage == "топ чат" ||
@@ -32,7 +36,8 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
     if (ctx.chat.type === "private") return next();
     const [word1, word2] = userMessage.split(" ");
 
-    const chat = await getChat(ctx.chat.id, ctx.chat.title);
+    const chat = ctx.state.chat || await getChat(ctx.chat.id, ctx.chat.title);
+    ctx.state.chat = chat;
     if (userMessage == "випчат") {
       await ctx.reply(
         ru_text.about_vip_chat +
@@ -45,6 +50,7 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
           } 🕓`
       );
     }
+    if (userMessage === "инфа чат" && chat.chatLink === "none") {
     const link = await ctx.getChat();
 
     if (link.pinned_message?.chat.username) {
@@ -61,12 +67,12 @@ vipChatRouter.on(message("text"), async (ctx, next) => {
       }
     }
 
-    const userStatus = await ctx.telegram.getChatMember(
-      ctx.chat.id,
-      ctx.from.id
-    );
-
-    const isOwner = userStatus.status === "creator";
+    }
+    let isOwner = false;
+    if (["+кейсы", "-кейсы", "+игры", "-игры"].includes(userMessage)) {
+      const userStatus = await ctx.telegram.getChatMember(ctx.chat.id, ctx.from.id);
+      isOwner = userStatus.status === "creator";
+    }
 
     if (userMessage == "инфа чат") {
       await ctx.replyWithHTML(
@@ -89,8 +95,17 @@ ${chat.allowCase ? "✅" : "❌"} Кейсы`,
       if (ctx.state.user.balance < Number(word2)) {
         return await ctx.reply("У тебя не хватает старок 😥");
       }
-      ctx.state.user.balance -= Number(word2);
-      chat.bank += Number(word2);
+      const amount = Number(word2);
+      if (!Number.isSafeInteger(amount)) return ctx.reply("Укажи целую положительную сумму");
+      await withUserTransaction(ctx.state.user, async (user, transaction) => {
+        const lockedChat = await Chat.findByPk(chat.chatId, { transaction, lock: transaction.LOCK.UPDATE });
+        if (Number(user.balance) < amount) throw new Error("INSUFFICIENT_FUNDS");
+        user.balance = Number(user.balance) - amount;
+        lockedChat.bank = Number(lockedChat.bank) + amount;
+        await user.save({ transaction });
+        await lockedChat.save({ transaction });
+        await chat.reload({ transaction });
+      });
       await ctx.reply(
         `🎉 Ты успешно пожертвовал ${separateNumber(word2)} старок в беседу «${
           ctx.chat.title
@@ -139,6 +154,7 @@ ${chat.allowCase ? "✅" : "❌"} Кейсы`,
     return next();
   } catch (e) {
     console.log(e);
+    return next();
   }
 });
 

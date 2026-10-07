@@ -1,5 +1,6 @@
 import { checkUserByUsername, getUser } from "../../db/functions.js";
 import { separateNumber } from "../../utils/helpers.js";
+import economyService from "../../services/economy-service.js";
 
 const giveDonate = async (ctx) => {
   const chatId = ctx.from.id;
@@ -46,7 +47,7 @@ const giveDonate = async (ctx) => {
   }
 
   try {
-    const sender = await getUser(chatId);
+    const sender = ctx.state.user || (await getUser(chatId));
 
     if (sender.donate < amount) {
       await ctx.reply("Недостаточно искр🥲");
@@ -63,10 +64,12 @@ const giveDonate = async (ctx) => {
       return;
     }
 
-    sender.donate -= amount;
-    receiver.donate += amount;
-    await sender.save();
-    await receiver.save();
+    await economyService.transfer({
+      sender,
+      receiver,
+      currency: "donate",
+      amount,
+    });
 
     await ctx.reply(
       `Ты успешно передал(а) ${separateNumber(

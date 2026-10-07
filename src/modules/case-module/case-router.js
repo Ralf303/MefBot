@@ -18,8 +18,10 @@ caseRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
     const [word1, word2, word3, word4] = userMessage.split(" ");
+    if (!["мои старкейсы", "старкейсы"].includes(userMessage) &&
+        !["передать", "купить", "инфо", "инфа", "открыть"].includes(word1)) return next();
     let chat;
-    if (ctx.chat.type !== "private") {
+    if (ctx.chat.type !== "private" && (word1 === "открыть" || userMessage === "старкейсы")) {
       chat = await getChat(ctx.chat.id);
     }
 

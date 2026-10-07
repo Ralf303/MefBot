@@ -1,8 +1,7 @@
 import { Op } from "sequelize";
-import { getUserCase } from "../modules/case-module/case-utils/case-tool-service.js";
 import redisService from "../services/redis-service.js";
-import sequelize from "./config.js";
-import { User, Case, Chat, Family, Bafs } from "./models.js";
+import sequelize, { currentTransaction } from "./config.js";
+import { User, Case, Chat, Family, Bafs, CaseCacheMigration } from "./models.js";
 
 const getUser = async (chatId, firstName, username) => {
   try {
@@ -11,25 +10,20 @@ const getUser = async (chatId, firstName, username) => {
       include: Case,
     });
     if (!user) {
-      user = await User.create({ chatId, firstName, username });
+      user = await User.create({ chatId, firstname: firstName, username });
       // Создание таблицы кейс для нового пользователя
       await Case.create({ userId: user.id, status: "active" });
     } else {
-      if (!username && firstName) {
-        user = await user.update({ username: "donthavetag" });
+      const changes = {};
+      if (firstName !== undefined && user.firstname !== firstName) changes.firstname = firstName;
+      if (username !== undefined || firstName !== undefined) {
+        const name = username || "donthavetag";
+        if (user.username !== name) changes.username = name;
       }
-
-      if (!(user.username === username)) {
-        user = await user.update({ username });
-      }
-
-      if (!user.firstname || !(user.firstname === firstName)) {
-        user = await user.update({ firstname: firstName });
-      }
+      if (Object.keys(changes).length) await user.update(changes);
 
       // Проверка на наличие таблицы кейс и создание, если отсутствует
-      let cases = await Case.findAll({ where: { userId: user.id } });
-      if (cases.length === 0) {
+      if (!user.case) {
         await Case.create({ userId: user.id, status: "active" });
       }
     }
@@ -104,30 +98,46 @@ const connectToDb = async () => {
     console.log("All models were synchronized successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
+    throw error;
   }
 };
 
+// One-time, transactional import of balances left by the old Redis case cache.
 const syncUserCaseToDb = async (userId) => {
-  try {
-    const userCaseRedis = await redisService.get(userId + "cases");
-
-    if (userCaseRedis) {
-      const userCase = JSON.parse(userCaseRedis);
-
-      const userCaseDb = await getUserCase(userId);
-
-      for (let caseName in userCase) {
-        userCaseDb[caseName] = userCase[caseName];
+  const key = userId + "cases";
+  const cached = await redisService.get(key);
+  if (!cached) return;
+  const apply = async (transaction) => {
+    const userCase = await Case.findOne({ where: { userId }, transaction, lock: transaction.LOCK.UPDATE });
+    if (!userCase) throw new Error("CASE_NOT_FOUND");
+    const [marker, created] = await CaseCacheMigration.findOrCreate({ where: { userId }, transaction });
+    if (created) {
+      const balances = JSON.parse(cached);
+      for (const name of ["minecraft", "brawl", "hotline", "donate", "fallout", "fnaf", "gem", "fam"]) {
+        if (balances[name] !== undefined) {
+          const amount = Number(balances[name]);
+          if (!Number.isSafeInteger(amount) || amount < 0) throw new Error("INVALID_CACHED_CASE_AMOUNT");
+          userCase[name] = amount;
+        }
       }
-
-      await userCaseDb.save();
-
-      await redisService.delete(userId + "cases");
+      await userCase.save({ transaction });
     }
-  } catch (error) {
-    console.log(error);
+    transaction.afterCommit(async () => {
+      try { await redisService.delete(key); } catch (error) { console.error("Legacy case cache cleanup:", error); }
+    });
+  };
+  const transaction = currentTransaction();
+  if (transaction) await apply(transaction);
+  else await sequelize.transaction(apply);
+};
+
+const migrateLegacyCaseCache = async () => {
+  for await (const key of redisService.client.scanIterator({ MATCH: "*cases", COUNT: 100 })) {
+    const id = /^(\d+)cases$/.exec(key)?.[1];
+    if (id) await syncUserCaseToDb(Number(id));
   }
 };
+
 
 const getTopChats = async () => {
   try {
@@ -150,6 +160,7 @@ export {
   getVipChats,
   updateChatTime,
   syncUserCaseToDb,
+  migrateLegacyCaseCache,
   checkUserById,
   checkUserByUsername,
   getTopChats,

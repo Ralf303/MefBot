@@ -1,3 +1,4 @@
+import economyService from "../../../services/economy-service.js";
 import { getRandomInt, separateNumber } from "../../../utils/helpers.js";
 import ru_text from "../../../../ru_text.js";
 import { getChat } from "../../../db/functions.js";
@@ -21,11 +22,14 @@ async function dice(word3, word2, user, ctx) {
   let winAmount = 0;
   const previousBalance = user.balance;
 
-  if (userTrueImput && user.balance >= stake && stake >= 500) {
-    user.balance -= stake;
+  if (userTrueImput && user.balance >= stake && Number.isSafeInteger(stake) && stake >= 500) {
     // const info = await bot.telegram.sendDice(ctx.chat.id);
     // const dice = info.dice.value;
     const dice = getRandomInt(1, 6);
+    const isEven = dice % 2 === 0;
+    const winnings = Number(userInput) === dice ? stake * 5 :
+      ((userInput === "чет" && isEven) || (userInput === "нечет" && !isEven)) ? Math.floor(stake * 1.5) : 0;
+    await economyService.wager({ user, stake, winnings });
     if (Number(userInput) >= 1 && Number(userInput) <= 6) {
       if (Number(userInput) === dice) {
         await ctx.reply(
@@ -61,8 +65,7 @@ async function dice(word3, word2, user, ctx) {
       }
     }
 
-    user.balance += winAmount;
-    await user.save();
+
   } else if (stake > user.balance) {
     await ctx.reply("Не достаточно старок😢");
   } else if (stake < 500) {

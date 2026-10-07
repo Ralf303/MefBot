@@ -5,6 +5,7 @@ import { Key, Keyboard } from "telegram-keyboard";
 import { getUser } from "../../db/functions.js";
 import { giveDonate } from "./donate-utils.js";
 import text from "../../../ru_text.js";
+import paymentService from "../../services/payment-service.js";
 
 const donateRouter = new Composer();
 
@@ -61,7 +62,7 @@ donateRouter.on(message("text"), async (ctx, next) => {
       const pay = await ctx.telegram.createInvoiceLink({
         title: `${count} искр`,
         description: `Пополнение на ${count} искр`,
-        payload: "gold",
+        payload: paymentService.createDonatePayload(ctx.from.id, count),
         currency: "XTR",
         prices: [{ label: "Искры", amount: count }],
       });
@@ -100,15 +101,24 @@ donateRouter.on(message("text"), async (ctx, next) => {
 });
 
 donateRouter.on("pre_checkout_query", async (ctx) => {
-  await ctx.answerPreCheckoutQuery(true);
+  try {
+    paymentService.validatePreCheckout(ctx.preCheckoutQuery);
+    await ctx.answerPreCheckoutQuery(true);
+  } catch (error) {
+    await ctx.answerPreCheckoutQuery(false, "Invalid payment");
+  }
 });
 
 donateRouter.on(message("successful_payment"), async (ctx) => {
-  const { total_amount } = ctx.message.successful_payment;
   const userId = ctx.from.id;
-  const user = await getUser(userId);
-  user.donate += total_amount;
-  await user.save();
+  const user = ctx.state.user || (await getUser(userId));
+  const result = await paymentService.applySuccessfulDonate(
+    user,
+    ctx.message.successful_payment
+  );
+  if (result.duplicate) {
+    return;
+  }
   await ctx.reply(
     `Пополнение прошло успешно! 🎉\n\nТвой баланс теперь: ${user.donate} искр ✨.\nСпасибо за поддержку СтарБота 💚`
   );

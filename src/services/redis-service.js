@@ -15,6 +15,7 @@ class RedisService {
         socket: { host: "127.0.0.1", port: 6379 },
       });
     }
+    this.client.on("error", (error) => console.error("Redis error:", error.message));
   }
 
   async connect() {
@@ -39,6 +40,12 @@ class RedisService {
 
   async delete(key) {
     await this.client.del(key);
+  }
+
+  async consumeCaptcha(key, chatId) {
+    return this.client.eval("if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end", {
+      keys: [String(key)], arguments: [String(chatId)],
+    });
   }
 
   async setInvite(key, value) {

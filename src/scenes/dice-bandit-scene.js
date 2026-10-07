@@ -27,6 +27,7 @@ diceScene.hears(/^([1-9]\d*)$/, async (ctx) => {
 
     const stake = Number(ctx.match[1]);
 
+    if (!Number.isSafeInteger(stake) || stake <= 0) return ctx.reply("Укажи целую положительную ставку");
     if (user.balance < stake) {
       await ctx.reply("Недостаточно старок😢");
       return;

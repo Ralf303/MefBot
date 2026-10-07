@@ -1,13 +1,18 @@
+import { currentTransaction } from "../../db/config.js";
 import { getUser } from "../../db/functions.js";
 import { Family, Bafs, FamMember, User } from "../../db/models.js";
 
 const getFamilyByFamId = async (familyId) => {
   try {
-    return await Family.findOne({
+    const family = await Family.findOne({
       where: { id: familyId },
       include: Bafs,
+      ...(currentTransaction() ? { transaction: currentTransaction(), lock: currentTransaction().LOCK.UPDATE } : {}),
     });
+    if (family) family.mef = Number(family.mef);
+    return family;
   } catch (error) {
+    if (currentTransaction()) throw error;
     console.log(error);
   }
 };
@@ -47,11 +52,15 @@ const getFamilyByUserId = async (userId) => {
 
     if (!isMember) return null;
 
-    return await Family.findOne({
+    const family = await Family.findOne({
       where: { id: isMember.familyId },
       include: Bafs,
+      ...(currentTransaction() ? { transaction: currentTransaction(), lock: currentTransaction().LOCK.UPDATE } : {}),
     });
+    if (family) family.mef = Number(family.mef);
+    return family;
   } catch (error) {
+    if (currentTransaction()) throw error;
     console.log(error);
   }
 };
@@ -71,7 +80,7 @@ const createFamily = async (name, creatorId) => {
     await creator.save();
     return newFamily;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
@@ -82,7 +91,7 @@ const addUserToFamily = async (userId, familyId) => {
       familyId: familyId,
     });
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 

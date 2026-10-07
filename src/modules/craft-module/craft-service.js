@@ -1,3 +1,4 @@
+import { withUserOperation } from "../../services/transaction-service.js";
 import { Item } from "../../db/models.js";
 import items from "../items-module/items.js";
 import craftItems from "./crafts.js";
@@ -6,23 +7,12 @@ import { checkItem } from "../items-module/items-utils/item-tool-service.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
 
 class CrafService {
-  async #countItemsByItemName(user, itemName) {
-    const userItems = await user.getItems();
-    const filteredItems = userItems.filter(
-      (item) => item.itemName === itemName
-    );
-    return filteredItems.length;
-  }
-
   async #checkUserCraft(user, components) {
+    const inventory = await user.getItems();
+    const counts = new Map();
+    for (const item of inventory) counts.set(item.itemName, (counts.get(item.itemName) || 0) + 1);
     for (const component of components) {
-      const itemQuantity = await this.#countItemsByItemName(
-        user,
-        component.name
-      );
-      if (itemQuantity < component.quantity) {
-        return false;
-      }
+      if ((counts.get(component.name) || 0) < component.quantity) return false;
     }
 
     for (const component of components) {
@@ -40,6 +30,9 @@ class CrafService {
     return true;
   }
   async craftItem(user, id, ctx) {
+    return withUserOperation(user, ctx, (locked, deferred) => this.craftItemUnsafe(locked, id, deferred));
+  }
+  async craftItemUnsafe(user, id, ctx) {
     try {
       const craft = craftItems[id];
 
@@ -113,7 +106,7 @@ class CrafService {
     } catch (error) {
       console.error(error);
 
-      await ctx.reply("Произошла ошибка при крафте.");
+      throw error;
     }
   }
 

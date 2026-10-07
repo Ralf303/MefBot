@@ -1,3 +1,4 @@
+import economyService from "../../../services/economy-service.js";
 import { getChat } from "../../../db/functions.js";
 import { separateNumber } from "../../../utils/helpers.js";
 import ru_text from "../../../../ru_text.js";
@@ -14,11 +15,13 @@ async function bandit(word2, user, ctx) {
     let stake = Number(word2);
     let winAmount = 0;
 
-    if (stake > 499 && user.balance >= stake && stake && needChat) {
-      user.balance -= stake;
+    if (Number.isSafeInteger(stake) && stake > 499 && user.balance >= stake && needChat) {
       const randEmoji = () => fruits[Math.floor(Math.random() * fruits.length)];
       const randomEmojis = [randEmoji(), randEmoji(), randEmoji()];
 
+      const winnings = randomEmojis.every((e) => e === randomEmojis[0]) ? stake * 10 :
+        new Set(randomEmojis).size < 3 ? stake * 3 : 0;
+      await economyService.wager({ user, stake, winnings });
       if (randomEmojis.every((e) => e === randomEmojis[0])) {
         winAmount = stake * 10;
         await ctx.reply(
@@ -44,9 +47,7 @@ async function bandit(word2, user, ctx) {
         winAmount = 0;
       }
 
-      user.balance += winAmount;
 
-      await user.save();
     } else if (stake > user.balance) {
       await ctx.reply("Недостаточно старок😢");
     } else if (!needChat) {

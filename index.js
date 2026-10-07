@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 const port = 88;
 
-import { connectToDb } from "./src/db/functions.js";
+import { connectToDb, migrateLegacyCaseCache } from "./src/db/functions.js";
 import gemsService from "./src/modules/gems-module/gems-service.js";
 import diceScene from "./src/scenes/dice-bandit-scene.js";
 import { buyPrefix, changePrefix } from "./src/scenes/prefix-scene.js";
@@ -48,13 +48,17 @@ const stage = new Scenes.Stage([
 
 const start = async () => {
   try {
-    bot.catch(async (err) => {
-      console.log(`ОШИБКА В БОТ CATCH: ${err}`);
+    bot.catch(async (err, ctx) => {
+      console.error("Ошибка обработки update:", err);
+      if (ctx.chat && ctx.chat.type !== "channel") {
+        await ctx.reply("Не удалось выполнить операцию. Попробуй ещё раз.").catch(() => {});
+      }
     });
 
     await connectToDb();
+    await redisService.connect();
+    await migrateLegacyCaseCache();
     bot.use(session());
-    bot.use(stage.middleware());
     bot.use(
       rateLimit({
         window: 1000,
@@ -62,6 +66,7 @@ const start = async () => {
       })
     );
 
+    bot.use(stage.middleware());
     bot.use(middleware);
     mainCronService(bot);
     activePrize(bot);
@@ -75,7 +80,6 @@ const start = async () => {
     await gemsService.giveAllGems();
     await mineService.mineCron(bot);
     await itemCronService.changeLook(bot);
-    await redisService.connect();
     app.use(usersItemRouter);
     app.use(homeApi);
     if (process.env.WEB_HOOK_URL) {
@@ -86,7 +90,7 @@ const start = async () => {
       app.use(
         await bot.createWebhook({
           domain: process.env.WEB_HOOK_URL,
-          drop_pending_updates: true,
+          drop_pending_updates: false,
         })
       );
       https.createServer(options, app).listen(port, () => {
@@ -100,7 +104,7 @@ const start = async () => {
       http.createServer(app).listen(5000, () => {
         console.log("Сервер работает на порту", 5000);
       });
-      bot.launch({ dropPendingUpdates: true });
+      bot.launch({ dropPendingUpdates: false }).catch((error) => console.error("Polling error:", error));
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на пулинге");
     }
   } catch (error) {

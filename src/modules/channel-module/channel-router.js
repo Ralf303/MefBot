@@ -16,15 +16,15 @@ channelRouter.on(channelPost("text"), async (ctx, next) => {
     const [word1, word2, word3, word4] = text.split(" ");
 
     if (text === "бонус") {
-      bonusService.createBonus(ctx);
+      await bonusService.createBonus(ctx);
     }
 
     if (word1 === "раздача" && word2) {
-      bonusService.sendEvent(ctx, word2);
+      await bonusService.sendEvent(ctx, word2);
     }
 
     if (word1 === "реклама" && word2) {
-      addService.send(ctx, word2, word3, word4);
+      await addService.send(ctx, word2, word3, word4);
     }
     return next();
   } catch (error) {

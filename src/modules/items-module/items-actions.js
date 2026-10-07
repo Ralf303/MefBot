@@ -1,3 +1,5 @@
+import jwtService from "../../services/jwt-service.js";
+import { purchaseAsset, tradeError } from "../../services/trade-service.js";
 import { Composer } from "telegraf";
 import { Item } from "../../db/models.js";
 import { getUser } from "../../db/functions.js";
@@ -6,41 +8,18 @@ import { Keyboard, Key } from "telegram-keyboard";
 
 const itemsActions = new Composer();
 
-itemsActions.action(/^sell/, async (ctx) => {
+itemsActions.action(/^(t_|sell )/, async (ctx, next) => {
   try {
-    await ctx.deleteMessage();
-    const [_, itemId, senderId, receiverId, price] =
-      ctx.callbackQuery.data.split(" ");
-    const receiver = await getUser(receiverId);
+    const offer = jwtService.verifyTradeToken(ctx.callbackQuery.data);
+    if (offer.kind !== "item") return next();
+    const { id: itemId, senderId, receiverId, price } = offer;
+    if (Number(ctx.from.id) !== Number(receiverId)) return ctx.answerCbQuery("Это предложение адресовано другому пользователю");
+    await ctx.deleteMessage().catch(() => {});
+    const receiver = ctx.state.user || await getUser(receiverId);
     const sender = await getUser(senderId);
-    const item = await Item.findOne({
-      where: {
-        id: itemId,
-        userId: sender.id,
-      },
+    const item = await purchaseAsset({
+      seller: sender, buyer: receiver, model: Item, id: itemId, price, inventory: true,
     });
-
-    if (!item) {
-      return await ctx.reply(`Юзер уже продал вещь и ее у него нет😥`);
-    }
-
-    if (receiver.fullSlots >= receiver.slots) {
-      return await ctx.reply(`У тебя недостаточно слотов😥`);
-    }
-
-    if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно старок😥`);
-    }
-
-    receiver.balance -= Number(price);
-    sender.balance += Number(price);
-    sender.fullSlots--;
-    receiver.fullSlots++;
-    item.userId = receiver.id;
-
-    await sender.save();
-    await receiver.save();
-    await item.save();
 
     await ctx.reply(
       `Ты успешно купил(а) ${item.itemName} за ${separateNumber(price)} старок`
@@ -54,11 +33,13 @@ itemsActions.action(/^sell/, async (ctx) => {
     );
   } catch (error) {
     console.log(error);
+    await ctx.reply(tradeError(error));
   }
 });
 
 itemsActions.action("cancel", async (ctx) => {
   try {
+    await ctx.deleteMessage();
     await ctx.deleteMessage();
     await ctx.reply("Сделка успешно отменена.");
   } catch (error) {
@@ -68,6 +49,7 @@ itemsActions.action("cancel", async (ctx) => {
 
 itemsActions.action("next", async (ctx) => {
   try {
+    await ctx.deleteMessage();
     await ctx.deleteMessage();
     let buttons = Keyboard.inline([Key.callback("🔽Закрыть🔽", "dell")]);
 

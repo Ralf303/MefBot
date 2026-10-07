@@ -1,3 +1,6 @@
+import jwtService from "../../services/jwt-service.js";
+import { Home } from "../../db/models.js";
+import { purchaseAsset, tradeError } from "../../services/trade-service.js";
 import { Composer } from "telegraf";
 import { getUser } from "../../db/functions.js";
 import { separateNumber } from "../../utils/helpers.js";
@@ -6,37 +9,18 @@ import { getHomeByUserId } from "./home-service.js";
 
 const homeActions = new Composer();
 
-homeActions.action(/^homeSell/, async (ctx) => {
+homeActions.action(/^(t_|homeSell )/, async (ctx, next) => {
   try {
-    await ctx.deleteMessage();
-    const [_, senderId, receiverId, price] = ctx.callbackQuery.data.split(" ");
-    const receiver = await getUser(receiverId);
+    const offer = jwtService.verifyTradeToken(ctx.callbackQuery.data);
+    if (offer.kind !== "home") return next();
+    const { id: itemId, senderId, receiverId, price } = offer;
+    if (Number(ctx.from.id) !== Number(receiverId)) return ctx.answerCbQuery("Это предложение адресовано другому пользователю");
+    await ctx.deleteMessage().catch(() => {});
+    const receiver = ctx.state.user || await getUser(receiverId);
     const sender = await getUser(senderId);
-
-    const senderHome = await getHomeByUserId(sender.id);
-
-    if (!senderHome) {
-      return await ctx.reply(`Продавец уже продал дом 😥`);
-    }
-
-    const receiverHome = await getHomeByUserId(receiver.id);
-
-    if (receiverHome) {
-      return await ctx.reply(`У тебя и так уже есть дом, зачем тебе второй 🧐`);
-    }
-
-    if (receiver.balance < price) {
-      return await ctx.reply(`У тебя недостаточно старок😥`);
-    }
-
-    receiver.balance -= Number(price);
-    sender.balance += Number(price);
-
-    senderHome.userId = receiver.id;
-
-    await sender.save();
-    await receiver.save();
-    await senderHome.save();
+    const senderHome = await purchaseAsset({
+      seller: sender, buyer: receiver, model: Home, id: itemId, house: true, price,
+    });
 
     await ctx.reply(
       `Ты успешно купил(а) ${senderHome.name} за ${separateNumber(
@@ -52,11 +36,13 @@ homeActions.action(/^homeSell/, async (ctx) => {
     );
   } catch (error) {
     console.log(error);
+    await ctx.reply(tradeError(error));
   }
 });
 
 homeActions.action("cancel", async (ctx) => {
   try {
+    await ctx.deleteMessage();
     await ctx.deleteMessage();
     await ctx.reply("Сделка успешно отменена.");
   } catch (error) {

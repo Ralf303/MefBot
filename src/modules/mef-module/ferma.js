@@ -1,9 +1,10 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { resiveLog } from "../../modules/logs-module/globalLogs.js";
 import { formatTime, getRandomInt } from "../../utils/helpers.js";
 import { getFamilyByUserId } from "../fam-module/fam-service.js";
 import { checkItem } from "../items-module/items-utils/item-tool-service.js";
 
-async function userFerma(user) {
+async function userFermaUnsafe(user) {
   const now = Math.floor(Date.now() / 1000);
   const lastTime = user.farmtime;
   const diff = now - lastTime;
@@ -84,4 +85,5 @@ async function userFerma(user) {
   }
 }
 
+const userFerma = (user) => withUserTransaction(user, (locked) => userFermaUnsafe(locked));
 export { userFerma };

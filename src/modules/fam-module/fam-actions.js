@@ -1,12 +1,14 @@
+import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { getUser } from "../../db/functions.js";
 import { getFamilyByUserId, deleteFam } from "./fam-service.js";
 
 const famActions = new Composer();
 
-famActions.action(/fam(\d+)/, async (ctx) => {
+famActions.action(/^fam(\d+)$/, async (ctx) => {
   try {
     const userId = ctx.match[1];
+    if (Number(userId) !== Number(ctx.from.id)) return ctx.answerCbQuery("Это чужая кнопка");
 
     await ctx.deleteMessage();
     const user = await getUser(userId);
@@ -15,8 +17,7 @@ famActions.action(/fam(\d+)/, async (ctx) => {
       return await ctx.reply("Недостаточно старок для создания семьи 😢");
     }
 
-    user.balance -= 5000000;
-    await user.save();
+    if (await getFamilyByUserId(ctx.from.id)) return ctx.reply("У тебя уже есть семья");
     await ctx.reply(
       "Отлично, теперь введи название своей семьи 🪧 (не больше 20 символов)"
     );
@@ -26,7 +27,7 @@ famActions.action(/fam(\d+)/, async (ctx) => {
   }
 });
 
-famActions.action(/check(\d+)/, async (ctx) => {
+famActions.action(/^check(\d+)$/, async (ctx) => {
   try {
     const userId = ctx.match[1];
 
@@ -35,21 +36,18 @@ famActions.action(/check(\d+)/, async (ctx) => {
     }
 
     await ctx.deleteMessage();
-    const fam = await getFamilyByUserId(ctx.from.id);
-    if (!fam) return await ctx.reply("У тебя нет семьи 😢");
-    if (fam.check) return await ctx.reply("У твоей семьи уже есть галочка ✅");
-
-    const user = await getUser(userId);
-
-    if (user.balance < 10000000) {
-      return await ctx.reply("Недостаточно старок для покупки галочки 😢");
-    }
-
-    user.balance -= 10000000;
-    fam.slots += 10;
-    fam.check = true;
-    await user.save();
-    await fam.save();
+    const fam = await withUserTransaction(ctx.state.user, async (user) => {
+      const family = await getFamilyByUserId(ctx.from.id);
+      if (!family) throw new Error("FAMILY_NOT_FOUND");
+      if (family.check) throw new Error("ALREADY_CHECKED");
+      if (user.balance < 10000000) throw new Error("INSUFFICIENT_FUNDS");
+      user.balance -= 10000000;
+      family.slots += 10;
+      family.check = true;
+      await user.save();
+      await family.save();
+      return family;
+    });
     await ctx.reply(
       `Поздравляю, семья «${fam.name}» успешно получила галочку 🎉`
     );
@@ -58,10 +56,11 @@ famActions.action(/check(\d+)/, async (ctx) => {
   }
 });
 
-famActions.action(/deleteFam/, async (ctx) => {
+famActions.action(/^deleteFam$/, async (ctx) => {
   await ctx.deleteMessage();
 
-  const fam = await getFamilyByUserId(ctx.chat.id);
+  const fam = await getFamilyByUserId(ctx.from.id);
+  if (!fam || String(fam.owner) !== String(ctx.from.id)) return ctx.reply("Удалить семью может только основатель");
   await deleteFam(fam.id);
   await ctx.reply(`Семья успешно удалена 🗑`);
 });

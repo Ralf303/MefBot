@@ -45,6 +45,10 @@ middleware.use(async (ctx, next) => {
       ctx.from.first_name,
       ctx.from.username
     );
+    if (!ctx.state.user) {
+      await ctx.reply("Не удалось загрузить профиль. Попробуй ещё раз.");
+      return;
+    }
     return next();
   } catch (error) {
     console.log(error);
