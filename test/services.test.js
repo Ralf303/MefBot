@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import jwtService from "../src/services/jwt-service.js";
 import paymentService, { parseDonatePayload } from "../src/services/payment-service.js";
 
+process.env.JWT_SECRET = "mefbot-test-only-signing-secret";
+
 test("signed tokens round-trip and reject tampering", () => {
   const token = jwtService.generateToken({ id: 7 }, "event");
 

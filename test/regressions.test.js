@@ -20,6 +20,8 @@ import vipRouter from "../src/modules/vipChat-module/vipChat-router.js";
 import redis from "../src/services/redis-service.js";
 import { createLimiter, withKeyLock } from "../src/utils/concurrency.js";
 
+process.env.JWT_SECRET = "mefbot-test-only-signing-secret";
+
 // Transactional in-memory adapter: no database connections or Telegram traffic.
 let database, cache, failSave, committed;
 const tables = new Map([[User, "users"], [Case, "cases"], [Item, "items"], [Payment, "payments"], [CaseCacheMigration, "migrations"], [Family, "families"], [FamMember, "members"], [Logs, "logs"], [Giveaway, "giveaways"]]);
