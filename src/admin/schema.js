@@ -37,6 +37,8 @@ export function fieldsFor(name) {
   return Object.entries(def.model.rawAttributes).filter(([key])=>!(def.hidden||[]).includes(key)).map(([key,attr])=>{
     const type=attr.type.key;
     const field={key,label:labels[key]||({id:'ID',roleId:'Владелец · ID в базе',createdAt:'Создан',updatedAt:'Обновлён'}[key]||key),type:type==='BOOLEAN'?'boolean':['INTEGER','BIGINT','FLOAT','DOUBLE'].includes(type)?'number':type==='DATE'?'date':'text',readonly:!!attr.primaryKey||['createdAt','updatedAt'].includes(key)||(def.readonly||[]).includes(key),nullable:attr.allowNull!==false,max:type==='BIGINT'?Number.MAX_SAFE_INTEGER:2147483647,step:type==='FLOAT'||type==='DOUBLE'?'any':1};
+    const resourceLabels={users:{balance:'Старки',gems:'Гемы',freeze:'Охлаждающие жидкости',oil:'Смазки',coin:'BTC'},families:{mef:'Старки',balance:'Семейные монеты'},cards:{balance:'Накоплено BTC',fuel:'Охлаждающая жидкость'},chats:{bank:'Банк · старки'},mining:{coin:'BTC на рынке',freeze:'Охлаждающие жидкости на рынке',currency:'Курс BTC · старки'},cases:{gem:'Гемовый'}};
+    field.label=resourceLabels[name]?.[key]||field.label;
     if(key==='bodyPart')field.options=['head','face','set','left','right','extra','legs','leg1','leg2',...Array.from({length:5},(_,i)=>'fnaf_set'+(i+1)),...Array.from({length:7},(_,i)=>'pups_set'+(i+1))];
     if(name==='roles'&&key==='status')field.options=['','manager','founder'];
     if(name==='memberships'&&key==='rang')field.max=5;
