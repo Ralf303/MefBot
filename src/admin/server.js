@@ -3,6 +3,8 @@ dotenv.config({path:'.env.admin'});
 dotenv.config({path:'.env.prod'});
 const [{default:sequelize},{default:redis},{AdminAudit},{createAdminApp}]=await Promise.all([import('../db/config.js'),import('../services/redis-service.js'),import('./audit-model.js'),import('./app.js')]);
 await sequelize.authenticate();
+const {prepareAdminSchema}=await import('./schema.js');
+await prepareAdminSchema();
 await AdminAudit.sync();
 await redis.connect();
 const {app,close}=createAdminApp({username:process.env.ADMIN_USERNAME,password:process.env.ADMIN_PASSWORD,secure:process.env.NODE_ENV==='production'});

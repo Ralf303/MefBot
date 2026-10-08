@@ -25,6 +25,13 @@ const resources = {
 };
 export {resources};
 
+// Production has the historical roleId column. Adapt this admin process only;
+// do not alter tables or the bot/API models running in other processes.
+export async function prepareAdminSchema(){
+  const columns=await Roles.sequelize.getQueryInterface().describeTable(Roles.getTableName());
+  if(!columns.userId&&columns.roleId){Roles.rawAttributes.userId.field='roleId';Roles.refreshAttributes();}
+}
+
 export function fieldsFor(name) {
   const def=resources[name];
   return Object.entries(def.model.rawAttributes).filter(([key])=>!(def.hidden||[]).includes(key)).map(([key,attr])=>{
