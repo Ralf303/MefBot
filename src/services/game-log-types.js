@@ -3,7 +3,7 @@ export const logTypes={
   'item.transfer':'Передача вещи','case.transfer':'Передача кейсов','shop.buy':'Покупка','shop.sell':'Продажа',
   'case.open':'Открытие кейса','craft':'Крафт','item.equip':'Одежда: надеть / снять','item.upgrade':'Улучшение вещи',
   'item.change':'Изменение вещи','inventory.slots':'Расширение инвентаря','farm.harvest':'Сбор фермы','farm.upgrade':'Улучшение фермы',
-  'game.play':'Игра / ставка','payment':'Оплата доната','reward':'Награда / бонус','giveaway':'Раздача',
+  'game.play':'Игра / ставка','payment':'Оплата доната','reward':'Награда / бонус','captcha':'Капча','giveaway':'Раздача',
   'family.create':'Создание семьи','family.bank':'Банк семьи','family.member':'Участники и ранги семьи',
   'family.settings':'Настройки и улучшения семьи','family.delete':'Удаление семьи',
   'home.change':'Действия с домом','card.change':'Майнинг и видеокарты','chat.settings':'Настройки чата / VIP',
@@ -18,7 +18,8 @@ export function classifyLog(command,changes=[],notes=[]){
   if(/^(выдать|админка|основатель|-ферма|дом задать)/.test(c)||has('roles'))return 'admin.change';
   if(/^(передать|дать)/.test(c)){if(has('item'))return 'item.transfer';if(has('case'))return 'case.transfer';return 'currency.transfer';}
   if(changes.some(x=>x.model==='user'&&x.operation==='create'))return 'user.register';
-  if(/^(актив|капча|\d{6}$)/.test(c))return 'reward';
+  if(/^(капча|\d{6}$)/.test(c)||changes.some(x=>x.model==='user'&&Object.hasOwn(x.after||{},'captureCounter')))return 'captcha';
+  if(/^актив/.test(c))return 'reward';
   if(has('family')||has('famMember')||has('Bafs')){
     if(changes.some(x=>x.model==='family'&&x.operation==='create'))return 'family.create';
     if(changes.some(x=>x.model==='family'&&x.operation==='delete'))return 'family.delete';
@@ -39,7 +40,7 @@ export function classifyLog(command,changes=[],notes=[]){
   if(field('meflvl')||field('timelvl'))return 'farm.upgrade';
   if(field('slots'))return 'inventory.slots';
   if(/ферм|собрать|фарм/.test(c))return 'farm.harvest';
-  if(/бонус|актив|капча|^\d{6}$/.test(c))return 'reward';
+  if(/бонус|актив/.test(c))return 'reward';
   if(/обмен/.test(c))return 'currency.exchange';
   if(has('item'))return 'item.change';return 'operation';
 }

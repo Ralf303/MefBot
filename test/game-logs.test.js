@@ -22,6 +22,7 @@ test('journal captures committed actions, isolates concurrent requests and ignor
   };
   try{
     await save(User,{id:1,gems:1},{id:1,gems:2});assert.equal(stored.length,0,'hourly cron has no request context');
+    await save(User,{id:1,chests:1},{id:1,chests:2});assert.equal(stored.length,0,'daily key grant has no request context');
     await withLogContext({command:'Просмотр профиля'},()=>save(User,{id:1,firstname:'A',username:'a'},{id:1,firstname:'B',username:'b'}));assert.equal(stored.length,0,'Telegram name synchronization is ignored');
     await withLogContext({command:'передать гемы',actorId:1},async()=>{
       const transaction=tx();
@@ -47,5 +48,10 @@ test('journal excludes secrets, classifies operations and validates calendar fil
   assert.equal(classifyLog('Сцена rouletteScene',[{model:'user',after:{balance:1}}]),'game.play');
   assert.equal(classifyLog('семья пополнить',[{model:'family',after:{mef:1}}]),'family.bank');
   assert.equal(classifyLog('открыть кейс',[{model:'case',after:{minecraft:0}}]),'case.open');
+  assert.equal(classifyLog('123456',[{model:'user',after:{captureCounter:1}},{model:'family',after:{reputation:30}}]),'captcha');
+  assert.equal(classifyLog('капча',[{model:'user',after:{balance:500}}]),'captcha');
+  assert.equal(classifyLog('Ответ на капчу',[{model:'user',after:{captureCounter:1}}]),'captcha');
+  assert.equal(classifyLog('актив',[{model:'user',after:{balance:500}}]),'reward');
+  assert.equal(classifyLog('передать ключи',[{model:'user',after:{chests:1}}]),'currency.transfer');
   assert.throws(()=>dateRange({from:'2026-02-30'}));assert.throws(()=>dateRange({from:'2026-10-09',to:'2026-10-08'}));assert.doesNotThrow(()=>dateRange({from:'2026-10-08',to:'2026-10-08'}));
 });

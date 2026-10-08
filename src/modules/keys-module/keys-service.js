@@ -1,4 +1,3 @@
-import {withLogContext} from '../../services/game-log-service.js';
 import sequelize from "sequelize";
 import { CronJob } from "cron";
 import { User } from "../../db/models.js";
@@ -82,10 +81,10 @@ class KeyService {
       "1 0 5 * * *",
       async function addKeys() {
         try {
-          await withLogContext({source:'system',type:'reward',command:'Ежедневный ключ всем пользователям'},()=>User.update(
+          await User.update(
             { chests: sequelize.literal("`chests` + 1") },
             { where: {} }
-          ));
+          );
         } catch (error) {
           console.log(error);
         }
