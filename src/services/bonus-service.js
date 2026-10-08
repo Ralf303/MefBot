@@ -1,3 +1,4 @@
+import {noteLog} from './game-log-service.js';
 import sequelize from "../db/config.js";
 import { withUserOperation } from "./transaction-service.js";
 import { Keyboard, Key } from "telegram-keyboard";
@@ -115,6 +116,7 @@ class BonusService {
         reply_markup: keyboard,
       }
     );
+    await noteLog('giveaway',{operation:'Раздача вещи опубликована',catalogId:id},[]);
   }
 
   async createBonus(ctx) {

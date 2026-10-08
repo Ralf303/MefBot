@@ -8,6 +8,7 @@ import {home as homesConfig} from '../modules/home-module/home.js';
 import redis from '../services/redis-service.js';
 import {AdminAudit} from './audit-model.js';
 import {resources,cleanRow,validateChanges,assertOriginal,AdminError} from './schema.js';
+import {listGameLogs} from './game-logs.js';
 
 const root=process.cwd();
 const primary=name=>resources[name].model.primaryKeyAttribute;
@@ -144,5 +145,5 @@ export const adminService={
     const value={users,items,chats,families,homes,cards,newUsers,changedUsers,vipChats,totals,caseTotals,payments,registrations,topUsers:topUsers.map(plain),recentAudits:recentAudits.map(plain),generatedAt:new Date().toISOString()};statsCache={value,until:Date.now()+30000};return value;
   },
   async history(query={}){const page=Math.max(1,Math.min(100000,Math.trunc(Number(query.page)||1)));const where={};if(query.entity&&resources[query.entity])where.entity=query.entity;if(query.entityId)where.entityId=String(query.entityId).slice(0,30);const {rows,count}=await AdminAudit.findAndCountAll({where,order:[['id','DESC']],limit:30,offset:(page-1)*30});return {rows:rows.map(plain),count,page,limit:30};},
-  async botLogs(query={}){const page=Math.max(1,Math.min(100000,Math.trunc(Number(query.page)||1)));const where=query.q?{action:{[Op.like]:'%'+String(query.q).slice(0,100)+'%'}}:{};const {rows,count}=await Logs.findAndCountAll({where,order:[['id','DESC']],limit:30,offset:(page-1)*30});return {rows:rows.map(plain),count,page,limit:30};},
+  botLogs:listGameLogs,
 };

@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {createAuth} from './auth.js';
 import {adminService,resolveMedia} from './service.js';
 import {publicSchemas,AdminError} from './schema.js';
+import {withLogContext} from '../services/game-log-service.js';
 
 export function createAdminApp({username,password,secure=true,service=adminService}){
   const app=express();app.disable('x-powered-by');app.enable('strict routing');app.set('trust proxy','loopback');
@@ -12,7 +13,7 @@ export function createAdminApp({username,password,secure=true,service=adminServi
     res.set({'X-Content-Type-Options':'nosniff','X-Frame-Options':'DENY','Referrer-Policy':'same-origin','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"});next();
   });
   app.use('/admin/api',express.json({limit:'32kb'}));
-  const route=fn=>(req,res,next)=>Promise.resolve(fn(req,res)).catch(next);
+  const route=fn=>(req,res,next)=>Promise.resolve(req.admin&&!['GET','HEAD'].includes(req.method)&&req.path!=='/logout'?withLogContext({source:'admin',type:'admin.change',command:req.method+' '+req.path,extra:{administrator:req.admin.username}},()=>fn(req,res)):fn(req,res)).catch(next);
   app.post('/admin/api/login',route(auth.login));
   app.use('/admin/api',auth.guard);
   app.get('/admin/api/session',(req,res)=>res.json({username:req.admin.username,csrf:req.admin.csrf}));

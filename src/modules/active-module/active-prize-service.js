@@ -1,3 +1,4 @@
+import {withLogContext} from '../../services/game-log-service.js';
 import economyService from "../../services/economy-service.js";
 import { grantItem } from "../../services/reward-service.js";
 import { Family } from "../../db/models.js";
@@ -31,7 +32,7 @@ function activePrize(bot) {
               let prize = (active.day *= 2);
 
               if (chance === 2) {
-                const item = await grantItem(user, 104);
+                const item = await withLogContext({source:'system',type:'reward',command:'Приз активности · вещь',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>grantItem(user,104));
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -49,11 +50,11 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                await Family.increment({ reputation: fam.check ? 200 : 100 }, { where: { id: fam.id } });
+                await withLogContext({source:'system',type:'reward',command:'Репутация семьи за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>Family.increment({reputation: fam.check ? 200 : 100},{where:{id:fam.id}}));
                 prize += fam.Baf.active * 250;
 
               }
-              await economyService.add({ user: user, currency: "balance", amount: prize });
+              await withLogContext({source:'system',type:'reward',command:'Приз за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>economyService.add({user,currency:'balance',amount:prize}));
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
@@ -99,7 +100,7 @@ function activePrize(bot) {
               let prize = (active.week *= 2);
 
               if (chance === 2) {
-                const item = await grantItem(user, 104);
+                const item = await withLogContext({source:'system',type:'reward',command:'Приз активности · вещь',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>grantItem(user,104));
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -117,12 +118,12 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                await Family.increment({ reputation: fam.check ? 600 : 300 }, { where: { id: fam.id } });
+                await withLogContext({source:'system',type:'reward',command:'Репутация семьи за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>Family.increment({reputation: fam.check ? 600 : 300},{where:{id:fam.id}}));
                 prize += fam.Baf.active * 250;
 
               }
 
-              await economyService.add({ user: user, currency: "balance", amount: prize });
+              await withLogContext({source:'system',type:'reward',command:'Приз за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>economyService.add({user,currency:'balance',amount:prize}));
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId
@@ -167,7 +168,7 @@ function activePrize(bot) {
               let prize = (active.month *= 2);
 
               if (chance === 2) {
-                const item = await grantItem(user, 104);
+                const item = await withLogContext({source:'system',type:'reward',command:'Приз активности · вещь',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>grantItem(user,104));
                 await bot.telegram.sendMessage(
                   user.chatId,
                   "❗️Ты испытал удачу и получил " + item.itemName + "❗️"
@@ -185,12 +186,12 @@ function activePrize(bot) {
               const fam = await getFamilyByUserId(user.chatId);
 
               if (fam) {
-                await Family.increment({ reputation: fam.check ? 1000 : 500 }, { where: { id: fam.id } });
+                await withLogContext({source:'system',type:'reward',command:'Репутация семьи за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>Family.increment({reputation: fam.check ? 1000 : 500},{where:{id:fam.id}}));
                 prize += fam.Baf.active * 250;
 
               }
 
-              await economyService.add({ user: user, currency: "balance", amount: prize });
+              await withLogContext({source:'system',type:'reward',command:'Приз за активность',actorId:user.id,actorTelegramId:String(user.chatId),chatId:String(chatId)},()=>economyService.add({user,currency:'balance',amount:prize}));
               await user.save();
               message += `${index + 1}) <a href="tg://user?id=${
                 active.user.chatId

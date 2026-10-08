@@ -1,3 +1,4 @@
+import {noteLog} from './game-log-service.js';
 import { withUserTransaction } from "./transaction-service.js";
 import dotenv from "dotenv";
 dotenv.config({
@@ -71,6 +72,7 @@ class AddService {
         reply_markup: keyboard,
       }
     );
+    await noteLog('giveaway',{operation:'Раздача опубликована',catalogId:id,channelId},[]);
   }
 
   async take(user, ctx, token) {

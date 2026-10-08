@@ -1,3 +1,4 @@
+import {withLogContext} from '../../services/game-log-service.js';
 import sequelize from "../../db/config.js";
 import { CronJob } from "cron";
 import { Op } from "sequelize";
@@ -8,9 +9,9 @@ async function homeCronService() {
     "0 0 * * * *",
     async function () {
       try {
-        await Home.update({ userId: null, tax: 0, energy: 0 }, {
+        await withLogContext({source:'system',type:'home.change',command:'Изъятие дома за неуплату'},()=>Home.update({ userId: null, tax: 0, energy: 0 }, {
           where: { userId: { [Op.ne]: null }, tax: { [Op.gte]: 35500 } },
-        });
+        }));
         await Home.update({
           tax: sequelize.literal("tax + 500"),
           energy: sequelize.literal("LEAST(energy + 100, 10000)"),

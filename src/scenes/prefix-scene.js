@@ -1,3 +1,4 @@
+import {noteLog,currentLogContext} from '../services/game-log-service.js';
 import { Scenes } from "telegraf";
 import { message } from "telegraf/filters";
 const buyPrefix = new Scenes.BaseScene("buyPrefix");
@@ -22,6 +23,8 @@ buyPrefix.on(message("text"), async (ctx) => {
         "</code>",
       { parse_mode: "HTML" }
     );
+    if(currentLogContext())currentLogContext().status='observed';
+    await noteLog('shop.buy',{operation:'Заявка на префикс отправлена администратору'},[{chatId:ctx.from.id}]);
     ctx.scene.leave();
   } else {
     ctx.scene.reenter();
@@ -47,6 +50,8 @@ changePrefix.on(message("text"), async (ctx) => {
         "</code>",
       { parse_mode: "HTML" }
     );
+    if(currentLogContext())currentLogContext().status='observed';
+    await noteLog('shop.buy',{operation:'Заявка на префикс отправлена администратору'},[{chatId:ctx.from.id}]);
     ctx.scene.leave();
   } else {
     ctx.scene.reenter();

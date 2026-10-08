@@ -1,3 +1,4 @@
+import {withLogContext} from '../../services/game-log-service.js';
 import economyService from "../../services/economy-service.js";
 import { Family } from "../../db/models.js";
 import { getUser } from "../../db/functions.js";
@@ -60,9 +61,9 @@ function famCron(bot) {
       try {
         const [fam1, fam2, fam3] = await getTopFams(3);
         let message = "🏆БИТВА СЕМЕЙ ЗАКОНЧЕНА🏆\n\n";
-        await flushReputation();
+        await withLogContext({source:'system',type:'family.settings',command:'Сброс репутации после битвы семей'},()=>flushReputation());
         if (fam1) {
-          await Family.increment({ balance: fam1.fullSlots * 200 }, { where: { id: fam1.id } });
+          await withLogContext({source:'system',type:'reward',command:'Приз семье за битву'},()=>Family.increment({balance: fam1.fullSlots * 200},{where:{id:fam1.id}}));
 
           const famUsers = await getFamUsers(fam1.id);
           if (!famUsers) return;
@@ -73,7 +74,7 @@ function famCron(bot) {
             const itemLvl = await getItemsLvl(realUser.id);
 
             const amount = rang * itemLvl * 15;
-            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+            if(amount>0)await withLogContext({source:'system',type:'reward',command:'Приз битвы семей',actorId:realUser.id,actorTelegramId:String(realUser.chatId)},()=>economyService.add({user:realUser,currency:'famMoney',amount}));
 
           }
 
@@ -84,7 +85,7 @@ function famCron(bot) {
         }
 
         if (fam2) {
-          await Family.increment({ balance: fam2.fullSlots * 150 }, { where: { id: fam2.id } });
+          await withLogContext({source:'system',type:'reward',command:'Приз семье за битву'},()=>Family.increment({balance: fam2.fullSlots * 150},{where:{id:fam2.id}}));
 
           const famUsers = await getFamUsers(fam2.id);
           if (!famUsers) return;
@@ -95,7 +96,7 @@ function famCron(bot) {
             const itemLvl = await getItemsLvl(realUser.id);
 
             const amount = rang * itemLvl * 10;
-            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+            if(amount>0)await withLogContext({source:'system',type:'reward',command:'Приз битвы семей',actorId:realUser.id,actorTelegramId:String(realUser.chatId)},()=>economyService.add({user:realUser,currency:'famMoney',amount}));
 
           }
 
@@ -106,7 +107,7 @@ function famCron(bot) {
         }
 
         if (fam3) {
-          await Family.increment({ balance: fam3.fullSlots * 100 }, { where: { id: fam3.id } });
+          await withLogContext({source:'system',type:'reward',command:'Приз семье за битву'},()=>Family.increment({balance: fam3.fullSlots * 100},{where:{id:fam3.id}}));
 
           const famUsers = await getFamUsers(fam3.id);
           if (!famUsers) return;
@@ -116,7 +117,7 @@ function famCron(bot) {
             const rang = await getRang(user.userId, fam3.id);
             const itemLvl = await getItemsLvl(realUser.id);
             const amount = rang * itemLvl * 5;
-            if (amount > 0) await economyService.add({ user: realUser, currency: "famMoney", amount });
+            if(amount>0)await withLogContext({source:'system',type:'reward',command:'Приз битвы семей',actorId:realUser.id,actorTelegramId:String(realUser.chatId)},()=>economyService.add({user:realUser,currency:'famMoney',amount}));
 
           }
 

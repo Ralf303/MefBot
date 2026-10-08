@@ -1,4 +1,5 @@
 import { withUserTransaction, withUsersTransaction } from "./transaction-service.js";
+import {noteLog,currentLogContext} from './game-log-service.js';
 
 const CURRENCIES = new Set(["balance", "gems", "donate", "stones", "freeze", "oil", "chests", "coin", "famMoney"]);
 class EconomyError extends Error {
@@ -24,6 +25,7 @@ class EconomyService {
       if (locked.balance < amount) throw new EconomyError("INSUFFICIENT_FUNDS");
       setBalance(locked, "balance", locked.balance - amount + winnings);
       await locked.save({ transaction });
+      if(currentLogContext())await noteLog('game.play',{stake:amount,winnings,net:winnings-amount},[user]);
     });
   }
 
@@ -38,6 +40,7 @@ class EconomyService {
       setBalance(lockedReceiver, currency, lockedReceiver[currency] + value);
       await lockedSender.save({ transaction });
       await lockedReceiver.save({ transaction });
+      if(currentLogContext())await noteLog('currency.transfer',{currency,amount:value},[sender,receiver]);
       return { sender: lockedSender, receiver: lockedReceiver };
     });
   }
@@ -53,6 +56,7 @@ class EconomyService {
       setBalance(locked, spendCurrency, locked[spendCurrency] - spend);
       setBalance(locked, receiveCurrency, locked[receiveCurrency] + receive);
       await locked.save({ transaction });
+      if(currentLogContext())await noteLog('currency.exchange',{spendCurrency,receiveCurrency,spendAmount:spend,receiveAmount:receive},[user]);
       return locked;
     });
   }

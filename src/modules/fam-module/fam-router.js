@@ -1,4 +1,5 @@
 import { withUserTransaction } from "../../services/transaction-service.js";
+import {noteLog} from '../../services/game-log-service.js';
 import { Composer } from "telegraf";
 import ru_text from "../../../ru_text.js";
 import {
@@ -366,6 +367,7 @@ famModule.hears(/^семья пригласить/i, async (ctx, next) => {
       });
 
     await redisService.setInvite(target.chatId, fam.id);
+    await noteLog('family.member',{operation:'Приглашение в семью',familyId:fam.id},[{chatId:target.chatId}]);
     await ctx.reply("Заявка успешно отправлена ✅");
 
     return next();
@@ -403,6 +405,7 @@ famModule.hears(/^семья отклонить/i, async (ctx, next) => {
     if (!famId) return await ctx.reply("У тебя нет приглашений в семью 🥲");
     await redisService.delete(`invite:${ctx.from.id}`);
     await ctx.reply("Ты успешно отклонил приглашение");
+    await noteLog('family.member',{operation:'Приглашение отклонено',familyId:famId},[ctx.state.user]);
     return next();
   } catch (error) {
     console.log(error);

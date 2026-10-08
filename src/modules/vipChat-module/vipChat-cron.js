@@ -1,3 +1,4 @@
+import {withLogContext} from '../../services/game-log-service.js';
 import { CronJob } from "cron";
 import dotenv from "dotenv";
 dotenv.config({
@@ -16,7 +17,7 @@ function vipCron(bot) {
         try {
           if (chat.vipTime === 0) {
             chat.vip = false;
-            await chat.save();
+            await withLogContext({source:'system',type:'chat.settings',command:'Истечение VIP чата',chatId:String(chat.chatId)},()=>chat.save());
             await bot.telegram.sendMessage(
               chat.chatId,
               "Беседа больше не является вип чатом, что купить введи «Купить випчат»"

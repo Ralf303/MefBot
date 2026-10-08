@@ -1,5 +1,6 @@
 import { Home, Card, CardStand } from "../db/models.js";
 import { withUsersTransaction } from "./transaction-service.js";
+import {noteLog,currentLogContext} from './game-log-service.js';
 
 export async function purchaseAsset({ seller, buyer, model, id, price, inventory = false, house = false }) {
   price = Number(price);
@@ -26,6 +27,7 @@ export async function purchaseAsset({ seller, buyer, model, id, price, inventory
     await lockedSeller.save({ transaction });
     await lockedBuyer.save({ transaction });
     await asset.save({ transaction });
+    if(currentLogContext())await noteLog('shop.buy',{operation:'Покупка у игрока',asset:model.name,assetId:asset.id,price},[seller,buyer]);
     return asset;
   });
 }

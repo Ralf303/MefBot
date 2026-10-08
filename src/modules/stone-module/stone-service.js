@@ -1,3 +1,4 @@
+import {noteLog,currentLogContext} from '../../services/game-log-service.js';
 import { withUserTransaction } from "../../services/transaction-service.js";
 import { Item } from "../../db/models.js";
 import { getRandomInt } from "../../utils/helpers.js";
@@ -54,5 +55,5 @@ const upgradeItemUnsafe = async (user, itemId) => {
   }
 };
 
-const upgradeItem = (user, ...args) => withUserTransaction(user, (locked) => upgradeItemUnsafe(locked, ...args));
+const upgradeItem = (user, ...args) => withUserTransaction(user, async (locked) => {const before=locked.stones,result=await upgradeItemUnsafe(locked,...args);if(currentLogContext()&&locked.stones<before)await noteLog('item.upgrade',{itemId:args[0],success:result.includes('успешно'),result},[user]);return result;});
 export { upgradeItem };

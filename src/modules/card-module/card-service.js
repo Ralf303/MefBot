@@ -1,3 +1,4 @@
+import {noteLog,currentLogContext} from '../../services/game-log-service.js';
 import jwtService from "../../services/jwt-service.js";
 import { withUserTransaction, withUsersTransaction } from "../../services/transaction-service.js";
 import { Key, Keyboard } from "telegram-keyboard";
@@ -211,5 +212,5 @@ const upgradeCardUnsafe = async (user, itemId) => {
 
 const deleteCard = (user, id) => withUserTransaction(user, (locked) => deleteCardUnsafe(locked, id));
 const buyCard = (user) => withUserTransaction(user, (locked, transaction) => buyCardUnsafe(locked, transaction));
-const upgradeCard = (user, ...args) => withUserTransaction(user, (locked) => upgradeCardUnsafe(locked, ...args));
+const upgradeCard = (user, ...args) => withUserTransaction(user, async (locked) => {const before=locked.oil,result=await upgradeCardUnsafe(locked,...args);if(currentLogContext()&&locked.oil<before)await noteLog('card.change',{cardId:args[0],success:result.includes('успешно'),result},[user]);return result;});
 export { getInventory, deleteCard, giveCard, buyCard, sellCard, upgradeCard };

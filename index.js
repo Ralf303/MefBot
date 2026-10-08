@@ -37,6 +37,7 @@ import homeApi from "./src/API/homeApi.js";
 import middleware from "./middlewares.js";
 import mineService from "./src/modules/mine-module/mine-cron.js";
 import { startAnimsCleanupCron } from "./src/modules/items-module/items-utils/blend-items-service.js";
+import { gameLogMiddleware, installGameLogHooks, noteLog } from "./src/services/game-log-service.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -55,6 +56,7 @@ const start = async () => {
       }
     });
 
+    installGameLogHooks();
     await connectToDb();
     await redisService.connect();
     await migrateLegacyCaseCache();
@@ -66,6 +68,7 @@ const start = async () => {
       })
     );
 
+    bot.use(gameLogMiddleware);
     bot.use(stage.middleware());
     bot.use(middleware);
     mainCronService(bot);
@@ -107,6 +110,7 @@ const start = async () => {
       bot.launch({ dropPendingUpdates: false }).catch((error) => console.error("Polling error:", error));
       await bot.telegram.sendMessage(1157591765, "Бот перезапущен на пулинге");
     }
+    await noteLog('operation',{operation:'Бот запущен',node:process.version});
   } catch (error) {
     console.log(error);
   }
