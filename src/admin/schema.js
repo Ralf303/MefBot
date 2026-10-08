@@ -41,6 +41,9 @@ export function fieldsFor(name) {
     if(name==='roles'&&key==='status')field.options=['','manager','founder'];
     if(name==='memberships'&&key==='rang')field.max=5;
     field.min=0;
+    if(name==='items'&&key==='userId')field.min=1;
+    if(name==='memberships'&&key==='userId')field.label='Telegram ID пользователя';
+    if(name==='activity'&&key==='chatId')field.label='Telegram ID чата';
     if(name==='users'&&['meflvl','timelvl'].includes(key)){field.min=1;field.max=4;}
     if(name==='memberships'&&key==='rang')field.min=1;
     if(name==='families'&&key==='percent')field.max=100;
