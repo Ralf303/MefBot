@@ -15,6 +15,7 @@ const defFor=name=>{if(!Object.hasOwn(resources,name))throw new AdminError(404,'
 const idOf=(name,id)=>{if(name==='chats'){if(!/^-?\d{1,20}$/.test(String(id)))throw new AdminError(400,'Неверный ID чата');return String(id);}const n=Number(id);if(!Number.isSafeInteger(n)||n<1)throw new AdminError(400,'Неверный ID');return n;};
 const plain=row=>row?.get?row.get({plain:true}):row;
 const ownerModelNames=['items','cases','homes','cards','stands','activity','roles'];
+const ownerField=name=>name==='roles'?'roleId':'userId';
 const audit=(actor,name,id,operation,before,after,transaction)=>AdminAudit.create({actor,entity:name,entityId:String(id),operation,before,after},{transaction});
 const catalog=Object.entries(itemsConfig).map(([id,item])=>({id:Number(id),...item}));
 let statsCache;
@@ -57,7 +58,7 @@ export const adminService={
     if(!Number.isInteger(page)||!Number.isInteger(limit))throw new AdminError(400,'Неверная страница');
     const where={},q=String(query.q||'').trim().slice(0,100);
     if(q){const search=(def.search||[]).map(key=>({[key]:{[Op.like]:'%'+q+'%'}}));if(/^\d+$/.test(q)&&primary(name)==='id')search.push({id:q});if(name==='items'&&/^\d+$/.test(q))search.push({userId:q});if(search.length)where[Op.or]=search;}
-    if(query.userId&&ownerModelNames.includes(name))where.userId=idOf('users',query.userId);
+    if(query.userId&&ownerModelNames.includes(name))where[ownerField(name)]=idOf('users',query.userId);
     if(name==='memberships'&&query.userId)where.userId=String(query.userId);
     if(name==='buffs'&&query.familyId)where.familyId=idOf('families',query.familyId);
     if(name==='items'&&query.worn==='true')where.isWorn=true;
@@ -74,7 +75,7 @@ export const adminService={
       const [itemCount,cardCount,standCount,membership]=await Promise.all([Item.count({where:{userId:id}}),Card.count({where:{userId:id}}),CardStand.count({where:{userId:id}}),FamMember.findOne({where:{userId:row.chatId}})]);
       result.counts={items:itemCount,cards:cardCount,stands:standCount};result.membership=plain(membership);if(membership)result.family=plain(await Family.findByPk(membership.familyId));
     }
-    if(ownerModelNames.includes(name)&&row.userId){const user=await User.findByPk(row.userId,{attributes:['id','firstname','username','chatId']});result.owner=plain(user);}
+    if(ownerModelNames.includes(name)&&row[ownerField(name)]){const user=await User.findByPk(row[ownerField(name)],{attributes:['id','firstname','username','chatId']});result.owner=plain(user);}
     if(name==='items')result.catalogue=catalog.find(c=>c.name===row.itemName)||null;
     return result;
   },
@@ -82,11 +83,11 @@ export const adminService={
     const def=defFor(name);id=idOf(name,id);const changes=validateChanges(name,body.changes);if(!Object.keys(changes).length)throw new AdminError(400,'Нет изменений');
     if(name==='items'&&changes.src)await resolveMedia(changes.src);
     const pre=await def.model.findByPk(id);if(!pre)throw new AdminError(404,'Запись не найдена');
-    const userIds=name==='users'?[id]:ownerModelNames.includes(name)?[pre.userId,...(name==='items'&&changes.userId?[changes.userId]:[])]:[];
+    const userIds=name==='users'?[id]:ownerModelNames.includes(name)?[pre[ownerField(name)],...(name==='items'&&changes.userId?[changes.userId]:[])]:[];
     const result=await sequelize.transaction(async transaction=>{
       const users=await lockUsers(userIds,transaction);
       const row=await def.model.findByPk(id,{transaction,lock:transaction.LOCK.UPDATE});if(!row)throw new AdminError(404,'Запись не найдена');
-      if(ownerModelNames.includes(name)&&String(row.userId)!==String(pre.userId))throw new AdminError(409,'Владелец изменился. Обновите страницу.');
+      if(ownerModelNames.includes(name)&&String(row[ownerField(name)])!==String(pre[ownerField(name)]))throw new AdminError(409,'Владелец изменился. Обновите страницу.');
       assertOriginal(row,changes,body.original);const before=cleanRow(name,row);
       if(name==='users'&&changes.slots!==undefined){const count=await Item.count({where:{userId:id},transaction});if(changes.slots<count)throw new AdminError(400,'Вместимость меньше количества вещей: '+count);}
       if(name==='items'&&changes.userId!==undefined&&Number(changes.userId)!==Number(row.userId)){await capacity(users.get(Number(changes.userId)),transaction,1);changes.isWorn=false;}
@@ -115,15 +116,15 @@ export const adminService={
     if(name==='stands')changes.cardId=null;
     const row=await sequelize.transaction(async transaction=>{
       await lockUsers([userId],transaction);
-      if(!['cards','stands'].includes(name)&&await def.model.findOne({where:{userId},transaction}))throw new AdminError(409,'Такая запись уже есть');
-      const row=await def.model.create({...changes,userId},{transaction});await audit(actor,name,row[primary(name)],'create',null,cleanRow(name,row),transaction);return cleanRow(name,row);
+      if(!['cards','stands'].includes(name)&&await def.model.findOne({where:{[ownerField(name)]:userId},transaction}))throw new AdminError(409,'Такая запись уже есть');
+      const row=await def.model.create({...changes,[ownerField(name)]:userId},{transaction});await audit(actor,name,row[primary(name)],'create',null,cleanRow(name,row),transaction);return cleanRow(name,row);
     });await invalidate([userId]);return row;
   },
   async remove(name,id,body,actor){
     const def=defFor(name);if(!def.remove)throw new AdminError(400,'Удаление недоступно');id=idOf(name,id);const pre=await def.model.findByPk(id);if(!pre)throw new AdminError(404,'Запись не найдена');
-    const ids=pre.userId?[pre.userId]:[];
+    const ids=pre[ownerField(name)]?[pre[ownerField(name)]]:[];
     await sequelize.transaction(async transaction=>{
-      const users=await lockUsers(ids,transaction);const row=await def.model.findByPk(id,{transaction,lock:transaction.LOCK.UPDATE});if(!row||String(row.userId)!==String(pre.userId))throw new AdminError(409,'Запись изменилась');
+      const users=await lockUsers(ids,transaction);const row=await def.model.findByPk(id,{transaction,lock:transaction.LOCK.UPDATE});if(!row||String(row[ownerField(name)])!==String(pre[ownerField(name)]))throw new AdminError(409,'Запись изменилась');
       if(!body.original||new Date(body.original.updatedAt).getTime()!==new Date(row.updatedAt).getTime())throw new AdminError(409,'Запись изменилась. Обновите страницу.');
       const before=cleanRow(name,row);if(name==='cards')await CardStand.update({cardId:null},{where:{cardId:row.id},transaction});await row.destroy({transaction});if(name==='items')await recount(users,transaction);await audit(actor,name,id,'delete',before,null,transaction);
     });await invalidate(ids);return {ok:true};

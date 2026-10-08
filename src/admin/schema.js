@@ -16,7 +16,7 @@ const resources = {
   cards:{model:Card,title:'Видеокарта',readonly:['userId'],parent:true,remove:true},
   stands:{model:CardStand,title:'Стойка',readonly:['userId'],parent:true,remove:true},
   activity:{model:Active,title:'Активность',readonly:['userId','chatId'],parent:true},
-  roles:{model:Roles,title:'Роль',readonly:['userId'],hidden:['password'],parent:true,remove:true},
+  roles:{model:Roles,title:'Роль',readonly:['roleId'],hidden:['password'],parent:true,remove:true},
   bonuses:{model:Bonus,title:'Раздача бонуса',create:false,remove:false},
   memberships:{model:FamMember,title:'Участие в семье',readonly:['userId','familyId'],parent:true,remove:false},
   families:{model:Family,title:'Семья',readonly:['owner','fullSlots'],search:['name','owner'],create:false,remove:false},
@@ -25,18 +25,18 @@ const resources = {
 };
 export {resources};
 
-// Production has the historical roleId column. Adapt this admin process only;
-// do not alter tables or the bot/API models running in other processes.
+// The role association uses roleId. Support databases which instead used userId
+// within this admin process only, without altering their schema or API.
 export async function prepareAdminSchema(){
   const columns=await Roles.sequelize.getQueryInterface().describeTable(Roles.getTableName());
-  if(!columns.userId&&columns.roleId){Roles.rawAttributes.userId.field='roleId';Roles.refreshAttributes();}
+  if(!columns.roleId&&columns.userId){Roles.rawAttributes.roleId.field='userId';Roles.refreshAttributes();}
 }
 
 export function fieldsFor(name) {
   const def=resources[name];
   return Object.entries(def.model.rawAttributes).filter(([key])=>!(def.hidden||[]).includes(key)).map(([key,attr])=>{
     const type=attr.type.key;
-    const field={key,label:labels[key]||({id:'ID',createdAt:'Создан',updatedAt:'Обновлён'}[key]||key),type:type==='BOOLEAN'?'boolean':['INTEGER','BIGINT','FLOAT','DOUBLE'].includes(type)?'number':type==='DATE'?'date':'text',readonly:!!attr.primaryKey||['createdAt','updatedAt'].includes(key)||(def.readonly||[]).includes(key),nullable:attr.allowNull!==false,max:type==='BIGINT'?Number.MAX_SAFE_INTEGER:2147483647,step:type==='FLOAT'||type==='DOUBLE'?'any':1};
+    const field={key,label:labels[key]||({id:'ID',roleId:'Владелец · ID в базе',createdAt:'Создан',updatedAt:'Обновлён'}[key]||key),type:type==='BOOLEAN'?'boolean':['INTEGER','BIGINT','FLOAT','DOUBLE'].includes(type)?'number':type==='DATE'?'date':'text',readonly:!!attr.primaryKey||['createdAt','updatedAt'].includes(key)||(def.readonly||[]).includes(key),nullable:attr.allowNull!==false,max:type==='BIGINT'?Number.MAX_SAFE_INTEGER:2147483647,step:type==='FLOAT'||type==='DOUBLE'?'any':1};
     if(key==='bodyPart')field.options=['head','face','set','left','right','extra','legs','leg1','leg2',...Array.from({length:5},(_,i)=>'fnaf_set'+(i+1)),...Array.from({length:7},(_,i)=>'pups_set'+(i+1))];
     if(name==='roles'&&key==='status')field.options=['','manager','founder'];
     if(name==='memberships'&&key==='rang')field.max=5;
