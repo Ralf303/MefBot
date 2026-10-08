@@ -45,12 +45,13 @@ async function persist(scope){
     for(const c of scope.changes){for(const id of [c.ownerId,!['famMember','add'].includes(c.model)&&c.previousOwnerId])if(id)ids.add(Number(id));for(const id of [c.ownerTelegramId,c.previousOwnerTelegramId])if(id)telegramIds.add(String(id));}
     for(const n of scope.notes)for(const u of n.users||[]){if(u.id)ids.add(Number(u.id));if(u.chatId)telegramIds.add(String(u.chatId));}
     const participants=(ids.size||telegramIds.size)?await User.findAll({where:{[Op.or]:[{id:{[Op.in]:[...ids]}},{chatId:{[Op.in]:[...telegramIds]}}]},attributes:['id','chatId','firstname','username'],transaction:null}):[];
-    const type=scope.type||classifyLog(scope.command,scope.changes,scope.notes);
+    const type=scope.type||(scope.error?'error':classifyLog(scope.command,scope.changes,scope.notes));
     const currencies=new Set();for(const c of scope.changes)for(const key of new Set([...Object.keys(c.before||{}),...Object.keys(c.after||{})])){if(c.model==='family'&&key==='balance')currencies.add('famMoney');else if(c.model==='family'&&key==='mef')currencies.add('balance');else if(c.model==='card'&&key==='balance')currencies.add('coin');else if(c.model==='card'&&key==='fuel')currencies.add('freeze');else if(c.model==='chat'&&key==='bank')currencies.add('balance');else if(['user','mining'].includes(c.model)&&Object.hasOwn(currencyNames,key))currencies.add(key);}
     const details={command:scope.command,currencies:[...currencies],changes:scope.changes,notes:scope.notes.map(({users,...n})=>n),omitted:scope.omitted||0,...(scope.error?{error:scope.error}:{}),...(scope.extra?{context:scope.extra}:{})};
     await sequelize.transaction(async transaction=>{
       const actorId=scope.actorId||participants.find(u=>String(u.chatId)===scope.actorTelegramId)?.id;
-      const log=await GameLog.create({type,status:scope.error?'error':scope.status||'success',source:scope.source,actorId,actorTelegramId:scope.actorTelegramId,chatId:scope.chatId,global:scope.changes.some(c=>c.global),action:(logTypes[type]||type)+(scope.command?' · '+scope.command:'') ,details},{transaction,hooks:false});
+      const description=scope.notes.find(n=>n.operation)?.operation||logTypes[type]||type;
+      const log=await GameLog.create({type,status:scope.error?'error':scope.status||'success',source:scope.source,actorId,actorTelegramId:scope.actorTelegramId,chatId:scope.chatId,global:scope.changes.some(c=>c.global),action:(description+(scope.command?' · '+scope.command:'')).slice(0,255),details},{transaction,hooks:false});
       const rows=participants.map(u=>({logId:log.id,userId:u.id,telegramId:String(u.chatId),name:String(u.firstname||'').slice(0,120),username:String(u.username||'').slice(0,64)}));
       for(const id of telegramIds)if(!rows.some(r=>r.telegramId===id))rows.push({logId:log.id,telegramId:id});
       if(rows.length)await GameLogUser.bulkCreate(rows,{transaction,hooks:false});

@@ -39,6 +39,7 @@ test('journal captures committed actions, isolates concurrent requests and ignor
     const before=stored.length;let ctx={from:{id:101},chat:{id:-100},message:{text:'/start event_secret-token'},state:{}};
     GameLog.create=async values=>{stored.push({...values,id:stored.length+1});return stored.at(-1);};
     await gameLogMiddleware(ctx,()=>save(User,{id:1,balance:3},{id:1,balance:4}));assert.equal(stored.length,before+1);assert.ok(!JSON.stringify(stored.at(-1)).includes('secret-token'));
+    await assert.rejects(withLogContext({command:'Ошибка'},async()=>{throw new TypeError('test');}));assert.equal(stored.at(-1).type,'error');assert.equal(stored.at(-1).status,'error');
   }finally{sequelize.transaction=original.transaction;User.findAll=original.users;GameLog.create=original.create;GameLogUser.bulkCreate=original.bulk;}
 });
 test('journal excludes secrets, classifies operations and validates calendar filters',()=>{
