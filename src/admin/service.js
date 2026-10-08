@@ -14,7 +14,7 @@ const primary=name=>resources[name].model.primaryKeyAttribute;
 const defFor=name=>{if(!Object.hasOwn(resources,name))throw new AdminError(404,'Раздел не найден');return resources[name];};
 const idOf=(name,id)=>{if(name==='chats'){if(!/^-?\d{1,20}$/.test(String(id)))throw new AdminError(400,'Неверный ID чата');return String(id);}const n=Number(id);if(!Number.isSafeInteger(n)||n<1)throw new AdminError(400,'Неверный ID');return n;};
 const plain=row=>row?.get?row.get({plain:true}):row;
-const ownerModelNames=['items','cases','homes','cards','stands','activity','roles','bonuses'];
+const ownerModelNames=['items','cases','homes','cards','stands','activity','roles'];
 const audit=(actor,name,id,operation,before,after,transaction)=>AdminAudit.create({actor,entity:name,entityId:String(id),operation,before,after},{transaction});
 const catalog=Object.entries(itemsConfig).map(([id,item])=>({id:Number(id),...item}));
 let statsCache;
@@ -109,7 +109,7 @@ export const adminService={
     });await invalidate([userId]);return rows;
   },
   async createOwned(name,userId,body,actor){
-    if(!['cases','homes','cards','stands','roles','bonuses','activity'].includes(name))throw new AdminError(400,'Создание недоступно');
+    if(!['cases','homes','cards','stands','roles','activity'].includes(name))throw new AdminError(400,'Создание недоступно');
     userId=idOf('users',userId);const def=defFor(name),changes=validateChanges(name,body);
     if(name==='homes'){if(!homesConfig[changes.homeId])throw new AdminError(400,'Выберите дом из каталога');if(!changes.name)changes.name=homesConfig[changes.homeId].name;}
     if(name==='stands')changes.cardId=null;

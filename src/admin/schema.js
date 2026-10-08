@@ -17,7 +17,7 @@ const resources = {
   stands:{model:CardStand,title:'Стойка',readonly:['userId'],parent:true,remove:true},
   activity:{model:Active,title:'Активность',readonly:['userId','chatId'],parent:true},
   roles:{model:Roles,title:'Роль',readonly:['userId'],hidden:['password'],parent:true,remove:true},
-  bonuses:{model:Bonus,title:'Бонус',readonly:['userId'],parent:true},
+  bonuses:{model:Bonus,title:'Раздача бонуса',create:false,remove:false},
   memberships:{model:FamMember,title:'Участие в семье',readonly:['userId','familyId'],parent:true,remove:false},
   families:{model:Family,title:'Семья',readonly:['owner','fullSlots'],search:['name','owner'],create:false,remove:false},
   buffs:{model:Bafs,title:'Улучшения семьи',readonly:['familyId'],parent:true},
