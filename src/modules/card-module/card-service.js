@@ -50,7 +50,7 @@ const giveCard = async (sender, cardId, ctx, confirmed) => {
     return { cards: assets };
   });
 
-  if (result.error) return ctx.reply(result.error);
+  if (result.error) return confirmed ? confirmed.replyFailure(result.error) : ctx.reply(result.error);
   const { cards } = result;
   if (!cards.length) return ctx.reply(cardId === ALL ? "У тебя нет видеокарт." : "У тебя нет такой видеокарты.");
   const description = cardId === ALL ? `все видеокарты (${cards.length} шт.)` : `Видеокарта[${cards[0].id}](${cards[0].lvl})`;

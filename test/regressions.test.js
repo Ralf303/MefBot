@@ -22,6 +22,7 @@ import itemsRouter from "../src/modules/items-module/items-router.js";
 import caseRouter from "../src/modules/case-module/case-router.js";
 import cardRouter from "../src/modules/card-module/card-router.js";
 import transferConfirmationRouter from "../src/modules/transfer-module/transfer-confirmation-router.js";
+import { requireGroupAdmin } from "../src/services/group-access.js";
 import { ALL } from "../src/utils/transfer-amount.js";
 import redis from "../src/services/redis-service.js";
 import { createLimiter, withKeyLock } from "../src/utils/concurrency.js";
@@ -64,17 +65,24 @@ function context(text = "test", type = "private") {
   return ctx;
 }
 async function pressTransferButton(preview, button = 0, fromId = 123, chat = preview.chat) {
-  const keyboard = preview.notifications[0][1].reply_markup.inline_keyboard;
+  const [text, options] = preview.notifications[0];
+  const keyboard = options.reply_markup.inline_keyboard;
   const data = keyboard.flat()[button].callback_data;
+  const message = options.ephemeral_message_parameters
+    ? { message_id: 0, ephemeral_message_id: 37, text, chat }
+    : { message_id: 2, text, chat };
   const ctx = new Context({
     update_id: 2,
-    callback_query: { id: "callback", from: { id: fromId, first_name: "Test" }, data, message: { message_id: 2, chat } },
+    callback_query: { id: "callback", from: { id: fromId, first_name: "Test" }, data, message },
   }, {}, { id: 999, username: "bot" });
   ctx.notifications=[];
   ctx.answers=[];
+  ctx.edits=[];
   ctx.reply=ctx.replyWithHTML=ctx.telegram.sendMessage=async (...args)=>{ ctx.notifications.push(args); };
   ctx.answerCbQuery=async message=>{ ctx.answers.push(message); };
   ctx.editMessageReplyMarkup=async()=>{};
+  ctx.editMessageText=async (...args)=>{ctx.edits.push(args);};
+  ctx.telegram.callApi=async (...args)=>{ctx.edits.push(args);};
   await transferConfirmationRouter.middleware()(ctx,async()=>{});
   return ctx;
 }
@@ -140,9 +148,19 @@ test("only the requester can use the buttons; cancel, expiry, and concurrent cli
     return ctx;
   };
   const cancelled=await preview();
+  assert.deepEqual(cancelled.notifications[0][1].ephemeral_message_parameters,{receiver_user_id:123});
   assert.match((await pressTransferButton(cancelled,1,456)).answers[0],/не твоя/);
   assert.match((await pressTransferButton(cancelled,0,123,{...cancelled.chat,id:-987})).answers[0],/не твоя/);
-  assert.match((await pressTransferButton(cancelled,1)).notifications[0][0],/отменена/);
+  const cancellation=await pressTransferButton(cancelled,1);
+  assert.deepEqual(cancellation.notifications,[]);
+  assert.equal(cancellation.edits.length,1);
+  const [method,payload]=cancellation.edits[0];
+  assert.equal(method,"editEphemeralMessageText");
+  assert.equal(payload.ephemeral_message_id,37);
+  assert.equal(payload.receiver_user_id,123);
+  assert.equal(payload.chat_id,-123);
+  assert.deepEqual(payload.reply_markup,{inline_keyboard:[]});
+  assert.match(payload.text,/10 BTC[\s\S]*Передача отменена\.$/);
   assert.match((await pressTransferButton(cancelled)).answers[0],/закрыта/);
   const expired=await preview();
   cache.clear();
@@ -151,6 +169,10 @@ test("only the requester can use the buttons; cancel, expiry, and concurrent cli
   const live=await preview();
   const results=await Promise.all([pressTransferButton(live),pressTransferButton(live)]);
   assert.equal(results.filter(result=>result.notifications.length>0).length,1);
+  const completed=results.find(result=>result.notifications.length>0);
+  assert.match(completed.notifications[0][0],/Ты успешно передал\(а\) 10 ₿/);
+  assert.equal(completed.notifications[0][1]?.ephemeral_message_parameters,undefined);
+  assert.equal(completed.edits[0][0],"editEphemeralMessageReplyMarkup");
   assert.deepEqual(database.users.map(user=>user.coin),[0,10]);
 });
 
@@ -161,8 +183,31 @@ test("confirmation rejects a balance that changed after the preview", async () =
   await mineRouter.middleware()(ctx,async()=>{});
   database.users[0].coin=11;
   const result=await pressTransferButton(ctx);
-  assert.match(result.notifications[0][0],/изменились/);
+  assert.deepEqual(result.notifications,[]);
+  assert.match(result.edits[0][0],/изменились/);
   assert.deepEqual(database.users.map(user=>user.coin),[11,0]);
+});
+
+test("group commands require admin status; membership changes and transfer buttons recheck permissions", async () => {
+  let status="member", checks=0, dispatched=0;
+  const ctx={
+    chat:{id:-98765,type:"supergroup"}, botInfo:{id:999},
+    telegram:{getChatMember:async()=>{checks++;return {status};}},
+  };
+  const next=async()=>{dispatched++;};
+  await requireGroupAdmin(ctx,next);
+  assert.equal(dispatched,0);
+  status="administrator";
+  await requireGroupAdmin({...ctx,myChatMember:{new_chat_member:{status}}},next);
+  await Promise.all([requireGroupAdmin(ctx,next),requireGroupAdmin(ctx,next)]);
+  assert.equal(dispatched,2);
+  assert.equal(checks,2);
+  status="member";
+  await requireGroupAdmin({...ctx,callbackQuery:{data:"all_transfer:y:token"}},next);
+  assert.equal(dispatched,2);
+  await requireGroupAdmin({...ctx,chat:{id:123,type:"private"}},next);
+  assert.equal(dispatched,3);
+  assert.equal(checks,3);
 });
 
 test("concurrent full balance transfers use locked balances and preserve the minimum", async () => {
@@ -191,7 +236,7 @@ test("giving all items checks capacity, unequips items and updates both inventor
   const preview=context("передать вещь всё @recipient");
   await itemsRouter.middleware()(preview,next);
   database.items[1].id=4;
-  assert.match((await pressTransferButton(preview)).notifications[0][0],/изменились/);
+  assert.match((await pressTransferButton(preview)).edits[0][0],/изменились/);
   const newPreview=context("передать вещь всё @recipient");
   await itemsRouter.middleware()(newPreview,next);
   await pressTransferButton(newPreview);

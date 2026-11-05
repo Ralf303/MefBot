@@ -11,6 +11,7 @@ import {
   createItem,
 } from "../items-module/items-utils/item-tool-service.js";
 import activeService from "./active-service.js";
+import { canPostToGroup } from "../../services/group-access.js";
 
 function activePrize(bot) {
   new CronJob(
@@ -21,6 +22,7 @@ function activePrize(bot) {
       for (const chat of chats) {
         try {
           const chatId = chat.chatId;
+          if (!await canPostToGroup(bot, chatId)) continue;
           const topUsers = await activeService.getTopDayUsers(chatId);
           let message = `Топ 3 активных пользователей за сегодня:\n\n`;
 
@@ -89,6 +91,7 @@ function activePrize(bot) {
       for (const chat of chats) {
         try {
           const chatId = chat.chatId;
+          if (!await canPostToGroup(bot, chatId)) continue;
           const topUsers = await activeService.getTopWeekUsers(chatId);
           let message = `Топ 3 активных пользователей за эту неделю:\n\n`;
 
@@ -157,6 +160,7 @@ function activePrize(bot) {
       for (const chat of chats) {
         try {
           const chatId = chat.chatId;
+          if (!await canPostToGroup(bot, chatId)) continue;
           const topUsers = await activeService.getTopMonthUsers(chatId);
           let message = `Топ 3 активных пользователей за этот месяц:\n\n`;
 

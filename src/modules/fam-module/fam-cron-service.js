@@ -1,4 +1,5 @@
 import {withLogContext} from '../../services/game-log-service.js';
+import { canPostToGroup } from "../../services/group-access.js";
 import economyService from "../../services/economy-service.js";
 import { Family } from "../../db/models.js";
 import { getUser } from "../../db/functions.js";
@@ -129,7 +130,9 @@ function famCron(bot) {
 
         message +=
           "\n\n\nТак же все участники топ 3 семей получили на свой баланс монеты";
-        await bot.telegram.sendMessage(process.env.CHAT_ID, message);
+        if (await canPostToGroup(bot, process.env.CHAT_ID)) {
+          await bot.telegram.sendMessage(process.env.CHAT_ID, message);
+        }
       } catch (error) {
         console.log(error);
       }

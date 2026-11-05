@@ -1,6 +1,7 @@
 import { getVipChats } from "../../db/functions.js";
 import { sleep } from "../../utils/helpers.js";
 import { CronJob } from "cron";
+import { canPostToGroup } from "../../services/group-access.js";
 import dotenv from "dotenv";
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
@@ -14,6 +15,7 @@ function mainCronService(bot) {
         const vipChats = await getVipChats();
         for (const chat of vipChats) {
           try {
+            if (!await canPostToGroup(bot, chat.chatId)) continue;
             await bot.telegram.sendMessage(
               chat.chatId,
               "Всем спокойной ночи 😴"
@@ -39,6 +41,7 @@ function mainCronService(bot) {
         const vipChats = await getVipChats();
         for (const chat of vipChats) {
           try {
+            if (!await canPostToGroup(bot, chat.chatId)) continue;
             await bot.telegram.sendMessage(chat.chatId, "Всем доброе утро ☀️");
             await sleep(100);
           } catch (error) {

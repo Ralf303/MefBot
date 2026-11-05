@@ -36,7 +36,7 @@ export async function giveCase(sender, id, count, ctx, confirmed) {
     return { moved: transfers };
   });
 
-  if (result.error) return ctx.reply(result.error);
+  if (result.error) return confirmed ? confirmed.replyFailure(result.error) : ctx.reply(result.error);
   const { moved } = result;
   if (!moved.length) return ctx.reply("Недостаточно кейсов.");
   const description = moved.map(({ name, amount }) => `${name}: ${amount} шт.`).join("\n");

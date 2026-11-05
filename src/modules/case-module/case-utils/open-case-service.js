@@ -1,4 +1,5 @@
 import { withUserOperation } from "../../../services/transaction-service.js";
+import { canPostToGroup } from "../../../services/group-access.js";
 import cases from "../cases.js";
 import items from "../../items-module/items.js";
 import { resiveLog } from "../../logs-module/globalLogs.js";
@@ -16,7 +17,7 @@ dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.dev",
 });
 
-const openDonateCaseUnsafe = async (user, ctx) => {
+const openDonateCaseUnsafe = async (user, ctx, announcementChatId) => {
   try {
     await syncUserCaseToDb(user.id);
     const userCase = await getUserCase(user.id);
@@ -39,8 +40,8 @@ const openDonateCaseUnsafe = async (user, ctx) => {
     await resiveLog(user, `${item.itemName}`, `1`, "приз из кейса");
     await user.save();
     await item.save();
-    await ctx.telegram.sendMessage(
-      process.env.CHAT_ID,
+    if (announcementChatId) await ctx.telegram.sendMessage(
+      announcementChatId,
       `❗️<a href="tg://user?id=${user.chatId}">${user.firstname}</a> испытал удачу при открытии Донат кейса и выбил ${item.itemName}❗️`,
       {
         parse_mode: "HTML",
@@ -287,5 +288,9 @@ const buyCase = (user, id, count, ctx) => {
   if (!Number.isSafeInteger(Number(count)) || count <= 0) return ctx.reply("Укажи целое положительное количество");
   return withUserOperation(user, ctx, (locked, deferred) => buyCaseUnsafe(locked, id, Number(count), deferred));
 };
-const openDonateCase = (user, ctx) => withUserOperation(user, ctx, (locked, deferred) => openDonateCaseUnsafe(locked, deferred));
+const openDonateCase = async (user, ctx) => {
+  const chatId = process.env.CHAT_ID;
+  const allowed = await canPostToGroup(ctx, chatId);
+  return withUserOperation(user, ctx, (locked, deferred) => openDonateCaseUnsafe(locked, deferred, allowed ? chatId : null));
+};
 export { openCase, buyCase, openDonateCase };

@@ -26,7 +26,9 @@ export async function transferCurrency(ctx, currency, amountIndex = 2) {
   return completeCurrencyTransfer(ctx, sender, target, currency, amount);
 }
 
-export async function completeCurrencyTransfer(ctx, sender, { receiver, transferredViaUsername }, currency, amount, expectedAmount) {
+export async function completeCurrencyTransfer(ctx, sender, { receiver, transferredViaUsername }, currency, amount, {
+  expectedAmount, replyFailure = text => ctx.reply(text),
+} = {}) {
   const unit = units[currency];
   const minAmount = currency === "balance" ? 100 : 1;
   let result;
@@ -34,13 +36,13 @@ export async function completeCurrencyTransfer(ctx, sender, { receiver, transfer
     result = await economyService.transfer({ sender, receiver, currency, amount, minAmount, expectedAmount });
   } catch (error) {
     switch (error.code || error.message) {
-      case "TRANSFER_CHANGED": return ctx.reply(CHANGED_TRANSFER);
-      case "SELF_TRANSFER": return ctx.reply("Нельзя передавать самому себе.");
-      case "INSUFFICIENT_FUNDS": return ctx.reply(`Недостаточно ${unit} 🥲`);
-      case "MIN_AMOUNT": return ctx.reply(`Минимальная сумма передачи — ${minAmount} ${unit}.`);
+      case "TRANSFER_CHANGED": return replyFailure(CHANGED_TRANSFER);
+      case "SELF_TRANSFER": return replyFailure("Нельзя передавать самому себе.");
+      case "INSUFFICIENT_FUNDS": return replyFailure(`Недостаточно ${unit} 🥲`);
+      case "MIN_AMOUNT": return replyFailure(`Минимальная сумма передачи — ${minAmount} ${unit}.`);
       default:
         console.error("Ошибка передачи валюты:", currency, error);
-        return ctx.reply("Ошибка при выполнении операции.");
+        return replyFailure("Ошибка при выполнении операции.");
     }
   }
 

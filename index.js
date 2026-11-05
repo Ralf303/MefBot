@@ -39,6 +39,7 @@ import mineService from "./src/modules/mine-module/mine-cron.js";
 import { startAnimsCleanupCron } from "./src/modules/items-module/items-utils/blend-items-service.js";
 import { gameLogMiddleware, installGameLogHooks, noteLog } from "./src/services/game-log-service.js";
 import transferConfirmationRouter from "./src/modules/transfer-module/transfer-confirmation-router.js";
+import { requireGroupAdmin } from "./src/services/group-access.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -61,6 +62,7 @@ const start = async () => {
     await connectToDb();
     await redisService.connect();
     await migrateLegacyCaseCache();
+    bot.use(requireGroupAdmin);
     bot.use(session());
     bot.use(
       rateLimit({

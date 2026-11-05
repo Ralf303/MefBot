@@ -2,6 +2,7 @@ import { CronJob } from "cron";
 import { getVipChats } from "../../db/functions.js";
 import redisService from "../../services/redis-service.js";
 import { sleep, generateCapcha } from "../../utils/helpers.js";
+import { canPostToGroup } from "../../services/group-access.js";
 
 async function captureGenerator(bot) {
   new CronJob(
@@ -10,6 +11,7 @@ async function captureGenerator(bot) {
       const vipChats = await getVipChats();
       for (const chatId of vipChats) {
         try {
+          if (!await canPostToGroup(bot, chatId.chatId)) continue;
           const capture = generateCapcha();
           await redisService.set(capture, chatId.chatId);
           await sleep(200);

@@ -7,6 +7,7 @@ dotenv.config({
 import { getVipChats, updateChatTime } from "../../db/functions.js";
 import { Chat } from "../../db/models.js";
 import { sleep } from "../../utils/helpers.js";
+import { canPostToGroup } from "../../services/group-access.js";
 
 function vipCron(bot) {
   new CronJob(
@@ -18,6 +19,7 @@ function vipCron(bot) {
           if (chat.vipTime === 0) {
             chat.vip = false;
             await withLogContext({source:'system',type:'chat.settings',command:'Истечение VIP чата',chatId:String(chat.chatId)},()=>chat.save());
+            if (!await canPostToGroup(bot, chat.chatId)) continue;
             await bot.telegram.sendMessage(
               chat.chatId,
               "Беседа больше не является вип чатом, что купить введи «Купить випчат»"

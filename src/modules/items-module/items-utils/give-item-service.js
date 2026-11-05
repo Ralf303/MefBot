@@ -30,7 +30,7 @@ export async function giveItem(sender, id, ctx, confirmed) {
     return { items };
   });
 
-  if (result.error) return ctx.reply(result.error);
+  if (result.error) return confirmed ? confirmed.replyFailure(result.error) : ctx.reply(result.error);
   const [item] = result.items;
   const description = id === ALL ? `все вещи (${result.items.length} шт.)` : `${item.itemName}[${item.id}](+${item.lvl})`;
   if (id === ALL && !confirmed) return requestFullTransfer(ctx, sender, target, "items", { snapshot: result.snapshot }, description);
