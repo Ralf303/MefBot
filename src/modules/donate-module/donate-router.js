@@ -12,7 +12,7 @@ const donateRouter = new Composer();
 donateRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3, word4] = userMessage.split(" ");
+    const [word1, word2, word3, word4] = userMessage.trim().split(/\s+/);
 
     if (userMessage == "донат" || userMessage == "🤑 донат 🤑") {
       await shopGenerator("4", ctx);

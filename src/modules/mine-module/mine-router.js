@@ -1,9 +1,8 @@
+import { transferCurrency } from "../../services/currency-transfer-command.js";
 import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
 import { getMineInfo } from "./mine-service.js";
-import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
-import { getUser } from "../../db/functions.js";
-import economyService from "../../services/economy-service.js";
+import { separateNumber } from "../../utils/helpers.js";
 
 const mineRouter = new Composer();
 
@@ -22,7 +21,7 @@ mineRouter.hears(/^курс$/i, async (ctx) => {
       price
     )} Стар</b>\nБанк покупает по курсу: 1 ₿ = <b>${separateNumber(
       bankBuyPrice
-    )} Стар</b>\n\n📖Крипта купить [кол-во]\n📖Крипта продать [кол-во]\n📖Крипта передать [кол-во]`
+    )} Стар</b>\n\n📖Крипта купить [кол-во]\n📖Крипта продать [кол-во]\n📖Крипта передать [кол-во или всё]\n📖Передать крипта [кол-во или всё]`
   );
 });
 
@@ -105,73 +104,6 @@ mineRouter.hears(/^крипта продать.*$/i, async (ctx) => {
   );
 });
 
-mineRouter.hears(/^передать крипту.*$/i, async (ctx, next) => {
-  const chatId = ctx.from.id;
-  const textParts = ctx.message.text.split(" ");
-  const amount = parseInt(textParts[2]);
-
-  if (isNaN(amount) || amount <= 0) {
-    return;
-  }
-
-  let receiver;
-  let viaUsername = false;
-
-  try {
-    const resolved = await resolveReceiver(ctx);
-    receiver = resolved.receiver;
-    viaUsername = resolved.transferredViaUsername;
-  } catch (err) {
-    switch (err.message) {
-      case "BOT_REJECT":
-        return ctx.reply("Зачем боту BTC 🧐");
-      case "NO_TARGET":
-        return ctx.reply("Сделай реплай или укажи @username.");
-      case "NOT_FOUND":
-        return ctx.reply("Пользователь с таким username не найден.");
-      case "SELF_TRANSFER":
-        return ctx.reply("Иди нахуй, так нельзя🖕");
-      default:
-        console.error("resolveReceiver error:", err);
-        return ctx.reply("Не удалось определить получателя.");
-    }
-  }
-
-  try {
-    const sender = ctx.state.user || (await getUser(chatId));
-
-    if (sender.coin < amount) {
-      return ctx.reply("Недостаточно BTC 🥲");
-    }
-
-    await economyService.transfer({
-      sender,
-      receiver,
-      currency: "coin",
-      amount,
-    });
-
-    await ctx.reply(
-      `Ты успешно передал(а) ${separateNumber(amount)} ₿ ` +
-        `${receiver.firstname}`
-    );
-
-    if (viaUsername) {
-      try {
-        await ctx.telegram.sendMessage(
-          receiver.chatId,
-          `Тебе передали ${separateNumber(amount)} ₿ от ${ctx.from.first_name}`
-        );
-      } catch (e) {
-        console.log("Не удалось отправить личное сообщение:", e.message);
-      }
-    }
-
-    return next();
-  } catch (error) {
-    console.error("Ошибка передачи ₿:", error);
-    return ctx.reply("Ошибка при выполнении операции.");
-  }
-});
+mineRouter.hears(/^(?:передать\s+крипт[ау]|крипта\s+передать)(?:\s|$)/i, (ctx) => transferCurrency(ctx, "coin"));
 
 export default mineRouter;

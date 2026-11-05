@@ -10,14 +10,15 @@ import {
   openDonateCase,
 } from "./case-utils/open-case-service.js";
 import ru_text from "../../../ru_text.js";
-import { giveCase, giveDonateCase } from "./case-utils/give-case-service.js";
+import { giveCase } from "./case-utils/give-case-service.js";
+import { ALL, parseTransferAmount } from "../../utils/transfer-amount.js";
 
 const caseRouter = new Composer();
 
 caseRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3, word4] = userMessage.split(" ");
+    const [word1, word2, word3, word4] = userMessage.trim().split(/\s+/);
     if (!["мои старкейсы", "старкейсы"].includes(userMessage) &&
         !["передать", "купить", "инфо", "инфа", "открыть"].includes(word1)) return next();
     let chat;
@@ -43,22 +44,18 @@ caseRouter.on(message("text"), async (ctx, next) => {
         result +
           "\n💰Донат кейс - " +
           userCase.donate +
-          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать старкейс id [кол-во]\n📖Передать старкейс донат [кол-во]"
+          "шт💰\n\n📖Открыть id\n📖Открыть донат\n📖Передать старкейс [ID или донат] [кол-во или всё]\n📖Передать старкейсы всё"
       );
     }
 
-    if (word1 == "передать") {
-      const id = Number(word3);
-      const count =
-        isNaN(Number(word4)) || Number(word4) < 1 ? 1 : Number(word4);
-
-      if (word2 == "старкейс" && !isNaN(id)) {
-        await giveCase(ctx.state.user, id, count, ctx);
-      }
-
-      if (word2 == "старкейс" && word3 === "донат") {
-        await giveDonateCase(ctx.state.user, word3, count, ctx);
-      }
+    if (word1 === "передать" && ["старкейс", "старкейсы"].includes(word2)) {
+      const id = word3 === "донат" ? "donate" : parseTransferAmount(word3);
+      if (id === null) return ctx.reply("Укажи ID кейса, «донат» или «всё».");
+      const omittedCount = !word4 || word4.startsWith("@");
+      if (id === ALL && !omittedCount) return ctx.reply("Для всех кейсов количество не нужно.");
+      const count = id === ALL ? ALL : omittedCount ? 1 : parseTransferAmount(word4);
+      if (count === null) return ctx.reply("Укажи целое положительное количество или «всё».");
+      return await giveCase(ctx.state.user, id, count, ctx);
     }
 
     if (userMessage == "инфа старкейс донат") {

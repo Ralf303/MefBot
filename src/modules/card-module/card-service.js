@@ -1,9 +1,11 @@
+import { ALL } from "../../utils/transfer-amount.js";
+import { getTransferRecipient } from "../../utils/transfer-recipient.js";
 import {noteLog,currentLogContext} from '../../services/game-log-service.js';
 import jwtService from "../../services/jwt-service.js";
 import { withUserTransaction, withUsersTransaction } from "../../services/transaction-service.js";
 import { Key, Keyboard } from "telegram-keyboard";
 import { getUser } from "../../db/functions.js";
-import { Card, User, CardStand } from "../../db/models.js";
+import { Card, CardStand } from "../../db/models.js";
 import { getRandomInt, separateNumber } from "../../utils/helpers.js";
 import { getMineInfo } from "../mine-module/mine-service.js";
 
@@ -17,7 +19,7 @@ const getInventory = async (user, ctx) => {
     .map((card) => `• Видеокарта[<code>${card.id}</code>](+${card.lvl})`)
     .join("\n");
 
-  return ctx.replyWithHTML(`Твой инвентарь:\n\n${message}`);
+  return ctx.replyWithHTML(`Твой инвентарь:\n\n${message}\n\n📖Передать видеокарту [ID или всё]`);
 };
 
 const deleteCardUnsafe = async (user, cardId) => {
@@ -32,43 +34,22 @@ const deleteCardUnsafe = async (user, cardId) => {
 };
 
 const giveCard = async (sender, cardId, ctx) => {
-  try {
-    const message = ctx.message.reply_to_message;
+  const target = await getTransferRecipient(ctx);
+  if (!target) return;
+  const { receiver } = target;
+  const cards = await withUsersTransaction([sender, receiver], async ([from, to], transaction) => {
+    const where = { userId: from.id, ...(cardId === ALL ? {} : { id: cardId }) };
+    const assets = await Card.findAll({ where, transaction, lock: transaction.LOCK.UPDATE });
+    if (!assets.length) return assets;
 
-    if (!message) return;
+    await CardStand.update({ cardId: null }, { where: { cardId: assets.map(({ id }) => id) }, transaction });
+    await Card.update({ userId: to.id }, { where, transaction });
+    return assets;
+  });
 
-    const receiverChatId = message.from.id;
-
-    if (message.from.is_bot) {
-      await ctx.reply("Зачем боту видеокарты?🧐");
-      return;
-    }
-
-    const receiver = await getUser(receiverChatId);
-
-    if (!receiver) {
-      await ctx.reply("Пользователь не зарегистрирован");
-      return;
-    }
-
-    if (Number(sender.id) === Number(receiver.id)) return ctx.reply("Нельзя передавать самому себе");
-    const card = await withUsersTransaction([sender, receiver], async ([lockedSender, lockedReceiver], transaction) => {
-      const asset = await Card.findOne({ where: { id: cardId, userId: lockedSender.id }, transaction, lock: transaction.LOCK.UPDATE });
-      if (!asset) throw new Error("CARD_NOT_FOUND");
-      await CardStand.update({ cardId: null }, { where: { cardId: asset.id }, transaction });
-      asset.userId = lockedReceiver.id;
-      await asset.save({ transaction });
-      return asset;
-    });
-
-    await ctx.reply(
-      `Ты передал(а) Видеокарта[${card.id}](${card.lvl}) <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
-      { parse_mode: "HTML" }
-    );
-  } catch (error) {
-    console.log("Ошибка при передаче карты:", error);
-    await ctx.reply("❌ Ошибка при передаче карты");
-  }
+  if (!cards.length) return ctx.reply(cardId === ALL ? "У тебя нет видеокарт." : "У тебя нет такой видеокарты.");
+  const description = cardId === ALL ? `все видеокарты (${cards.length} шт.)` : `видеокарту [${cards[0].id}](+${cards[0].lvl})`;
+  return ctx.reply(`Ты передал(а) ${description} → ${receiver.firstname}`);
 };
 
 const buyCardUnsafe = async (user, transaction) => {

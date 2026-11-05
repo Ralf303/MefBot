@@ -110,7 +110,7 @@ itemsActions.action("next", async (ctx) => {
         reply_markup: buttons.reply_markup,
       });
     } else {
-      const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
+      const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь [ID или всё]\n📖Узнать айди id`;
       await ctx.telegram.sendMessage(user.chatId, message, {
         parse_mode: "HTML",
         reply_markup: buttons.reply_markup,

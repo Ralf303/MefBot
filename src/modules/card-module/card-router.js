@@ -1,5 +1,6 @@
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
+import { parseTransferAmount } from "../../utils/transfer-amount.js";
 import {
   buyCard,
   deleteCard,
@@ -14,7 +15,7 @@ const cardRouter = new Composer();
 cardRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3, word4] = userMessage.split(" ");
+    const [word1, word2, word3, word4] = userMessage.trim().split(/\s+/);
     const replyToMessage = ctx.message?.reply_to_message?.from;
 
     if (userMessage == "карты" || userMessage == "видеокарты") {
@@ -29,12 +30,10 @@ cardRouter.on(message("text"), async (ctx, next) => {
       }
     }
 
-    if (word1 == "передать") {
-      const id = Number(word3);
-
-      if ((word2 == "карту" || word2 == "видеокарту") && !isNaN(id)) {
-        await giveCard(ctx.state.user, id, ctx);
-      }
+    if (word1 === "передать" && ["карту", "видеокарту", "карты", "видеокарты"].includes(word2)) {
+      const id = parseTransferAmount(word3);
+      if (id === null) return ctx.reply("Укажи ID видеокарты или «всё».");
+      return await giveCard(ctx.state.user, id, ctx);
     }
 
     if (word1 == "купить" && (word2 == "карту" || word2 == "видеокарту")) {

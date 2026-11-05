@@ -204,7 +204,7 @@ const getInventory = async (user, ctx) => {
       .filter((section) => section)
       .join("\n\n");
 
-    const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь id\n📖Узнать айди id`;
+    const message = `Твой инвентарь:\n\n${inventoryMessage}\n\n📖Надеть id\n📖Удалить вещь id\n📖Передать вещь [ID или всё]\n📖Узнать айди id`;
 
     if (message.length > 4000) {
       const firstPage = inventoryMessage.slice(0, 150);

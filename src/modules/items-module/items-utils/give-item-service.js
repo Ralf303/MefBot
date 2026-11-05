@@ -1,67 +1,33 @@
 import { withUsersTransaction } from "../../../services/transaction-service.js";
-import { User, Item } from "../../../db/models.js";
+import { Item } from "../../../db/models.js";
+import { ALL } from "../../../utils/transfer-amount.js";
+import { getTransferRecipient } from "../../../utils/transfer-recipient.js";
 
-const giveItem = async (sender, id, ctx) => {
-  try {
-    const message = ctx.message.reply_to_message;
+export async function giveItem(sender, id, ctx) {
+  const target = await getTransferRecipient(ctx, { registeredOnly: true });
+  if (!target) return;
+  const { receiver } = target;
+  const result = await withUsersTransaction([sender, receiver], async ([from, to], transaction) => {
+    const where = { userId: from.id, ...(id === ALL ? {} : { id }) };
+    const items = await Item.findAll({ where, transaction, lock: transaction.LOCK.UPDATE });
+    if (!items.length) return { error: id === ALL ? "У тебя нет вещей." : "У тебя нет такой вещи." };
 
-    if (!message) {
-      return;
+    const occupied = await Item.count({ where: { userId: to.id }, transaction });
+    const free = Math.max(0, to.slots - occupied);
+    if (items.length > free) {
+      return { error: `У получателя мало места: нужно ${items.length} слотов, свободно ${free}. Ничего не передано.` };
     }
 
-    const receiverChatId = message.from.id;
+    await Item.update({ userId: to.id, isWorn: false }, { where, transaction });
+    from.fullSlots = id === ALL ? 0 : await Item.count({ where: { userId: from.id }, transaction });
+    to.fullSlots = occupied + items.length;
+    await from.save({ transaction });
+    await to.save({ transaction });
+    return { items };
+  });
 
-    if (message.from.is_bot) {
-      return ctx.reply("Зачем боту вещи🧐");
-    }
-
-    const receiver = await User.findOne({
-      where: { chatId: receiverChatId },
-    });
-
-    if (!receiver) return ctx.reply("Пользователь не зарегистрирован");
-    const result = await withUsersTransaction([sender, receiver], async ([sender, receiver], transaction) => {
-      const item = await Item.findOne({
-      transaction, lock: transaction.LOCK.UPDATE,
-      where: {
-        id: id,
-        userId: sender.id,
-      },
-    });
-
-    if (!item) {
-      return { error: `У тебя нет такой вещи 😥` };
-    }
-
-    if (receiver.slots <= receiver.fullSlots) {
-      return { error: `У ${receiver.firstname} нет места 😥` };
-    }
-
-    if (item.isWorn) {
-      item.isWorn = false;
-    }
-
-    if (sender.id === receiver.id) {
-      return { error: `Иди нахуй, так нельзя🖕` };
-    }
-    sender.fullSlots--;
-    receiver.fullSlots++;
-    item.userId = receiver.id;
-
-    await sender.save();
-    await receiver.save();
-    await item.save();
-    return { item };
-    });
-    if (result.error) return ctx.reply(result.error);
-    const { item } = result;
-    await ctx.reply(
-      `Ты успешно передал(а) ${item.itemName}[${item.id}](+${item.lvl}) <a href="tg://user?id=${receiver.chatId}">${receiver.firstname}</a>`,
-      { parse_mode: "HTML" }
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export { giveItem };
+  if (result.error) return ctx.reply(result.error);
+  const [item] = result.items;
+  const description = id === ALL ? `все вещи (${result.items.length} шт.)` : `${item.itemName} [${item.id}](+${item.lvl})`;
+  return ctx.reply(`Ты передал(а) ${description} → ${receiver.firstname}`);
+}

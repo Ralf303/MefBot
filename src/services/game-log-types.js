@@ -1,6 +1,6 @@
 export const logTypes={
   'user.register':'Регистрация','currency.transfer':'Перевод ресурсов','currency.exchange':'Обмен ресурсов',
-  'item.transfer':'Передача вещи','case.transfer':'Передача кейсов','shop.buy':'Покупка','shop.sell':'Продажа',
+  'item.transfer':'Передача вещи','case.transfer':'Передача кейсов','card.transfer':'Передача видеокарт','shop.buy':'Покупка','shop.sell':'Продажа',
   'case.open':'Открытие кейса','craft':'Крафт','item.equip':'Одежда: надеть / снять','item.upgrade':'Улучшение вещи',
   'item.change':'Изменение вещи','inventory.slots':'Расширение инвентаря','farm.harvest':'Сбор фермы','farm.upgrade':'Улучшение фермы',
   'game.play':'Игра / ставка','payment':'Оплата доната','reward':'Награда / бонус','captcha':'Капча','giveaway':'Раздача',
@@ -16,7 +16,7 @@ export function classifyLog(command,changes=[],notes=[]){
   if(notes.find(n=>n.type))return notes.find(n=>n.type).type;
   if(has('payment'))return 'payment';
   if(/^(выдать|админка|основатель|-ферма|дом задать)/.test(c)||has('roles'))return 'admin.change';
-  if(/^(передать|дать)/.test(c)){if(has('item'))return 'item.transfer';if(has('case'))return 'case.transfer';return 'currency.transfer';}
+  if(/^(передать|дать)/.test(c)){if(has('item'))return 'item.transfer';if(has('case'))return 'case.transfer';if(has('card'))return 'card.transfer';return 'currency.transfer';}
   if(changes.some(x=>x.model==='user'&&x.operation==='create'))return 'user.register';
   if(/^(капча|\d{6}$)/.test(c)||changes.some(x=>x.model==='user'&&Object.hasOwn(x.after||{},'captureCounter')))return 'captcha';
   if(/^актив/.test(c))return 'reward';

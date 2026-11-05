@@ -3,7 +3,7 @@ import { User } from "../db/models.js";
 import { getFamilyByUserId } from "../modules/fam-module/fam-service.js";
 import items from "../modules/items-module/items.js";
 import redisService from "../services/redis-service.js";
-import { checkUserByUsername, getUser } from "../db/functions.js";
+import { checkUserById, checkUserByUsername, getUser } from "../db/functions.js";
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -276,27 +276,24 @@ function daysRemaining(days) {
   }
 }
 
-async function resolveReceiver(ctx) {
+async function resolveReceiver(ctx, { registeredOnly = false } = {}) {
   const chatId = ctx.from.id;
   const reply = ctx.message.reply_to_message;
   if (reply) {
-    if (reply.from.is_bot) {
+    if (!reply.from || reply.sender_chat || reply.from.is_bot) {
       throw new Error("BOT_REJECT");
     }
-    const user = await getUser(reply.from.id);
+    if (String(reply.from.id) === String(chatId)) throw new Error("SELF_TRANSFER");
+    const user = await (registeredOnly ? checkUserById : getUser)(reply.from.id);
 
     if (!user) {
       throw new Error("NOT_FOUND");
     }
 
-    if (user.chatId == chatId) {
-      throw new Error("SELF_TRANSFER");
-    }
-
     return { receiver: user, transferredViaUsername: false };
   }
 
-  const parts = ctx.message.text.split(" ");
+  const parts = ctx.message.text.trim().split(/\s+/);
   const usernamePart = parts.find((p) => p.startsWith("@"));
   if (!usernamePart) {
     throw new Error("NO_TARGET");

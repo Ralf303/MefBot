@@ -1,3 +1,4 @@
+import { transferCurrency } from "../../services/currency-transfer-command.js";
 import { withUserTransaction } from "../../services/transaction-service.js";
 import {noteLog} from '../../services/game-log-service.js';
 import { Composer } from "telegraf";
@@ -22,8 +23,7 @@ import {
   getUser,
 } from "../../db/functions.js";
 import redisService from "../../services/redis-service.js";
-import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
-import economyService from "../../services/economy-service.js";
+import { separateNumber } from "../../utils/helpers.js";
 
 const famModule = new Composer();
 
@@ -813,75 +813,6 @@ famModule.hears(/^семья купить слот/i, async (ctx, next) => {
   }
 });
 
-famModule.hears(/^передать монеты.*$/i, async (ctx, next) => {
-  const chatId = ctx.from.id;
-  const textParts = ctx.message.text.split(" ");
-  const amount = parseInt(textParts[2]);
-
-  if (isNaN(amount) || amount <= 0) {
-    return;
-  }
-
-  let receiver;
-  let viaUsername = false;
-
-  try {
-    const resolved = await resolveReceiver(ctx);
-    receiver = resolved.receiver;
-    viaUsername = resolved.transferredViaUsername;
-  } catch (err) {
-    switch (err.message) {
-      case "BOT_REJECT":
-        return ctx.reply("Зачем боту семейные монеты 🧐");
-      case "NO_TARGET":
-        return ctx.reply("Сделай реплай или укажи @username.");
-      case "NOT_FOUND":
-        return ctx.reply("Пользователь с таким username не найден.");
-      case "SELF_TRANSFER":
-        return ctx.reply("Иди нахуй, так нельзя🖕");
-      default:
-        console.error("resolveReceiver error:", err);
-        return ctx.reply("Не удалось определить получателя.");
-    }
-  }
-
-  try {
-    const sender = ctx.state.user || (await getUser(chatId));
-
-    if (sender.famMoney < amount) {
-      return ctx.reply("Недостаточно семейных монет 🥲");
-    }
-
-    await economyService.transfer({
-      sender,
-      receiver,
-      currency: "famMoney",
-      amount,
-    });
-
-    await ctx.reply(
-      `Ты успешно передал(а) ${separateNumber(amount)} семейных монет ` +
-        `${receiver.firstname}`
-    );
-
-    if (viaUsername) {
-      try {
-        await ctx.telegram.sendMessage(
-          receiver.chatId,
-          `Тебе передали ${separateNumber(amount)} семейных монет от ${
-            ctx.from.first_name
-          }`
-        );
-      } catch (e) {
-        console.log("Не удалось отправить личное сообщение:", e.message);
-      }
-    }
-
-    return next();
-  } catch (error) {
-    console.error("Ошибка передачи семейных монет:", error);
-    return ctx.reply("Ошибка при выполнении операции.");
-  }
-});
+famModule.hears(/^передать\s+монеты(?:\s|$)/i, (ctx) => transferCurrency(ctx, "famMoney"));
 
 export default famModule;

@@ -2,7 +2,7 @@ import test, { beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { Context } from "telegraf";
 import sequelize, { currentTransaction } from "../src/db/config.js";
-import { User, Case, Item, Payment, CaseCacheMigration, Family, FamMember, Logs, Giveaway } from "../src/db/models.js";
+import { User, Case, Item, Card, CardStand, Payment, CaseCacheMigration, Family, FamMember, Logs, Giveaway } from "../src/db/models.js";
 import economy from "../src/services/economy-service.js";
 import paymentService from "../src/services/payment-service.js";
 import { withUserOperation } from "../src/services/transaction-service.js";
@@ -17,6 +17,11 @@ import bonusService from "../src/services/bonus-service.js";
 import { dice_bandit } from "../src/modules/game-module/games/dice-bandit.js";
 import commandRouter from "../src/modules/commands-module/commands-router.js";
 import vipRouter from "../src/modules/vipChat-module/vipChat-router.js";
+import mineRouter from "../src/modules/mine-module/mine-router.js";
+import itemsRouter from "../src/modules/items-module/items-router.js";
+import caseRouter from "../src/modules/case-module/case-router.js";
+import cardRouter from "../src/modules/card-module/card-router.js";
+import { ALL } from "../src/utils/transfer-amount.js";
 import redis from "../src/services/redis-service.js";
 import { createLimiter, withKeyLock } from "../src/utils/concurrency.js";
 
@@ -24,9 +29,12 @@ process.env.JWT_SECRET = "mefbot-test-only-signing-secret";
 
 // Transactional in-memory adapter: no database connections or Telegram traffic.
 let database, cache, failSave, committed;
-const tables = new Map([[User, "users"], [Case, "cases"], [Item, "items"], [Payment, "payments"], [CaseCacheMigration, "migrations"], [Family, "families"], [FamMember, "members"], [Logs, "logs"], [Giveaway, "giveaways"]]);
+const tables = new Map([[User, "users"], [Case, "cases"], [Item, "items"], [Card, "cards"], [CardStand, "stands"], [Payment, "payments"], [CaseCacheMigration, "migrations"], [Family, "families"], [FamMember, "members"], [Logs, "logs"], [Giveaway, "giveaways"]]);
 function rows(model) { return (currentTransaction()?.data || database)[tables.get(model)]; }
-function matches(row, where = {}) { return Object.entries(where).every(([key, value]) => String(row[key]) === String(value)); }
+function matches(row, where = {}) {
+  return Object.entries(where).every(([key, value]) =>
+    Array.isArray(value) ? value.includes(row[key]) : String(row[key]) === String(value));
+}
 function instance(model, values) {
   const object = model.build(values, { isNewRecord: false, raw: true });
   object.save = async (options = {}) => {
@@ -77,9 +85,79 @@ beforeEach(() => {
     model.findByPk=async(id,options={})=>{const primary=model===CaseCacheMigration?"userId":model===Giveaway?"kind":"id";const row=rows(model).find(row=>String(row[primary])===String(id));return row?instance(model,row):null;};
     model.findOne=async(options={})=>{const row=rows(model).find(row=>matches(row,options.where));return row?instance(model,row):null;};
     model.findAll=async(options={})=>rows(model).filter(row=>matches(row,options.where)).map(row=>instance(model,row));
+    model.count=async(options={})=>rows(model).filter(row=>matches(row,options.where)).length;
+    model.update=async(values, options={})=>{
+      const found=await model.findAll(options);
+      for(const row of found) await row.update(values);
+      return [found.length];
+    };
     model.create=async values=>{const row=model.build(values).get({plain:true});if(!row.id && model!==CaseCacheMigration)row.id=Math.max(0,...rows(model).map(row=>row.id||0))+1;rows(model).push(row);return instance(model,row);};
     model.findOrCreate=async(options)=>{const existing=await model.findOne(options);return existing?[existing,false]:[await model.create({...options.defaults,...options.where}),true];};
   }
+});
+
+test("both BTC command orders transfer the actual amount; invalid amounts change nothing", async () => {
+  database.users[0].coin=12;
+  database.users[1].username="recipient";
+  const next=async()=>{};
+  await mineRouter.middleware()(context("передать крипта 2.5 @recipient"),next);
+  assert.deepEqual(database.users.map(user=>user.coin),[12,0]);
+  await mineRouter.middleware()(context("передать крипта 2 @recipient"),next);
+  assert.deepEqual(database.users.map(user=>user.coin),[10,2]);
+  const all=context("Крипта передать ВСЁ @recipient");
+  await mineRouter.middleware()(all,next);
+  assert.deepEqual(database.users.map(user=>user.coin),[0,12]);
+  assert.match(all.notifications[0][0],/10 BTC/);
+  assert.match(all.notifications[1][1],/10 BTC/);
+});
+
+test("concurrent full balance transfers use locked balances and preserve the minimum", async () => {
+  const first=snapshot(), second=snapshot();
+  database.users[0].balance=600;
+  const transfer=sender=>economy.transfer({sender,receiver:snapshot(2),currency:"balance",amount:ALL,minAmount:100});
+  const results=await Promise.allSettled([transfer(first),transfer(second)]);
+  assert.equal(results.filter(result=>result.status==="fulfilled").length,1);
+  assert.equal(results.find(result=>result.status==="fulfilled").value.amount,600);
+  assert.deepEqual(database.users.map(user=>user.balance),[0,600]);
+  database.users[0].balance=99;
+  await assert.rejects(transfer(first),{code:"MIN_AMOUNT"});
+  assert.deepEqual(database.users.map(user=>user.balance),[99,600]);
+});
+
+test("giving all items checks capacity, unequips items and updates both inventories", async () => {
+  database.users[1].username="recipient";
+  database.users[1].slots=2;
+  database.items=[{id:1,userId:1,isWorn:true},{id:2,userId:1,isWorn:false},{id:3,userId:2,isWorn:true}];
+  const next=async()=>{};
+  const rejected=context("передать вещи все @recipient");
+  await itemsRouter.middleware()(rejected,next);
+  assert.match(rejected.notifications[0][0],/Ничего не передано/);
+  assert.deepEqual(database.items.map(item=>item.userId),[1,1,2]);
+  database.users[1].slots=3;
+  await itemsRouter.middleware()(context("передать вещь всё @recipient"),next);
+  assert.deepEqual(database.items.map(item=>[item.userId,item.isWorn]),[[2,false],[2,false],[2,true]]);
+  assert.deepEqual(database.users.map(user=>user.fullSlots),[0,3]);
+});
+
+test("case transfers support all of one type and all types including donate cases", async () => {
+  database.users[1].username="recipient";
+  database.cases[0].minecraft=4;
+  database.cases[0].donate=3;
+  await Case.create({id:2,userId:2,minecraft:1,donate:2});
+  const next=async()=>{};
+  await caseRouter.middleware()(context("передать старкейс 1 все @recipient"),next);
+  assert.deepEqual(database.cases.map(({minecraft,donate})=>[minecraft,donate]),[[0,3],[5,2]]);
+  await caseRouter.middleware()(context("передать старкейсы всё @recipient"),next);
+  assert.deepEqual(database.cases.map(({minecraft,donate})=>[minecraft,donate]),[[0,0],[5,5]]);
+});
+
+test("giving all cards unmounts only the cards transferred, retaining card balances", async () => {
+  database.users[1].username="recipient";
+  database.cards=[{id:1,userId:1,balance:2.5},{id:2,userId:1,balance:0},{id:3,userId:2,balance:5}];
+  database.stands=[{id:1,userId:1,cardId:1},{id:2,userId:2,cardId:3}];
+  await cardRouter.middleware()(context("передать видеокарты всё @recipient"),async()=>{});
+  assert.deepEqual(database.cards.map(card=>[card.userId,card.balance]),[[2,2.5],[2,0],[2,5]]);
+  assert.deepEqual(database.stands.map(stand=>stand.cardId),[null,3]);
 });
 
 test("payment failure rolls back its receipt and a retry credits exactly once", async()=>{

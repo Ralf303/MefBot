@@ -1,7 +1,8 @@
 import { withUserTransaction, withUsersTransaction } from "./transaction-service.js";
 import {noteLog,currentLogContext} from './game-log-service.js';
+import { ALL } from "../utils/transfer-amount.js";
 
-const CURRENCIES = new Set(["balance", "gems", "donate", "stones", "freeze", "oil", "chests", "coin", "famMoney"]);
+const CURRENCIES = new Set(["balance", "gems", "donate", "stones", "freeze", "oil", "chests", "coin", "famMoney", "snows"]);
 class EconomyError extends Error {
   constructor(code, message = code) { super(message); this.code = code; }
 }
@@ -31,17 +32,18 @@ class EconomyService {
 
   async transfer({ sender, receiver, currency, amount, minAmount = 1 }) {
     assertCurrency(currency);
-    const value = normalizeAmount(amount);
-    if (value < minAmount) throw new EconomyError("MIN_AMOUNT");
+    const requested = amount === ALL ? ALL : normalizeAmount(amount);
     if (!sender || !receiver || Number(sender.id) === Number(receiver.id)) throw new EconomyError("SELF_TRANSFER");
     return withUsersTransaction([sender, receiver], async ([lockedSender, lockedReceiver], transaction) => {
-      if (lockedSender[currency] < value) throw new EconomyError("INSUFFICIENT_FUNDS");
+      const value = requested === ALL ? lockedSender[currency] : requested;
+      if (value <= 0 || lockedSender[currency] < value) throw new EconomyError("INSUFFICIENT_FUNDS");
+      if (value < minAmount) throw new EconomyError("MIN_AMOUNT");
       setBalance(lockedSender, currency, lockedSender[currency] - value);
       setBalance(lockedReceiver, currency, lockedReceiver[currency] + value);
       await lockedSender.save({ transaction });
       await lockedReceiver.save({ transaction });
       if(currentLogContext())await noteLog('currency.transfer',{currency,amount:value},[sender,receiver]);
-      return { sender: lockedSender, receiver: lockedReceiver };
+      return { sender: lockedSender, receiver: lockedReceiver, amount: value };
     });
   }
 

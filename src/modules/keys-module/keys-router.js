@@ -1,6 +1,5 @@
 import { Composer } from "telegraf";
 import { message } from "telegraf/filters";
-import { getUser } from "../../db/functions.js";
 import keysService from "./keys-service.js";
 
 const keysRouter = new Composer();
@@ -8,12 +7,10 @@ const keysRouter = new Composer();
 keysRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3] = userMessage.split(" ");
+    const [word1, word2] = userMessage.trim().split(/\s+/);
 
     if (word1 == "передать") {
-      const id = Number(word3);
-
-      if (word2 == "ключи" && !isNaN(id)) {
+      if (word2 == "ключи") {
         await keysService.giveKeys(ctx);
       }
     }

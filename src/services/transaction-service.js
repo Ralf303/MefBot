@@ -24,7 +24,7 @@ export async function withUsersTransaction(users, operation) {
       const user = await User.findByPk(id, { transaction, lock: transaction.LOCK.UPDATE });
       if (!user) throw new Error("USER_NOT_FOUND");
       // mysql BIGINT may be returned as a string; arithmetic must never concatenate it.
-      for (const field of ["balance", "gems", "donate", "stones", "freeze", "oil", "chests", "coin", "famMoney"]) {
+      for (const field of ["balance", "gems", "donate", "stones", "freeze", "oil", "chests", "coin", "famMoney", "snows"]) {
         const value = Number(user[field]);
         if (user[field] !== undefined && !Number.isSafeInteger(value)) throw new Error("INVALID_STORED_BALANCE");
         if (user.setDataValue) user.setDataValue(field, value);

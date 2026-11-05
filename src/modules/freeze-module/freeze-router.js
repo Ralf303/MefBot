@@ -1,83 +1,11 @@
+import { transferCurrency } from "../../services/currency-transfer-command.js";
 import { withUserTransaction } from "../../services/transaction-service.js";
 import { Composer } from "telegraf";
-import { resolveReceiver, separateNumber } from "../../utils/helpers.js";
-import { getUser } from "../../db/functions.js";
 import { getMineInfo } from "../mine-module/mine-service.js";
-import economyService from "../../services/economy-service.js";
 
 const freezeRouter = new Composer();
 
-freezeRouter.hears(/^передать жидкости.*$/i, async (ctx, next) => {
-  const chatId = ctx.from.id;
-  const textParts = ctx.message.text.split(" ");
-  const amount = parseInt(textParts[2]);
-
-  if (isNaN(amount) || amount <= 0) {
-    return;
-  }
-
-  let receiver,
-    viaUsername = false;
-
-  try {
-    const resolved = await resolveReceiver(ctx);
-    receiver = resolved.receiver;
-    viaUsername = resolved.transferredViaUsername;
-  } catch (err) {
-    switch (err.message) {
-      case "BOT_REJECT":
-        return ctx.reply("Зачем боту охлаждаюющие жидкости🧐");
-      case "NO_TARGET":
-        return ctx.reply("Сделай реплай или укажи @username.");
-      case "NOT_FOUND":
-        return ctx.reply("Пользователь с таким username не найден.");
-      case "SELF_TRANSFER":
-        return ctx.reply("Иди нахуй, так нельзя🖕");
-      default:
-        console.error("resolveReceiver error:", err);
-        return ctx.reply("Не удалось определить получателя.");
-    }
-  }
-
-  try {
-    const sender = ctx.state.user || (await getUser(chatId));
-
-    if (sender.freeze < amount) {
-      return ctx.reply("Недостаточно охлаждающих жидкостей🥲");
-    }
-
-    await economyService.transfer({
-      sender,
-      receiver,
-      currency: "freeze",
-      amount,
-    });
-
-    await ctx.reply(
-      `Ты успешно передал(а) ${separateNumber(amount)} охлаждающих жидкостей ${
-        receiver.firstname
-      }`
-    );
-
-    if (viaUsername) {
-      try {
-        await ctx.telegram.sendMessage(
-          receiver.chatId,
-          `Тебе передали ${separateNumber(amount)} смазок для видеокарт от ${
-            ctx.from.first_name
-          }`
-        );
-      } catch (e) {
-        console.log("Не удалось отправить личное сообщение:", e.message);
-      }
-    }
-
-    return next();
-  } catch (error) {
-    console.error("Ошибка передачи камней:", error);
-    return ctx.reply("Ошибка при выполнении операции.");
-  }
-});
+freezeRouter.hears(/^передать\s+жидкости(?:\s|$)/i, (ctx) => transferCurrency(ctx, "freeze"));
 
 freezeRouter.hears(/^купить жидкости.*$/i, async (ctx, next) => {
   try {

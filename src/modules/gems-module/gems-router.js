@@ -7,12 +7,10 @@ const gemsRouter = new Composer();
 gemsRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3] = userMessage.split(" ");
+    const [word1, word2] = userMessage.trim().split(/\s+/);
 
     if (word1 == "передать") {
-      const id = Number(word3);
-
-      if (word2 == "гемы" && !isNaN(id)) {
+      if (word2 == "гемы") {
         await gemsService.giveGems(ctx);
       }
     }

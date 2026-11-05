@@ -13,6 +13,7 @@ import { wearItem } from "./items-utils/wear-item-service.js";
 import { tryItem, getWornItems } from "./items-utils/blend-items-service.js";
 import { getItemInfo, checkId } from "./items-utils/item-tool-service.js";
 import { giveItem } from "./items-utils/give-item-service.js";
+import { parseTransferAmount } from "../../utils/transfer-amount.js";
 import { home } from "../home-module/home.js";
 import { getHomeByUserId } from "../home-module/home-service.js";
 
@@ -21,7 +22,7 @@ const itemsRouter = new Composer();
 itemsRouter.on(message("text"), async (ctx, next) => {
   try {
     const userMessage = ctx.message.text.toLowerCase();
-    const [word1, word2, word3, word4] = userMessage.split(" ");
+    const [word1, word2, word3, word4] = userMessage.trim().split(/\s+/);
     const isPrivate = ctx.chat.type === "private";
     const replyToMessage = ctx.message?.reply_to_message?.from;
 
@@ -87,12 +88,10 @@ itemsRouter.on(message("text"), async (ctx, next) => {
       }
     }
 
-    if (word1 == "передать") {
-      const id = Number(word3);
-
-      if (word2 == "вещь" && !isNaN(id)) {
-        await giveItem(ctx.state.user, id, ctx);
-      }
+    if (word1 === "передать" && ["вещь", "вещи"].includes(word2)) {
+      const id = parseTransferAmount(word3);
+      if (id === null) return ctx.reply("Укажи ID вещи или «всё».");
+      return await giveItem(ctx.state.user, id, ctx);
     }
 
     if (word1 == "надеть") {
