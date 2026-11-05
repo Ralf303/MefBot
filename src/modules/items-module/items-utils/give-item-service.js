@@ -1,7 +1,7 @@
 import { withUsersTransaction } from "../../../services/transaction-service.js";
 import { Item } from "../../../db/models.js";
 import { ALL } from "../../../utils/transfer-amount.js";
-import { getTransferRecipient } from "../../../utils/transfer-recipient.js";
+import { escapeTransferText, getTransferRecipient, transferRecipientLink } from "../../../utils/transfer-recipient.js";
 import { assetSnapshot, CHANGED_TRANSFER, requestFullTransfer } from "../../../services/transfer-confirmation.js";
 
 export async function giveItem(sender, id, ctx, confirmed) {
@@ -32,7 +32,7 @@ export async function giveItem(sender, id, ctx, confirmed) {
 
   if (result.error) return ctx.reply(result.error);
   const [item] = result.items;
-  const description = id === ALL ? `все вещи (${result.items.length} шт.)` : `${item.itemName} [${item.id}](+${item.lvl})`;
+  const description = id === ALL ? `все вещи (${result.items.length} шт.)` : `${item.itemName}[${item.id}](+${item.lvl})`;
   if (id === ALL && !confirmed) return requestFullTransfer(ctx, sender, target, "items", { snapshot: result.snapshot }, description);
-  return ctx.reply(`Ты передал(а) ${description} → ${receiver.firstname}`);
+  return ctx.replyWithHTML(`Ты успешно передал(а) ${escapeTransferText(description)} ${transferRecipientLink(receiver)}`);
 }

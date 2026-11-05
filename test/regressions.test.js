@@ -72,7 +72,7 @@ async function pressTransferButton(preview, button = 0, fromId = 123, chat = pre
   }, {}, { id: 999, username: "bot" });
   ctx.notifications=[];
   ctx.answers=[];
-  ctx.reply=ctx.telegram.sendMessage=async (...args)=>{ ctx.notifications.push(args); };
+  ctx.reply=ctx.replyWithHTML=ctx.telegram.sendMessage=async (...args)=>{ ctx.notifications.push(args); };
   ctx.answerCbQuery=async message=>{ ctx.answers.push(message); };
   ctx.editMessageReplyMarkup=async()=>{};
   await transferConfirmationRouter.middleware()(ctx,async()=>{});
@@ -128,7 +128,7 @@ test("both BTC command orders transfer the actual amount; invalid amounts change
   assert.match(all.notifications[0][0],/@recipient[\s\S]*456[\s\S]*10 BTC/);
   const confirmation=await pressTransferButton(all);
   assert.deepEqual(database.users.map(user=>user.coin),[0,12]);
-  assert.match(confirmation.notifications[1][1],/10 BTC/);
+  assert.match(confirmation.notifications[1][1],/10 ₿/);
 });
 
 test("only the requester can use the buttons; cancel, expiry, and concurrent clicks cannot send twice", async () => {

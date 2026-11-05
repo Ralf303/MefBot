@@ -1,7 +1,7 @@
 import { getUser } from "../db/functions.js";
 import { separateNumber } from "../utils/helpers.js";
 import { ALL, parseTransferAmount } from "../utils/transfer-amount.js";
-import { getTransferRecipient } from "../utils/transfer-recipient.js";
+import { getTransferRecipient, transferRecipientLink } from "../utils/transfer-recipient.js";
 import economyService from "./economy-service.js";
 import { CHANGED_TRANSFER, requestFullTransfer } from "./transfer-confirmation.js";
 
@@ -45,10 +45,14 @@ export async function completeCurrencyTransfer(ctx, sender, { receiver, transfer
   }
 
   const quantity = separateNumber(result.amount);
-  await ctx.reply(`Ты успешно передал(а) ${quantity} ${unit} → ${receiver.firstname}`);
+  const stars = currency === "balance";
+  const displayUnit = currency === "coin" ? "₿" : unit;
+  const sent = `Ты успешно ${stars ? "отсыпал(а)" : "передал(а)"} ${quantity} ${displayUnit}`;
+  if (stars || currency === "donate") await ctx.replyWithHTML(`${sent} ${transferRecipientLink(receiver)}`);
+  else await ctx.reply(`${sent} ${receiver.firstname || "Игрок"}`);
   if (transferredViaUsername) {
     try {
-      await ctx.telegram.sendMessage(receiver.chatId, `Тебе передали ${quantity} ${unit} от ${ctx.from.first_name}`);
+      await ctx.telegram.sendMessage(receiver.chatId, `Тебе ${stars ? "отсыпали" : "передали"} ${quantity} ${displayUnit} от ${ctx.from.first_name}`);
     } catch (error) {
       console.log("Не удалось отправить личное сообщение:", error.message);
     }

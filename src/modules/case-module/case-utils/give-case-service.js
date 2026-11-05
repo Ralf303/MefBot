@@ -1,6 +1,6 @@
 import { withUsersTransaction } from "../../../services/transaction-service.js";
 import { ALL } from "../../../utils/transfer-amount.js";
-import { getTransferRecipient } from "../../../utils/transfer-recipient.js";
+import { escapeTransferText, getTransferRecipient, transferRecipientLink } from "../../../utils/transfer-recipient.js";
 import { CHANGED_TRANSFER, requestFullTransfer } from "../../../services/transfer-confirmation.js";
 import cases from "../cases.js";
 import { getUserCase } from "./case-tool-service.js";
@@ -41,10 +41,16 @@ export async function giveCase(sender, id, count, ctx, confirmed) {
   if (!moved.length) return ctx.reply("Недостаточно кейсов.");
   const description = moved.map(({ name, amount }) => `${name}: ${amount} шт.`).join("\n");
   if (count === ALL && !confirmed) return requestFullTransfer(ctx, sender, target, "cases", { caseId: id === ALL ? null : id, snapshot: result.snapshot }, description);
-  await ctx.reply(`Ты передал(а) кейсы → ${receiver.firstname}:\n${description}`);
+  const single = moved.length === 1 ? `${moved[0].amount} ${moved[0].dbName === "donate" ? "донат кейсов" : moved[0].name}` : null;
+  const mention = transferRecipientLink(receiver);
+  await ctx.replyWithHTML(single
+    ? `Ты успешно передал(а) ${escapeTransferText(single)} ${mention}`
+    : `Ты успешно передал(а) все кейсы ${mention}:\n${escapeTransferText(description)}`);
   if (transferredViaUsername) {
     try {
-      await ctx.telegram.sendMessage(receiver.chatId, `Тебе передали кейсы от ${ctx.from.first_name}:\n${description}`);
+      await ctx.telegram.sendMessage(receiver.chatId, single
+        ? `Тебе передали ${single} от ${ctx.from.first_name}`
+        : `Тебе передали кейсы от ${ctx.from.first_name}:\n${description}`);
     } catch (error) {
       console.log("Не удалось отправить личное сообщение:", error.message);
     }

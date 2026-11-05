@@ -1,5 +1,5 @@
 import { ALL } from "../../utils/transfer-amount.js";
-import { getTransferRecipient } from "../../utils/transfer-recipient.js";
+import { escapeTransferText, getTransferRecipient, transferRecipientLink } from "../../utils/transfer-recipient.js";
 import { assetSnapshot, CHANGED_TRANSFER, requestFullTransfer } from "../../services/transfer-confirmation.js";
 import {noteLog,currentLogContext} from '../../services/game-log-service.js';
 import jwtService from "../../services/jwt-service.js";
@@ -53,9 +53,9 @@ const giveCard = async (sender, cardId, ctx, confirmed) => {
   if (result.error) return ctx.reply(result.error);
   const { cards } = result;
   if (!cards.length) return ctx.reply(cardId === ALL ? "У тебя нет видеокарт." : "У тебя нет такой видеокарты.");
-  const description = cardId === ALL ? `все видеокарты (${cards.length} шт.)` : `видеокарту [${cards[0].id}](+${cards[0].lvl})`;
+  const description = cardId === ALL ? `все видеокарты (${cards.length} шт.)` : `Видеокарта[${cards[0].id}](${cards[0].lvl})`;
   if (cardId === ALL && !confirmed) return requestFullTransfer(ctx, sender, target, "cards", { snapshot: result.snapshot }, description);
-  return ctx.reply(`Ты передал(а) ${description} → ${receiver.firstname}`);
+  return ctx.replyWithHTML(`Ты передал(а) ${escapeTransferText(description)} ${transferRecipientLink(receiver)}`);
 };
 
 const buyCardUnsafe = async (user, transaction) => {
