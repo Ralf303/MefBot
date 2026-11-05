@@ -38,6 +38,12 @@ class RedisService {
     return await this.client.get(key);
   }
 
+  async take(key) {
+    return this.client.eval("local value = redis.call('GET', KEYS[1]); if value then redis.call('DEL', KEYS[1]) end; return value", {
+      keys: [key],
+    });
+  }
+
   async delete(key) {
     await this.client.del(key);
   }

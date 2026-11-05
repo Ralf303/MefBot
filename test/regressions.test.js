@@ -21,6 +21,7 @@ import mineRouter from "../src/modules/mine-module/mine-router.js";
 import itemsRouter from "../src/modules/items-module/items-router.js";
 import caseRouter from "../src/modules/case-module/case-router.js";
 import cardRouter from "../src/modules/card-module/card-router.js";
+import transferConfirmationRouter from "../src/modules/transfer-module/transfer-confirmation-router.js";
 import { ALL } from "../src/utils/transfer-amount.js";
 import redis from "../src/services/redis-service.js";
 import { createLimiter, withKeyLock } from "../src/utils/concurrency.js";
@@ -62,6 +63,21 @@ function context(text = "test", type = "private") {
   ctx.telegram.sendMessage=async (...args)=>{ ctx.notifications.push(args); };
   return ctx;
 }
+async function pressTransferButton(preview, button = 0, fromId = 123, chat = preview.chat) {
+  const keyboard = preview.notifications[0][1].reply_markup.inline_keyboard;
+  const data = keyboard.flat()[button].callback_data;
+  const ctx = new Context({
+    update_id: 2,
+    callback_query: { id: "callback", from: { id: fromId, first_name: "Test" }, data, message: { message_id: 2, chat } },
+  }, {}, { id: 999, username: "bot" });
+  ctx.notifications=[];
+  ctx.answers=[];
+  ctx.reply=ctx.telegram.sendMessage=async (...args)=>{ ctx.notifications.push(args); };
+  ctx.answerCbQuery=async message=>{ ctx.answers.push(message); };
+  ctx.editMessageReplyMarkup=async()=>{};
+  await transferConfirmationRouter.middleware()(ctx,async()=>{});
+  return ctx;
+}
 beforeEach(() => {
   test.mock.method(console, "error", () => {});
   test.mock.method(console, "log", () => {});
@@ -70,7 +86,9 @@ beforeEach(() => {
   database.cases=[Case.build({id:1,userId:1,minecraft:1}).get({plain:true})];
   cache=new Map(); failSave=null; committed=false;
   redis.get=async key=>cache.get(String(key)) || null;
+  redis.set=async(key,value)=>{cache.set(String(key),value);};
   redis.delete=async key=>cache.delete(String(key));
+  redis.take=async key=>{const value=cache.get(key);cache.delete(key);return value;};
   sequelize.transaction=async operation=>withKeyLock("test-transaction",async()=>{
     const transaction={data:structuredClone(database),LOCK:{UPDATE:"UPDATE"},callbacks:[],afterCommit(fn){this.callbacks.push(fn);}};
     const result=await sequelize.constructor._cls.run(async()=>{
@@ -106,9 +124,45 @@ test("both BTC command orders transfer the actual amount; invalid amounts change
   assert.deepEqual(database.users.map(user=>user.coin),[10,2]);
   const all=context("Крипта передать ВСЁ @recipient");
   await mineRouter.middleware()(all,next);
+  assert.deepEqual(database.users.map(user=>user.coin),[10,2]);
+  assert.match(all.notifications[0][0],/@recipient[\s\S]*456[\s\S]*10 BTC/);
+  const confirmation=await pressTransferButton(all);
   assert.deepEqual(database.users.map(user=>user.coin),[0,12]);
-  assert.match(all.notifications[0][0],/10 BTC/);
-  assert.match(all.notifications[1][1],/10 BTC/);
+  assert.match(confirmation.notifications[1][1],/10 BTC/);
+});
+
+test("only the requester can use the buttons; cancel, expiry, and concurrent clicks cannot send twice", async () => {
+  database.users[0].coin=10;
+  database.users[1].username="recipient";
+  const preview=async()=>{
+    const ctx=context("крипта передать всё @recipient","group");
+    await mineRouter.middleware()(ctx,async()=>{});
+    return ctx;
+  };
+  const cancelled=await preview();
+  assert.match((await pressTransferButton(cancelled,1,456)).answers[0],/не твоя/);
+  assert.match((await pressTransferButton(cancelled,0,123,{...cancelled.chat,id:-987})).answers[0],/не твоя/);
+  assert.match((await pressTransferButton(cancelled,1)).notifications[0][0],/отменена/);
+  assert.match((await pressTransferButton(cancelled)).answers[0],/закрыта/);
+  const expired=await preview();
+  cache.clear();
+  assert.match((await pressTransferButton(expired)).answers[0],/закрыта/);
+  assert.deepEqual(database.users.map(user=>user.coin),[10,0]);
+  const live=await preview();
+  const results=await Promise.all([pressTransferButton(live),pressTransferButton(live)]);
+  assert.equal(results.filter(result=>result.notifications.length>0).length,1);
+  assert.deepEqual(database.users.map(user=>user.coin),[0,10]);
+});
+
+test("confirmation rejects a balance that changed after the preview", async () => {
+  database.users[0].coin=10;
+  database.users[1].username="recipient";
+  const ctx=context("передать крипта все @recipient");
+  await mineRouter.middleware()(ctx,async()=>{});
+  database.users[0].coin=11;
+  const result=await pressTransferButton(ctx);
+  assert.match(result.notifications[0][0],/изменились/);
+  assert.deepEqual(database.users.map(user=>user.coin),[11,0]);
 });
 
 test("concurrent full balance transfers use locked balances and preserve the minimum", async () => {
@@ -134,7 +188,13 @@ test("giving all items checks capacity, unequips items and updates both inventor
   assert.match(rejected.notifications[0][0],/Ничего не передано/);
   assert.deepEqual(database.items.map(item=>item.userId),[1,1,2]);
   database.users[1].slots=3;
-  await itemsRouter.middleware()(context("передать вещь всё @recipient"),next);
+  const preview=context("передать вещь всё @recipient");
+  await itemsRouter.middleware()(preview,next);
+  database.items[1].id=4;
+  assert.match((await pressTransferButton(preview)).notifications[0][0],/изменились/);
+  const newPreview=context("передать вещь всё @recipient");
+  await itemsRouter.middleware()(newPreview,next);
+  await pressTransferButton(newPreview);
   assert.deepEqual(database.items.map(item=>[item.userId,item.isWorn]),[[2,false],[2,false],[2,true]]);
   assert.deepEqual(database.users.map(user=>user.fullSlots),[0,3]);
 });
@@ -145,9 +205,16 @@ test("case transfers support all of one type and all types including donate case
   database.cases[0].donate=3;
   await Case.create({id:2,userId:2,minecraft:1,donate:2});
   const next=async()=>{};
-  await caseRouter.middleware()(context("передать старкейс 1 все @recipient"),next);
+  const one=context("передать старкейс 1 все @recipient");
+  await caseRouter.middleware()(one,next);
+  assert.match(one.notifications[0][0],/Майнкрафт кейс: 4 шт/);
+  assert.deepEqual(database.cases.map(({minecraft,donate})=>[minecraft,donate]),[[4,3],[1,2]]);
+  await pressTransferButton(one);
   assert.deepEqual(database.cases.map(({minecraft,donate})=>[minecraft,donate]),[[0,3],[5,2]]);
-  await caseRouter.middleware()(context("передать старкейсы всё @recipient"),next);
+  const all=context("передать старкейсы всё @recipient");
+  await caseRouter.middleware()(all,next);
+  assert.match(all.notifications[0][0],/Донат кейс: 3 шт/);
+  await pressTransferButton(all);
   assert.deepEqual(database.cases.map(({minecraft,donate})=>[minecraft,donate]),[[0,0],[5,5]]);
 });
 
@@ -155,7 +222,11 @@ test("giving all cards unmounts only the cards transferred, retaining card balan
   database.users[1].username="recipient";
   database.cards=[{id:1,userId:1,balance:2.5},{id:2,userId:1,balance:0},{id:3,userId:2,balance:5}];
   database.stands=[{id:1,userId:1,cardId:1},{id:2,userId:2,cardId:3}];
-  await cardRouter.middleware()(context("передать видеокарты всё @recipient"),async()=>{});
+  const preview=context("передать видеокарты всё @recipient");
+  await cardRouter.middleware()(preview,async()=>{});
+  assert.match(preview.notifications[0][0],/2 шт/);
+  assert.deepEqual(database.stands.map(stand=>stand.cardId),[1,3]);
+  await pressTransferButton(preview);
   assert.deepEqual(database.cards.map(card=>[card.userId,card.balance]),[[2,2.5],[2,0],[2,5]]);
   assert.deepEqual(database.stands.map(stand=>stand.cardId),[null,3]);
 });

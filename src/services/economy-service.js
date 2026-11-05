@@ -30,11 +30,12 @@ class EconomyService {
     });
   }
 
-  async transfer({ sender, receiver, currency, amount, minAmount = 1 }) {
+  async transfer({ sender, receiver, currency, amount, minAmount = 1, expectedAmount }) {
     assertCurrency(currency);
     const requested = amount === ALL ? ALL : normalizeAmount(amount);
     if (!sender || !receiver || Number(sender.id) === Number(receiver.id)) throw new EconomyError("SELF_TRANSFER");
     return withUsersTransaction([sender, receiver], async ([lockedSender, lockedReceiver], transaction) => {
+      if (expectedAmount !== undefined && lockedSender[currency] !== expectedAmount) throw new EconomyError("TRANSFER_CHANGED");
       const value = requested === ALL ? lockedSender[currency] : requested;
       if (value <= 0 || lockedSender[currency] < value) throw new EconomyError("INSUFFICIENT_FUNDS");
       if (value < minAmount) throw new EconomyError("MIN_AMOUNT");

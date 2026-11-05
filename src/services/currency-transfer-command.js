@@ -1,8 +1,9 @@
 import { getUser } from "../db/functions.js";
 import { separateNumber } from "../utils/helpers.js";
-import { parseTransferAmount } from "../utils/transfer-amount.js";
+import { ALL, parseTransferAmount } from "../utils/transfer-amount.js";
 import { getTransferRecipient } from "../utils/transfer-recipient.js";
 import economyService from "./economy-service.js";
+import { CHANGED_TRANSFER, requestFullTransfer } from "./transfer-confirmation.js";
 
 const units = {
   balance: "старок", gems: "гемов", donate: "искр", stones: "точильных камней",
@@ -13,18 +14,27 @@ const units = {
 export async function transferCurrency(ctx, currency, amountIndex = 2) {
   const amount = parseTransferAmount(ctx.message.text.trim().split(/\s+/)[amountIndex]);
   if (amount === null) return ctx.reply("Укажи целое положительное количество или «всё».");
+  const target = await getTransferRecipient(ctx, amount === ALL ? { registeredOnly: true } : undefined);
+  if (!target) return;
+  const sender = ctx.state.user || await getUser(ctx.from.id);
+  if (amount === ALL) {
+    const expectedAmount = Number(sender[currency]);
+    if (!Number.isSafeInteger(expectedAmount) || expectedAmount <= 0) return ctx.reply(`Недостаточно ${units[currency]} 🥲`);
+    if (currency === "balance" && expectedAmount < 100) return ctx.reply("Минимальная сумма передачи — 100 старок.");
+    return requestFullTransfer(ctx, sender, target, "currency", { currency, expectedAmount }, `${separateNumber(expectedAmount)} ${units[currency]}`);
+  }
+  return completeCurrencyTransfer(ctx, sender, target, currency, amount);
+}
 
+export async function completeCurrencyTransfer(ctx, sender, { receiver, transferredViaUsername }, currency, amount, expectedAmount) {
   const unit = units[currency];
   const minAmount = currency === "balance" ? 100 : 1;
-  let result, receiver, transferredViaUsername;
+  let result;
   try {
-    const target = await getTransferRecipient(ctx);
-    if (!target) return;
-    ({ receiver, transferredViaUsername } = target);
-    const sender = ctx.state.user || await getUser(ctx.from.id);
-    result = await economyService.transfer({ sender, receiver, currency, amount, minAmount });
+    result = await economyService.transfer({ sender, receiver, currency, amount, minAmount, expectedAmount });
   } catch (error) {
     switch (error.code || error.message) {
+      case "TRANSFER_CHANGED": return ctx.reply(CHANGED_TRANSFER);
       case "SELF_TRANSFER": return ctx.reply("Нельзя передавать самому себе.");
       case "INSUFFICIENT_FUNDS": return ctx.reply(`Недостаточно ${unit} 🥲`);
       case "MIN_AMOUNT": return ctx.reply(`Минимальная сумма передачи — ${minAmount} ${unit}.`);

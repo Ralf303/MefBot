@@ -1,5 +1,6 @@
 import { ALL } from "../../utils/transfer-amount.js";
 import { getTransferRecipient } from "../../utils/transfer-recipient.js";
+import { assetSnapshot, CHANGED_TRANSFER, requestFullTransfer } from "../../services/transfer-confirmation.js";
 import {noteLog,currentLogContext} from '../../services/game-log-service.js';
 import jwtService from "../../services/jwt-service.js";
 import { withUserTransaction, withUsersTransaction } from "../../services/transaction-service.js";
@@ -33,22 +34,27 @@ const deleteCardUnsafe = async (user, cardId) => {
   return `Успешно удалена Видеокарта[<code>${card.id}</code>]`;
 };
 
-const giveCard = async (sender, cardId, ctx) => {
-  const target = await getTransferRecipient(ctx);
+const giveCard = async (sender, cardId, ctx, confirmed) => {
+  const target = confirmed?.target ?? await getTransferRecipient(ctx, cardId === ALL ? { registeredOnly: true } : undefined);
   if (!target) return;
   const { receiver } = target;
-  const cards = await withUsersTransaction([sender, receiver], async ([from, to], transaction) => {
+  const result = await withUsersTransaction([sender, receiver], async ([from, to], transaction) => {
     const where = { userId: from.id, ...(cardId === ALL ? {} : { id: cardId }) };
     const assets = await Card.findAll({ where, transaction, lock: transaction.LOCK.UPDATE });
-    if (!assets.length) return assets;
+    const snapshot = cardId === ALL ? assetSnapshot(assets) : null;
+    if (confirmed && snapshot !== confirmed.data.snapshot) return { error: CHANGED_TRANSFER };
+    if (!assets.length || (cardId === ALL && !confirmed)) return { cards: assets, snapshot };
 
     await CardStand.update({ cardId: null }, { where: { cardId: assets.map(({ id }) => id) }, transaction });
     await Card.update({ userId: to.id }, { where, transaction });
-    return assets;
+    return { cards: assets };
   });
 
+  if (result.error) return ctx.reply(result.error);
+  const { cards } = result;
   if (!cards.length) return ctx.reply(cardId === ALL ? "У тебя нет видеокарт." : "У тебя нет такой видеокарты.");
   const description = cardId === ALL ? `все видеокарты (${cards.length} шт.)` : `видеокарту [${cards[0].id}](+${cards[0].lvl})`;
+  if (cardId === ALL && !confirmed) return requestFullTransfer(ctx, sender, target, "cards", { snapshot: result.snapshot }, description);
   return ctx.reply(`Ты передал(а) ${description} → ${receiver.firstname}`);
 };
 

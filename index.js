@@ -38,6 +38,7 @@ import middleware from "./middlewares.js";
 import mineService from "./src/modules/mine-module/mine-cron.js";
 import { startAnimsCleanupCron } from "./src/modules/items-module/items-utils/blend-items-service.js";
 import { gameLogMiddleware, installGameLogHooks, noteLog } from "./src/services/game-log-service.js";
+import transferConfirmationRouter from "./src/modules/transfer-module/transfer-confirmation-router.js";
 
 const stage = new Scenes.Stage([
   buyPrefix,
@@ -69,6 +70,7 @@ const start = async () => {
     );
 
     bot.use(gameLogMiddleware);
+    bot.use(transferConfirmationRouter);
     bot.use(stage.middleware());
     bot.use(middleware);
     mainCronService(bot);
